@@ -115,6 +115,7 @@ static void turn_off_freeing_of_storage_on_exception(
                              an_init_pos_descr_ptr       ipdp,
                              an_expr_node_ptr            delete_args,
                              a_routine_ptr               new_routine,
+                             an_expr_node_ptr            alloc_prefix_size,
                              an_expr_node_ptr            init_expr,
                              an_insert_location          *insert_location);
 static void insert_pending_stmk_init_statements_at_mark(
@@ -11902,6 +11903,7 @@ arrays with class elements.
   a_boolean                   zero_storage = FALSE;
   a_boolean                   needs_dynamic_initialization = FALSE;
   a_boolean                   aligned_delete = FALSE;
+  an_expr_node_ptr            aligned_prefix_size_node = NULL;
 #if ABI_CHANGES_FOR_PLACEMENT_DELETE
   a_boolean                   sized_delete = FALSE;
   an_expr_node_ptr            prefix_size_node = NULL;
@@ -11997,6 +11999,12 @@ arrays with class elements.
                                               /*vars_can_change=*/FALSE);
         prefix_size_node = add_cast_if_necessary(prefix_size_node,
                                                  size_node->type);
+        /* get_prefix_size_node does not account for the alignment, so
+           the code that frees the storage on an exception must use the
+           same prefix size. */
+        aligned_prefix_size_node = make_reusable_copy(
+                                                  prefix_size_node,
+                                                  /*vars_can_change=*/FALSE);
       } else
 #endif /* !IA64_ABI */
       /* Do not insert code here. */
@@ -12234,6 +12242,7 @@ arrays with class elements.
        exception. */
     turn_off_freeing_of_storage_on_exception(ndsp, &ipd, delete_args,
                                              new_routine,
+                                             aligned_prefix_size_node,
                                              init_insert_location.variant.expr,
                                              &insert_location);
     /* Insert the value of the temporary as the final value of the
@@ -12426,6 +12435,7 @@ static void turn_off_freeing_of_storage_on_exception(
                              an_init_pos_descr_ptr       ipdp,
                              an_expr_node_ptr            delete_args,
                              a_routine_ptr               new_routine,
+                             an_expr_node_ptr            alloc_prefix_size,
                              an_expr_node_ptr            init_expr,
                              an_insert_location          *insert_location)
 /*
@@ -12436,6 +12446,10 @@ set_up_freeing_of_storage_on_exception.  ipdp describes the location of the
 allocated storage.  delete_args points to the list of arguments for a
 deallocation call, if one is needed.  If new_routine is non-NULL, it is
 the placement new routine that is being called to allocate the memory.
+If alloc_prefix_size is non-NULL, it is a reusable expression for the size
+of the array prefix that was used when the storage was allocated (e.g., the
+alignment for an aligned array new in the Cfront ABI); otherwise, the
+prefix size is determined from the array element type.
 
 In the case of an initialized array (e.g., "new A[4] {1, 2}"), the caller
 has generated two logical pieces of code: a run-time call to allocate the
@@ -12488,9 +12502,14 @@ as well as any additional code needed to process the deletion.
                           new_delete_base_type_from_operation_type(ndsp->type),
                           /*check_constructor=*/TRUE)) {
           /* Get the size of a prefix if there is one. */
-          prefix_size_node = get_prefix_size_node(
+          if (alloc_prefix_size != NULL) {
+            prefix_size_node = make_reusable_copy(alloc_prefix_size,
+                                                  /*vars_can_change=*/FALSE);
+          } else {
+            prefix_size_node = get_prefix_size_node(
                                                 array_element_type(ndsp->type),
                                                 new_routine);
+          }  /* if */
           if (prefix_size_node != NULL) {
             /* Subtract the array prefix size. */
             entity_node = add_cast_if_necessary(entity_node, char_star_type());
@@ -12823,6 +12842,7 @@ The subtree of the node has not yet been lowered.
            exception. */
         turn_off_freeing_of_storage_on_exception(ndsp, &ipd, delete_args,
                                              (a_routine_ptr)NULL,
+                                             (an_expr_node_ptr)NULL,
                                              init_insert_location.variant.expr,
                                              &insert_location);
       }  /* if */
