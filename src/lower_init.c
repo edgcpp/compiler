@@ -5917,8 +5917,9 @@ must NOT already be lowered (see comment in default_version_of_routine).
                                     ctor_routine, dtor_routine);
   } else if (!zero_storage &&
              (!exceptions_enabled || dtor_routine == NULL)) {
-    /* No cleanup is needed if a constructor throws.  Construct the elements
-       directly without pulling in the allocating vector-new runtime. */
+    /* With exceptions disabled or no destructor to call, construct the
+       elements directly without pulling in the allocating vector-new
+       runtime. */
     an_insert_location helper_insert_location;
     a_variable_ptr     element_ptr;
     a_type_ptr         element_type = type_pointed_to(entity_node->type);
@@ -5928,15 +5929,15 @@ must NOT already be lowered (see comment in default_version_of_routine).
     num_elem_node = num_elem_node_if_array(ipdp);
     check_assertion(num_elem_node != NULL);
     helper_routine = helper_routine_to_loop_through_array_elements(
-                              element_type, &element_ptr,
-                              &helper_insert_location);
+                                                    element_type, &element_ptr,
+                                                    &helper_insert_location);
     ctor_call = make_call_node(ctor_routine, var_rvalue_expr(element_ptr));
     (void)insert_expr_statement(ctor_call, &helper_insert_location);
     entity_node = add_cast_if_necessary(entity_node,
                                        make_pointer_type(element_type));
     entity_node->next = add_cast_if_necessary(
-                                  num_elem_node,
-                                  integer_type(targ_size_t_int_kind));
+                                           num_elem_node,
+                                           integer_type(targ_size_t_int_kind));
     call_node = make_call_node(helper_routine, entity_node);
   } else {
     /* Normal constructor case. */

@@ -2,7 +2,7 @@
 //options_all:--c++11
 //options:--exceptions:--no_exceptions
 //require:BACK_END_IS_C_GEN_BE 1
-//filter:cat; awk 'BEGIN { found = 0 } /__vec_new|__cxa_vec_new|__cxa_vec_ctor/ { found = 1 } END { if (found) print "unexpected vector allocation helper"; else print "array construction needs no allocation helper" }' Test_name.int.c
+//filter:cat; grep -Eq '__array_new|__vec_new|__cxa_vec_(new|ctor)' Test_name.int.c; [ $? = 1 ] && echo 'array construction needs no allocation helper'
 //match_regex:array construction needs no allocation helper
 
 struct Element {
