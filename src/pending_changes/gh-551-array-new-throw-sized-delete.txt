@@ -1,0 +1,7 @@
+[GH #551]
+Sized delete[] size when an array new element constructor throws
+
+When an element constructor of an array new with an initializer (e.g.,
+"new E[n]{}") threw, the storage was freed by a sized operator delete[] whose
+size argument was read from an uninitialized temporary.  The size passed is
+now the size that was allocated.
