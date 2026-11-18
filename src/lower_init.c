@@ -11100,6 +11100,28 @@ do_keep_constant:
       free_destructible_entity_descr(dip->destructible_entity_descr);
       dip->destructible_entity_descr = NULL;
     }  /* if */
+  } else if ((options & LDIO_THROW) &&
+             (dip->kind == (a_dynamic_init_kind)dik_nonconstant_aggregate ||
+              dip->kind == (a_dynamic_init_kind)dik_lambda) &&
+             latest_initialization_on_entry !=
+                                          eff_context->latest_initialization) {
+    /* A thrown aggregate (which has no destructor entry; the runtime
+       destroys the exception object) has been completely initialized.
+       Remove the cleanups for its partially constructed subobjects from
+       the cleanup state, so that they are not run (in addition to the
+       destruction of the exception object) when it is thrown. */
+    a_boolean some_cloned, some_ordered;
+    adjust_cleanup_state_for_aggregate_init(
+                                            eff_context->latest_initialization,
+                                            latest_initialization_on_entry,
+                                            eff_insert_location,
+                                            &some_cloned,
+                                            &some_ordered);
+    if (exceptions_enabled) {
+      insert_code_to_indicate_cleanup_state(curr_context->curr_cleanup_state,
+                                            eff_insert_location,
+                                            /*unreachable=*/FALSE);
+    }  /* if */
   }  /* if */
   /* If the dynamic init defines a lifetime that surrounds the initialization,
      pop the context for that lifetime. */
