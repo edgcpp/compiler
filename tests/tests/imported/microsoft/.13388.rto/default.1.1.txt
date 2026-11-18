@@ -1,0 +1,11 @@
+fe_only -DTEST_NUMBER=1 --microsoft --c++14 Test_name.c
+"Test_name.c", line 10: error: an empty initializer is invalid for an array with unspecified bound
+  int const list<Pack...>::values[] = { Pack... };
+                           ^
+          detected during implicit definition of "const int list<Pack...>::values[] [with Pack=<>]" at line 14
+
+"Test_name.c", line 14: warning: expression has no effect
+  list<>::values; // Error expected here, cannot create an array with 0 elements.
+  ^
+
+1 error detected in the compilation of "Test_name.c".
