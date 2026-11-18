@@ -337,6 +337,16 @@ typedef struct a_destructible_entity_descr {
 			   slightly different than the front end order
 			   (reflected by the dynamic init
 			   next_in_destruction_list pointer). */
+  a_variable_ptr
+		runtime_elem_count_var;
+			/* When exceptions are enabled and the entity is a
+			   sequence of array elements whose number is known
+			   only at run time (e.g., the default-initialized
+			   remainder of a row of a partially initialized
+			   multidimensional variable-length array), points to
+			   a size_t variable holding that number, which the
+			   region table entry refers to like the element count
+			   of a VLA.  NULL otherwise. */
 #endif /* GENERATE_EH_TABLES */
   a_byte_boolean
 		initialization_done;

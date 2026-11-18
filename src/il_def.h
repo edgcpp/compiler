@@ -5353,7 +5353,14 @@ typedef struct a_constant {
 			   zero is used for new and delete of an array, and
 			   means "use the number of elements recorded along
 			   with the storage allocation".  A similar case occurs
-			   when initializing a variable-length array. */
+			   when initializing a variable-length array: a count
+			   of zero (which can also appear in a nested
+			   variable-length row of a multidimensional array)
+			   initializes all the remaining elements, a number
+			   known only at run time.  In that case the repeated
+			   constant always initializes leaf elements and the
+			   ck_init_repeat is the last constant of its
+			   aggregate. */
       a_byte_boolean
 		multidimensional_aggr_tail_not_repeated;
 			/* This flag is used to indicate that the repeated
