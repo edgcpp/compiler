@@ -1991,8 +1991,10 @@ See ``lower_array_new`` and ``lower_array_delete``.
 Constructors and Destructors for Arrays
 ---------------------------------------
 
-Construction or destruction of an entire (static or automatic) array is done by
-calling runtime routines.  For the cfront-like ABI, ``__vec_new`` or
+For construction of an entire (static or automatic) array, lowering generates
+a loop that calls the element constructor when no storage zeroing or exception
+cleanup is needed.  Other construction cases and array destruction call
+runtime routines.  For the cfront-like ABI, ``__vec_new`` or
 ``__vec_delete`` are used (see previous section).  The address of the array is
 passed into ``__vec_new``, thus suppressing allocation, and ``0`` for the flag
 ``free`` is passed into ``__vec_delete``, thus suppressing freeing of the
@@ -2011,8 +2013,8 @@ array address.  [#f4]_ In the IA-64 ABI, the runtime routine is
 
 If the constructor involved has default arguments, a wrapper routine is created
 that requires no arguments other than the "``this``" parameter and calls the
-constructor with the proper default arguments.  The wrapper routine is then
-passed to the runtime routine, which can call it like a normal constructor.
+constructor with the proper default arguments.  The generated loop or runtime
+routine can then call the wrapper like a normal constructor.
 
 See
 
