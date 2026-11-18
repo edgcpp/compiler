@@ -2004,6 +2004,14 @@ allocation-capable vector runtime.  Newly generated calls require a matching
 runtime library; the existing vector entry points remain available for
 previously generated code and dynamic allocation.
 
+The runtime traverses preallocated arrays using byte offsets from the supplied
+address.  For nested arrays, strict ISO C pointer-bounds portability of this
+traversal has not been established.
+
+Separating array construction from the allocation-capable vector runtime does
+not make exception handling allocation-free: the exception runtime can still
+allocate storage for thrown objects and its own bookkeeping.
+
 For the IA-64 ABI, the standard runtime routines for these functions are:
 
   | ``__cxa_vec_ctor(``\ *array, num_elems, elem_size, ctor_routine,*
