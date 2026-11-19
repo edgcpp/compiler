@@ -11304,7 +11304,8 @@ do_assignment:;
                                       num_elem_node, helper, dtor_routine,
                                       (a_routine_ptr)NULL,
                                       (a_routine_ptr)NULL,
-                                      /*zero_storage=*/FALSE),
+                                      /*zero_storage=*/FALSE,
+                                      /*fixed_array=*/TRUE),
                     eff_insert_location);
           break;
         }  /* if */
