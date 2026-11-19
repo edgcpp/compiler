@@ -1988,10 +1988,15 @@ void update_routine_decl_modifiers(a_routine_ptr               routine,
 
 extern
 void update_variable_decl_modifiers(a_decl_parse_state  *dps);
+
+extern
+void check_variable_decl_modifiers(a_variable_ptr      var_ptr,
+                                   a_decl_parse_state  *dps);
 #else /* !DECL_MODIFIERS_IN_USE */
 /* Define these as macros that expand to nothing. */
 #define update_routine_decl_modifiers(a,b,c,d,e,f) /* nothing */
 #define update_variable_decl_modifiers(a) /* nothing */
+#define check_variable_decl_modifiers(a,b) /* nothing */
 #endif /* !DECL_MODIFIERS_IN_USE */
 
 extern void check_default_args_for_param_type(a_param_type_ptr        ptp,
