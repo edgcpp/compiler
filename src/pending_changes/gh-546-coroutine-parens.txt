@@ -1,10 +1,10 @@
 [GH #546]
 C++-generating back end: dropped parentheses around co_await and co_yield
 
-With PARENS_IN_IL=0, the C++-generating back end could drop parentheses that
-are needed to keep the meaning of co_await and co_yield expressions, so the
-generated code was rejected or had a different meaning.  For example, with
---c++20:
+In configurations with PARENS_IN_IL set to FALSE, the C++-generating back
+end could drop parentheses that are needed to keep the meaning of co_await
+and co_yield expressions, so the generated code was rejected or had a
+different meaning.  For example, with --c++20:
 
   #include <coroutine>
   struct S { int m; };
@@ -21,6 +21,6 @@ generated code was rejected or had a different meaning.  For example, with
     co_return i;
   }
 
-A dependent co_yield expression used as an operand, as in
-"(co_yield T{}) + 1", had the same problem when ALL_TEMPLATE_INFO_IN_IL is
-also set.  Parentheses are now added where they are needed.
+Additionally, in configurations with ALL_TEMPLATE_INFO_IN_IL set to TRUE, a
+dependent co_yield expression used as an operand, as in "(co_yield T{}) + 1",
+had the same problem.  Parentheses are now added where they are needed.
