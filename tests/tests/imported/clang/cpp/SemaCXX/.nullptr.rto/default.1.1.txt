@@ -38,7 +38,7 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     (void)&nullptr;
            ^
 
-"SemaCXX/nullptr.cpp", line 68: warning: conversion from pointer to smaller integer
+"SemaCXX/nullptr.cpp", line 68: error: invalid type conversion
     (void)reinterpret_cast<char>(nullptr);
           ^
 
@@ -78,4 +78,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   void *q = null();
             ^
 
-11 errors detected in the compilation of "Test_name.c".
+12 errors detected in the compilation of "Test_name.c".

@@ -35,7 +35,7 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     extern __unknown_anytype test1(...);
            ^
 
-"Test_name.c", line 46: warning: conversion from pointer to smaller integer
+"Test_name.c", line 46: error: invalid type conversion
       int x = (int) test1; // expected-error {{function 'test1' with unknown type must be given a function type}}
               ^
 
@@ -55,4 +55,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     extern __unknown_anytype var;
            ^
 
-13 errors detected in the compilation of "Test_name.c".
+14 errors detected in the compilation of "Test_name.c".

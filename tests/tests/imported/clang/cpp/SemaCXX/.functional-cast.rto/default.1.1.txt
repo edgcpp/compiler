@@ -90,7 +90,7 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     (void)Amp((int F::*)0); // expected-error {{conversion from pointer to member of class 'F' to pointer to member of class 'A' via virtual base 'B' is not allowed}}
           ^
 
-"Test_name.c", line 245: warning: conversion from pointer to smaller integer
+"Test_name.c", line 245: error: invalid type conversion
     (void)char(fnp); // expected-error {{cast from pointer to smaller type 'char' loses information}}
           ^
 
@@ -114,4 +114,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     (void)int_ref(); // expected-error {{reference to type 'int' requires an initializer}}
           ^
 
-19 errors detected in the compilation of "Test_name.c".
+20 errors detected in the compilation of "Test_name.c".
