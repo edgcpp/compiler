@@ -1,0 +1,7 @@
+[GH #453]
+SFINAE for function template with pending definition and deduced return type
+
+With modules, it is possible that a function template definition exists in a
+module but the definition is not yet loaded.  Previously, substitution failed
+if such a function template is called in a SFINAE context and the function
+template has a deduced return type.  This is now fixed.
