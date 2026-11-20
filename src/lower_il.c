@@ -16074,7 +16074,14 @@ Several nested aggregates can have the type of "this", as in:
 
 where "k" refers to the Y being initialized, not to the temporary
 initialized by "Y{2, k}".  The aggregates for which an explicitly specified
-element is being lowered are therefore skipped.
+element is being lowered are therefore skipped.  When no other aggregate
+matches, the "this" parameter of a constructor init comes next, as in:
+
+  struct D : Y { D() {} };
+
+where the default member initializer of Y::n is lowered by the constructor
+of Y, and "k" refers to the object that constructor initializes.  Only
+then are the skipped aggregates searched.
 */
 {
   a_boolean found = FALSE;
@@ -16082,24 +16089,26 @@ element is being lowered are therefore skipped.
   check_assertion(expr->kind == (an_expr_node_kind)enk_param_ref &&
                   expr->variant.param_ref.param_num == 0);
   if (aggregate_this_stack != NULL) {
-    /* We must be lowering an aggregate constant.  If no candidate aggregate
-       matches, fall back on all the aggregates on the stack. */
+    /* We must be lowering an aggregate constant.  Look for a candidate
+       aggregate. */
     found = replace_param_ref_with_aggregate_this(expr,
-                                                  /*candidates_only=*/TRUE) ||
-            replace_param_ref_with_aggregate_this(expr,
+                                                  /*candidates_only=*/TRUE);
+  }  /* if */
+  if (!found && ctor_init_this != NULL &&
+      identical_types_ignoring_qualifiers(ctor_init_this->type, expr->type)) {
+    /* We're lowering a constructor init; use the "this" parameter for
+       the function. */
+    set_expr_node_kind(expr, enk_variable);
+    node_variable(expr) = ctor_init_this;
+    found = TRUE;
+  }  /* if */
+  if (!found && aggregate_this_stack != NULL) {
+    /* Fall back on all the aggregates on the stack. */
+    found = replace_param_ref_with_aggregate_this(expr,
                                                   /*candidates_only=*/FALSE);
   }  /* if */
   if (!found) {
-    if (ctor_init_this != NULL) {
-      /* We're lowering a constructor init; use the "this" parameter for
-         the function. */
-      check_assertion(identical_types_ignoring_qualifiers(ctor_init_this->type,
-                                                          expr->type));
-      set_expr_node_kind(expr, (an_expr_node_kind)enk_variable);
-      node_variable(expr) = ctor_init_this;
-    } else {
-      unexpected_condition();
-    }  /* if */
+    unexpected_condition();
   }  /* if */
 }  /* lower_param_ref */
 
