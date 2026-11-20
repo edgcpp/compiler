@@ -1,6 +1,6 @@
 //type:cp
 //options_all:--c++20
-using size_t = unsigned int;
+using size_t = decltype(sizeof 0);
 using uint8_t = unsigned char;
 
 template <class T, size_t N>
