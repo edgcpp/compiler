@@ -6895,6 +6895,17 @@ expression.
 }  /* set_partial_initialization_start */
 
 
+static a_boolean is_single_element_array_type(a_type_ptr type)
+/*
+Return TRUE if type is a (fixed-size) array type with a single element.
+*/
+{
+  type = skip_typerefs(type);
+  return is_array_type(type) && !type->variant.array.is_vla &&
+         type->variant.array.variant.number_of_elements == 1;
+}  /* is_single_element_array_type */
+
+
 static a_constant_ptr set_init_pos_for_init_repeat(
                                      an_init_pos_descr_ptr ipdp,
                                      an_init_pos_descr_ptr outer_ipdp,
@@ -6919,7 +6930,9 @@ then covers only the constant dimensions and the number of innermost elements
 is likewise known only at run time.
 If strip_nested_repeats is TRUE and the repeated constant is an aggregate
 consisting of a single repeat (as for a multidimensional array), the nested
-repeats are folded into the count.  Return the constant to be repeated.
+repeats are folded into the count; likewise, a row of a single element
+(as for "A a[3][1]") is replaced by that element.  Return the constant to be
+repeated.
 */
 {
   a_constant_ptr repeated_con = repeat_con->variant.init_repeat.constant;
@@ -6970,15 +6983,22 @@ repeats are folded into the count.  Return the constant to be repeated.
          multi-dimensional arrays).  If so, strip any applicable
          ck_init_repeat constants and increase the count accordingly. */
       while (repeated_con->kind == ck_aggregate &&
-             repeated_con->variant.aggregate.first_constant->kind ==
-                                                             ck_init_repeat &&
+             (repeated_con->variant.aggregate.first_constant->kind ==
+                                                             ck_init_repeat ||
+              is_single_element_array_type(repeated_con->type)) &&
              repeated_con->variant.aggregate.first_constant ==
                                repeated_con->variant.aggregate.last_constant) {
         a_constant_ptr rcon = repeated_con->variant.aggregate.first_constant;
-        check_assertion(rcon->variant.init_repeat.count != 0);
-        ipdp->array_element_count *=
+        if (constant_is(rcon, ck_init_repeat)) {
+          check_assertion(rcon->variant.init_repeat.count != 0);
+          ipdp->array_element_count *=
                              (a_targ_ptrdiff_t)rcon->variant.init_repeat.count;
-        repeated_con = rcon->variant.init_repeat.constant;
+          repeated_con = rcon->variant.init_repeat.constant;
+        } else {
+          /* A row of a single element (e.g., of "A a[3][1]"); the count
+             is unchanged. */
+          repeated_con = rcon;
+        }  /* if */
         ipdp->array_element_type = repeated_con->type;
       }  /* while */
     }  /* if */

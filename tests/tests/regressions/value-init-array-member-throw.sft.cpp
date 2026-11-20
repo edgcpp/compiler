@@ -26,12 +26,15 @@ struct G2 { P a[2][3]; };
 struct G3 { P a[2][2][2]; };
 struct N { G g[2]; };
 struct GV { int k = 5; Q a[2]; P b[2][2]; };
+struct G1 { P a[3][1]; };
+struct G12 { P a[3][1][2]; };
 
 template <class F> static void check(int n, F f) {
   for (throw_at = 1; throw_at <= n; ++throw_at) {
+    bool threw = false;
     ctors = dtors = live = 0;
-    try { f(); } catch (int) {}
-    if (dtors != throw_at - 1 || live != 0) ++errors;
+    try { f(); } catch (int) { threw = true; }
+    if (!threw || dtors != throw_at - 1 || live != 0) ++errors;
   }
 }
 
@@ -44,12 +47,15 @@ int main() {
   check(8, [] { N x{}; });
   check(8, [] { GV x{}; });
   check(12, [] { G2 x[2]{}; });
+  check(3, [] { G1 x{}; });
+  check(6, [] { G12 x{}; });
+  check(3, [] { (void)G1{}; });
   check(4, [] { static G x{}; });
   check(4, [] { (void)G{}; });
   check(4, [] { G *p = new G{}; delete p; });
   /* Success path: everything constructed is destroyed. */
   throw_at = 0; live = 0;
-  { G2 a{}; GV b{}; G c[2]{}; N d{}; }
+  { G2 a{}; GV b{}; G c[2]{}; N d{}; G1 e{}; G12 f{}; }
   if (live != 0) ++errors;
   return errors != 0;
 }
