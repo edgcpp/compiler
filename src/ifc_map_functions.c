@@ -5778,6 +5778,129 @@ universal representation.
 
 
 /*
+Functions for interacting with IFC EdgFloatTypeSort sorts.
+*/
+
+
+a_const_char* str_for(an_ifc_edg_float_type_sort universal)
+/*
+Given the universal representation of EdgFloatTypeSort, return the textual name
+in the form of a c-string.
+*/
+{
+  a_const_char *result;
+
+  switch (universal) {
+    case ifc_efts_float128:
+      result = "EdgFloatTypeSort::Float128";
+      break;
+    case ifc_efts_float16:
+      result = "EdgFloatTypeSort::Float16";
+      break;
+    case ifc_efts_float32x:
+      result = "EdgFloatTypeSort::Float32x";
+      break;
+    case ifc_efts_float64x:
+      result = "EdgFloatTypeSort::Float64x";
+      break;
+    case ifc_efts_float80:
+      result = "EdgFloatTypeSort::Float80";
+      break;
+    case ifc_efts_fp16:
+      result = "EdgFloatTypeSort::Fp16";
+      break;
+    case ifc_efts_std_bfloat16:
+      result = "EdgFloatTypeSort::StdBfloat16";
+      break;
+    default:
+      unexpected_condition_str("Invalid value for a EdgFloatTypeSort.");
+      break;
+  }  /* switch */
+  return result;
+}  /* str_for */
+
+
+an_ifc_encoded_edg_float_type_sort to_encoded(
+                                          an_ifc_module_file         *file,
+                                          an_ifc_edg_float_type_sort universal)
+/*
+Given the universal representation of EdgFloatTypeSort and the destination
+module, return a reencoded sort value.
+*/
+{
+  using ue_ty = an_ifc_encoded_edg_float_type_sort_storage;
+  an_ifc_encoded_edg_float_type_sort_storage result;
+
+  switch (universal) {
+    case ifc_efts_float16:
+      result = (ue_ty)ifc_0_44_efts_float16;
+      break;
+    case ifc_efts_fp16:
+      result = (ue_ty)ifc_0_44_efts_fp16;
+      break;
+    case ifc_efts_float32x:
+      result = (ue_ty)ifc_0_44_efts_float32x;
+      break;
+    case ifc_efts_float64x:
+      result = (ue_ty)ifc_0_44_efts_float64x;
+      break;
+    case ifc_efts_float80:
+      result = (ue_ty)ifc_0_44_efts_float80;
+      break;
+    case ifc_efts_float128:
+      result = (ue_ty)ifc_0_44_efts_float128;
+      break;
+    case ifc_efts_std_bfloat16:
+      result = (ue_ty)ifc_0_44_efts_std_bfloat16;
+      break;
+    default:
+      unexpected_condition_str("Invalid value for a EdgFloatTypeSort.");
+      break;
+  }  /* switch */
+  return an_ifc_encoded_edg_float_type_sort{file, result};
+}  /* to_encoded */
+
+
+an_ifc_edg_float_type_sort to_universal_sort(
+                                     an_ifc_edg_float_type_sort_0_44 versioned)
+/*
+Given the versioned representation of EdgFloatTypeSort, return the
+corresponding universal representation.
+*/
+{
+  an_ifc_edg_float_type_sort result;
+
+  switch (versioned) {
+    case ifc_0_44_efts_float16:
+      result = ifc_efts_float16;
+      break;
+    case ifc_0_44_efts_fp16:
+      result = ifc_efts_fp16;
+      break;
+    case ifc_0_44_efts_float32x:
+      result = ifc_efts_float32x;
+      break;
+    case ifc_0_44_efts_float64x:
+      result = ifc_efts_float64x;
+      break;
+    case ifc_0_44_efts_float80:
+      result = ifc_efts_float80;
+      break;
+    case ifc_0_44_efts_float128:
+      result = ifc_efts_float128;
+      break;
+    case ifc_0_44_efts_std_bfloat16:
+      result = ifc_efts_std_bfloat16;
+      break;
+    default:
+      unexpected_condition_str("Invalid value for a EdgFloatTypeSort.");
+      break;
+  }  /* switch */
+  return result;
+}  /* to_universal_sort */
+
+
+/*
 Functions for interacting with IFC EdgTemplateArgumentSort sorts.
 */
 
@@ -5881,6 +6004,9 @@ the form of a c-string.
   a_const_char *result;
 
   switch (universal) {
+    case ifc_ets_edg_type_float:
+      result = "EdgTypeSort::EdgTypeFloat";
+      break;
     case ifc_ets_edg_type_substituted:
       result = "EdgTypeSort::EdgTypeSubstituted";
       break;
@@ -5902,14 +6028,28 @@ return a reencoded sort value.
   using ue_ty = an_ifc_encoded_edg_type_sort_storage;
   an_ifc_encoded_edg_type_sort_storage result;
 
-  switch (universal) {
-    case ifc_ets_edg_type_substituted:
-      result = (ue_ty)ifc_0_43_ets_edg_type_substituted;
-      break;
-    default:
-      unexpected_condition_str("Invalid value for a EdgTypeSort.");
-      break;
-  }  /* switch */
+  if (is_at_least(file, 0, 44)) {
+    switch (universal) {
+      case ifc_ets_edg_type_substituted:
+        result = (ue_ty)ifc_0_44_ets_edg_type_substituted;
+        break;
+      case ifc_ets_edg_type_float:
+        result = (ue_ty)ifc_0_44_ets_edg_type_float;
+        break;
+      default:
+        unexpected_condition_str("Invalid value for a EdgTypeSort.");
+        break;
+    }  /* switch */
+  } else {
+    switch (universal) {
+      case ifc_ets_edg_type_substituted:
+        result = (ue_ty)ifc_0_43_ets_edg_type_substituted;
+        break;
+      default:
+        unexpected_condition_str("Invalid value for a EdgTypeSort.");
+        break;
+    }  /* switch */
+  }  /* if */
   return an_ifc_encoded_edg_type_sort{file, result};
 }  /* to_encoded */
 
@@ -5925,6 +6065,29 @@ universal representation.
   switch (versioned) {
     case ifc_0_43_ets_edg_type_substituted:
       result = ifc_ets_edg_type_substituted;
+      break;
+    default:
+      unexpected_condition_str("Invalid value for a EdgTypeSort.");
+      break;
+  }  /* switch */
+  return result;
+}  /* to_universal_sort */
+
+
+an_ifc_edg_type_sort to_universal_sort(an_ifc_edg_type_sort_0_44 versioned)
+/*
+Given the versioned representation of EdgTypeSort, return the corresponding
+universal representation.
+*/
+{
+  an_ifc_edg_type_sort result;
+
+  switch (versioned) {
+    case ifc_0_44_ets_edg_type_substituted:
+      result = ifc_ets_edg_type_substituted;
+      break;
+    case ifc_0_44_ets_edg_type_float:
+      result = ifc_ets_edg_type_float;
       break;
     default:
       unexpected_condition_str("Invalid value for a EdgTypeSort.");
@@ -18934,6 +19097,40 @@ return the corresponding universal representation.
 }  /* to_universal_index */
 
 
+an_ifc_edg_type_sort_0_44 edg_type_sort(an_ifc_edg_type_index_0_44 versioned)
+/*
+Given the versioned representation of EdgTypeIndex, return the extracted
+versioned representation of EdgTypeSort.
+*/
+{
+  return (an_ifc_edg_type_sort_0_44)(0x1f & (uint32_t)versioned);
+
+}  /* edg_type_sort */
+
+
+uint32_t edg_type_value(an_ifc_edg_type_index_0_44 versioned)
+/*
+Given the versioned representation of EdgTypeIndex, return the extracted value.
+*/
+{
+  return versioned >> 5;
+}  /* edg_type_value */
+
+
+an_ifc_edg_type_index to_universal_index(an_ifc_module_file         *file,
+                                         an_ifc_edg_type_index_0_44 versioned)
+/*
+Given the versioned representation of EdgTypeIndex and the associated module,
+return the corresponding universal representation.
+*/
+{
+  an_ifc_edg_type_sort sort = to_universal_sort(edg_type_sort(versioned));
+  uint32_t             index = edg_type_value(versioned);
+
+  return an_ifc_edg_type_index{file, sort, index};
+}  /* to_universal_index */
+
+
 an_ifc_encoded_edg_type_index to_encoded(an_ifc_module_file    *file,
                                          an_ifc_edg_type_index universal)
 /*
@@ -27309,6 +27506,72 @@ Return the corresponding partition kind for EdgTraitFunctionDefinition.
 */
 {
   return ifc_pk_edg_trait_function_definition;
+}  /* get_ifc_partition_kind */
+
+
+template<>
+size_t get_ifc_buffer_size<an_ifc_edg_type_float_storage>(
+                                                      an_ifc_module_file *file)
+/*
+Given the associated module file, return the number of bytes required for an
+IFC EdgTypeFloat node.
+*/
+{
+  size_t result;
+
+  result = 4;
+  return result;
+}  /* get_ifc_buffer_size */
+
+
+template<>
+an_ifc_edg_type_float_storage* get<an_ifc_edg_type_float_storage>(
+                                    an_ifc_module_file            *file,
+                                    an_ifc_edg_type_float_storage *storage,
+                                    a_boolean                     fill_storage)
+/*
+Retrieve an instance of EdgTypeFloat from the IFC module file.
+
+If memory mapping is used and both the host and the target have the same
+endianness, then the file layout and the alignment/padding of the host must
+have exactly the same characteristics.  In this case, simply return a pointer
+to a suitably-cast byte_buffer and increment it as appropriate (the storage
+argument is unused in this scenario).
+
+Otherwise, the storage passed in to the function is used to store copies of
+each field of the structure and each field is individually copied (and
+byte-swapped if necessary).
+
+If fill_storage is TRUE, always copy the data into the passed storage (i.e.,
+the storage specified by the storage argument).
+*/
+{
+#if USE_MMAP_FOR_MODULES
+  using storage_type = an_ifc_edg_type_float_storage;
+  if (has_matching_endianness(file)) {
+    if (fill_storage) {
+      memcpy(*storage, get_byte_buffer(file), /*size=*/4);
+    } else {
+      storage = (storage_type*)(get_byte_buffer(file));
+    }  /* if */
+  } else
+#endif /* USE_MMAP_FOR_MODULES */
+  /* Do not put code here. */
+  {
+    /* kind */
+    get_bytes(file, (*storage) + 0, /*num_bytes=*/4, /*from_header=*/FALSE);
+  }  /* if */
+  return storage;
+}  /* get<an_ifc_edg_type_float_storage> */
+
+
+template<>
+an_ifc_partition_kind get_ifc_partition_kind<an_ifc_edg_type_float>()
+/*
+Return the corresponding partition kind for EdgTypeFloat.
+*/
+{
+  return ifc_pk_edg_type_float;
 }  /* get_ifc_partition_kind */
 
 
@@ -47763,6 +48026,9 @@ corresponding expected partition element size.
     case ifc_pk_edg_trait_function_definition:
       result = 8;
       break;
+    case ifc_pk_edg_type_float:
+      result = 4;
+      break;
     case ifc_pk_edg_type_substitued:
       result = 12;
       break;
@@ -49290,6 +49556,7 @@ representation of EdgTypeSort; otherwise, return FALSE.
   a_boolean result;
 
   switch (kind) {
+    case ifc_pk_edg_type_float:
     case ifc_pk_edg_type_substitued:
       result = TRUE;
       break;
@@ -49310,6 +49577,9 @@ EdgTypeSort.  If no corresponding sort kind exists for EdgTypeSort, abort.
   an_ifc_edg_type_sort result;
 
   switch (kind) {
+    case ifc_pk_edg_type_float:
+      result = ifc_ets_edg_type_float;
+      break;
     case ifc_pk_edg_type_substitued:
       result = ifc_ets_edg_type_substituted;
       break;
@@ -51045,6 +51315,7 @@ corresponding partition kind; otherwise, return FALSE.
   a_boolean result;
 
   switch (sort) {
+    case ifc_ets_edg_type_float:
     case ifc_ets_edg_type_substituted:
       result = TRUE;
       break;
@@ -51065,6 +51336,9 @@ partition kind.  If no corresponding partition kind exists, abort.
   an_ifc_partition_kind result;
 
   switch (sort) {
+    case ifc_ets_edg_type_float:
+      result = ifc_pk_edg_type_float;
+      break;
     case ifc_ets_edg_type_substituted:
       result = ifc_pk_edg_type_substitued;
       break;
@@ -52920,6 +53194,13 @@ node's representation is valid; otherwise, return FALSE.
   a_boolean result = FALSE;
 
   switch (idx.sort) {
+    case ifc_ets_edg_type_float:
+      { Opt<an_ifc_edg_type_float> opt_universal;
+
+        construct_node(&opt_universal, idx);
+        result = opt_universal.has_value();
+      }
+      break;
     case ifc_ets_edg_type_substituted:
       { Opt<an_ifc_edg_type_substituted> opt_universal;
 

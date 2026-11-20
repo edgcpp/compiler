@@ -351,6 +351,18 @@
         "0x4": "GenConstant"
       }
     },
+    "EdgFloatType": {
+      "size": 4,
+      "values": {
+        "0x0": "Float16",
+        "0x1": "Fp16",
+        "0x2": "Float32x",
+        "0x3": "Float64x",
+        "0x4": "Float80",
+        "0x5": "Float128",
+        "0x6": "StdBfloat16"
+      }
+    },
     "ExpansionMode": {
       "size": 1,
       "values": {
@@ -1153,7 +1165,8 @@
       "bitwidth": 5,
       "non_null": true,
       "values": {
-        "0x0": "EdgTypeSubstituted"
+        "0x0": "EdgTypeSubstituted",
+        "0x1": "EdgTypeFloat"
       }
     },
     "Expr": {
@@ -2360,6 +2373,12 @@
       "fields": {
         "decl": "DeclIndex",
         "initializer": "EdgTokenCacheOffset"
+      }
+    },
+    "EdgTypeFloat": {
+      "padding": 0,
+      "fields": {
+        "kind": "EdgFloatTypeSort"
       }
     },
     "EdgTypeSubstituted": {
@@ -4636,6 +4655,7 @@
     ".edg.token.complex.textual": "EdgTokenTextual",
     ".edg.trait.class-template-definition": "EdgTraitClassTemplateDefinition",
     ".edg.trait.function-definition": "EdgTraitFunctionDefinition",
+    ".edg.type.float": "EdgTypeFloat",
     ".edg.type.substitued": "EdgTypeSubstituted",
     ".msvc.trait.decl-attrs": "TraitMsvcDeclAttrs",
     ".msvc.trait.named-function-parameters": "TraitMsvcFuncParams",

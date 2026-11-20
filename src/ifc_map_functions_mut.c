@@ -7986,16 +7986,29 @@ field "value" to the given EdgTypeIndex value.
 {
   /* Ensure the value field exists in the current module version. */
   check_assertion(has_ifc_value(*universal));
-  an_ifc_encoded_edg_type_index stage_0;
-  an_ifc_edg_type_index_0_43    stage_1;
+  if (is_at_least(universal->get_file(), 0, 44)) {
+    an_ifc_encoded_edg_type_index stage_0;
+    an_ifc_edg_type_index_0_44    stage_1;
 
-  stage_0 = to_encoded(universal->get_file(), value);
-  stage_1 = (an_ifc_edg_type_index_0_43)stage_0.value;
-  /* Copy from version-specific storage into the field (EdgExtensionType::value
-     - EdgTypeIndex). */
-  static_assert(sizeof(stage_1) == 4,
-                "stage_1 is not properly sized storage!");
-  copy_to_node_field(&stage_1, universal->get_storage(), /*offset=*/0);
+    stage_0 = to_encoded(universal->get_file(), value);
+    stage_1 = (an_ifc_edg_type_index_0_44)stage_0.value;
+    /* Copy from version-specific storage into the field
+       (EdgExtensionType::value - EdgTypeIndex). */
+    static_assert(sizeof(stage_1) == 4,
+                  "stage_1 is not properly sized storage!");
+    copy_to_node_field(&stage_1, universal->get_storage(), /*offset=*/0);
+  } else {
+    an_ifc_encoded_edg_type_index stage_0;
+    an_ifc_edg_type_index_0_43    stage_1;
+
+    stage_0 = to_encoded(universal->get_file(), value);
+    stage_1 = (an_ifc_edg_type_index_0_43)stage_0.value;
+    /* Copy from version-specific storage into the field
+       (EdgExtensionType::value - EdgTypeIndex). */
+    static_assert(sizeof(stage_1) == 4,
+                  "stage_1 is not properly sized storage!");
+    copy_to_node_field(&stage_1, universal->get_storage(), /*offset=*/0);
+  }  /* if */
 }  /* set_ifc_value */
 
 
@@ -8561,6 +8574,34 @@ value of the field "initializer" to the given EdgTokenCacheOffset value.
                 "stage_1 is not properly sized storage!");
   copy_to_node_field(&stage_1, universal->get_storage(), /*offset=*/4);
 }  /* set_ifc_initializer */
+
+
+/*
+Functions for writing data to IFC EdgTypeFloat nodes.
+*/
+
+
+template<>
+void set_ifc_kind(an_ifc_edg_type_float            *universal,
+                  const an_ifc_edg_float_type_sort &value)
+/*
+Given the universal representation of EdgTypeFloat update the value of the
+field "kind" to the given EdgFloatTypeSort value.
+*/
+{
+  /* Ensure the kind field exists in the current module version. */
+  check_assertion(has_ifc_kind(*universal));
+  an_ifc_encoded_edg_float_type_sort stage_0;
+  an_ifc_edg_float_type_sort_0_44    stage_1;
+
+  stage_0 = to_encoded(universal->get_file(), value);
+  stage_1 = (an_ifc_edg_float_type_sort_0_44)stage_0.value;
+  /* Copy from version-specific storage into the field (EdgTypeFloat::kind -
+     EdgFloatTypeSort). */
+  static_assert(sizeof(stage_1) == 4,
+                "stage_1 is not properly sized storage!");
+  copy_to_node_field(&stage_1, universal->get_storage(), /*offset=*/0);
+}  /* set_ifc_kind */
 
 
 /*
