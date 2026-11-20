@@ -4155,6 +4155,10 @@ typedef struct a_dynamic_init {
   a_bit_field	is_braced_initializer:1;
 			/* If TRUE, the source construct that generated this
 			   initialization is a brace-enclosed initializer. */
+  a_bit_field	is_auto_cast:1;
+			/* If TRUE, is_explicit_cast is also TRUE, and the
+			   cast was written with "auto" as its type (C++23),
+			   as in "auto(x)" or "auto{x}". */
   a_bit_field	is_partially_initialized:1;
 			/* TRUE if the initialized entity is an array or class
 			   aggregate not completely initialized by the
