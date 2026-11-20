@@ -1,0 +1,7 @@
+[GH #555]
+Rows of multidimensional arrays of an empty class in generated C
+
+When the C-generating back end used an empty struct for an empty class, the
+rows of a multidimensional array of that class (e.g., "Z a[3][2]") all had the
+same address, and the difference of two pointers to rows did not compile.
+Pointer arithmetic on pointers to such rows is now scaled by the row size.

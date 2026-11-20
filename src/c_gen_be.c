@@ -5459,21 +5459,110 @@ type of the variable to which it refers.
 #endif /* !STANDALONE_C_GEN_BE */
 #endif /* CHECKING */
 
+static a_type_ptr empty_struct_pointee(a_type_ptr type)
+/*
+If type is a pointer to a struct that has been generated as empty, or to an
+array (of any rank, possibly variable-length, and of nonzero size) of such
+structs, return the type pointed to.  Otherwise, return NULL.  The type
+pointed to has size zero in the generated code, so pointer arithmetic on
+such a pointer is done on char * and scaled by the number of structs in the
+type pointed to (see dump_empty_struct_pointee_size).
+*/
+{
+  a_type_ptr pointee = NULL;
+
+  if (is_pointer_type(type)) {
+    pointee = f_skip_typerefs(type_pointed_to(type));
+    if (pointee->generated_as_empty_struct) {
+      /* A pointer to an empty struct. */
+    } else if (is_array_type(pointee) &&
+               f_skip_typerefs(underlying_array_element_type(pointee))->
+                                                 generated_as_empty_struct &&
+               (is_vla_type(pointee) || pointee->size != 0)) {
+      /* A pointer to an array of empty structs. */
+    } else {
+      pointee = NULL;
+    }  /* if */
+  }  /* if */
+  return pointee;
+}  /* empty_struct_pointee */
+
+
+static a_boolean empty_struct_pointee_size_is_one(a_type_ptr pointee)
+/*
+pointee is a type returned by empty_struct_pointee.  Return TRUE if it
+contains exactly one struct, i.e., if pointer arithmetic on char * need not
+be scaled.
+*/
+{
+  return pointee->generated_as_empty_struct ||
+         (!is_vla_type(pointee) && pointee->size == 1);
+}  /* empty_struct_pointee_size_is_one */
+
+
+static void dump_empty_struct_pointee_size(a_type_ptr pointee)
+/*
+pointee is a type returned by empty_struct_pointee.  Put out the number of
+structs it contains, by which pointer arithmetic on char * is scaled.  For
+a variable-length array, this is the product of the dimensions, where each
+variable dimension is put out as in its array declarator (i.e., using the
+variable holding the value of the dimension, if any), e.g.,
+"((long)__T1*3)" for an array of type "S[n][3]".
+*/
+{
+  if (pointee->generated_as_empty_struct) {
+    write_unsigned_num((a_host_large_unsigned)1);
+  } else if (!is_vla_type(pointee)) {
+    write_unsigned_num((a_host_large_unsigned)pointee->size);
+  } else {
+    a_type_ptr    type = pointee;
+    a_targ_size_t constant_factor = 1;
+    write_tok_str("((");
+    write_tok_str(int_kind_name_full(targ_ptrdiff_t_int_kind,
+                                     /*for_generated_code=*/TRUE));
+    write_tok_ch(')');
+    do {
+      if (type->variant.array.is_vla) {
+        a_vla_dimension_ptr vlap;
+        check_assertion(type->variant.array.has_assoc_vla_dimension);
+        vlap = find_vla_dimension(type);
+#if DO_IL_LOWERING && !LOWER_VARIABLE_LENGTH_ARRAYS
+        if (vlap->dimension_variable != NULL) {
+          dump_variable_name(vlap->dimension_variable);
+        } else
+#endif /* DO_IL_LOWERING && !LOWER_VARIABLE_LENGTH_ARRAYS */
+        {
+          write_tok_ch('(');
+          dump_expression(vlap->dimension_expr);
+          write_tok_ch(')');
+        }  /* if */
+        write_tok_ch('*');
+      } else {
+        constant_factor *= type->variant.array.variant.number_of_elements;
+      }  /* if */
+      type = f_skip_typerefs(type->variant.array.element_type);
+    } while (is_array_type(type));
+    write_unsigned_num((a_host_large_unsigned)constant_factor);
+    write_tok_ch(')');
+  }  /* if */
+}  /* dump_empty_struct_pointee_size */
+
+
 static a_boolean cast_to_ptr_to_empty_struct(a_type_ptr type,
                                              a_boolean  *parens_needed)
 /*
 If the given type (the result type of an expression) is a pointer to a
-struct that has been generated as empty, put out a cast to the specified
-type and return TRUE.  If *parens_needed is FALSE, precede the cast with
-a left parenthesis and set *parens_needed to TRUE.  This is used to
-reverse the effect of casting operands of the expression to char * to
-allow them to be used in pointer arithmetic in spite of the zero size.
+struct that has been generated as empty (or to an array of such structs;
+see empty_struct_pointee), put out a cast to the specified type and return
+TRUE.  If *parens_needed is FALSE, precede the cast with a left parenthesis
+and set *parens_needed to TRUE.  This is used to reverse the effect of
+casting operands of the expression to char * to allow them to be used in
+pointer arithmetic in spite of the zero size.
 */
 {
   a_boolean did_cast = FALSE;
 
-  if (is_pointer_type(type) &&
-      f_skip_typerefs(type_pointed_to(type))->generated_as_empty_struct) {
+  if (empty_struct_pointee(type) != NULL) {
     if (!*parens_needed) {
       /* We must supply parentheses to enclose the added cast. */
       *parens_needed = TRUE;
@@ -5490,14 +5579,12 @@ allow them to be used in pointer arithmetic in spite of the zero size.
 static void dump_lvalue_ptr_to_empty_struct(an_expr_node_ptr expr)
 /*
 expr is an lvalue node whose type is a pointer to a struct that has been
-generated as empty.  In order for this lvalue to be usable in pointer
-arithmetic expressions, it must be cast to an lvalue pointer to char *,
-which this function does.
+generated as empty (see empty_struct_pointee).  In order for this lvalue to
+be usable in pointer arithmetic expressions, it must be cast to an lvalue
+pointer to char *, which this function does.
 */
 {
-  check_assertion(is_pointer_type(expr->type) &&
-                  f_skip_typerefs(type_pointed_to(expr->type))->
-                                                   generated_as_empty_struct &&
+  check_assertion(empty_struct_pointee(expr->type) != NULL &&
                   expr->is_lvalue);
   write_tok_str("(*(char **)&");
   dump_expr_with_parens(expr);
@@ -5505,24 +5592,67 @@ which this function does.
 }  /* dump_lvalue_ptr_to_empty_struct */
 
 
-static void dump_possible_ptr_to_empty_struct(an_expr_node_ptr expr)
+static void dump_possible_ptr_to_empty_struct(an_expr_node_ptr expr,
+                                              a_type_ptr       pointee)
 /*
 expr is an operand of a pointer arithmetic operation (it need not be the
 pointer operand).  If it is a pointer to struct that has been generated as
-empty, cast it to char * to give it the right element size for the
-computation.  Otherwise, just dump the expression normally.
+empty (see empty_struct_pointee), cast it to char * to give it the right
+element size for the computation.  Otherwise, if pointee (the value of
+empty_struct_pointee for the pointer operand) is non-NULL, expr is the
+integer operand, so scale it by the size of pointee if necessary.
+Otherwise, just dump the expression normally.
 */
 {
-  if (is_pointer_type(expr->type) &&
-      f_skip_typerefs(type_pointed_to(expr->type))->
-                                                   generated_as_empty_struct) {
+  if (empty_struct_pointee(expr->type) != NULL) {
     write_tok_str("((char *)");
     dump_expr_with_parens(expr);
+    write_tok_ch(')');
+  } else if (pointee != NULL && !empty_struct_pointee_size_is_one(pointee)) {
+    write_tok_str("((");
+    dump_expression(expr);
+    write_tok_str(")*");
+    dump_empty_struct_pointee_size(pointee);
     write_tok_ch(')');
   } else {
     dump_expr_with_parens(expr);
   }  /* if */
 }  /* dump_possible_ptr_to_empty_struct */
+
+
+static void dump_incr_decr_of_ptr_to_empty_struct(an_expr_node_ptr operand,
+                                                  a_boolean        is_incr,
+                                                  a_boolean        is_prefix)
+/*
+Dump an increment (if is_incr) or decrement of operand, a pointer to struct
+that has been generated as empty (see empty_struct_pointee), as a prefix
+(if is_prefix) or postfix operation on operand cast to an lvalue of type
+char * (see dump_lvalue_ptr_to_empty_struct).  When the size of the type
+pointed to is not 1, use "(p += size)" for "++p" and "((p += size) - size)"
+for "p++" (and similarly for decrements).  The caller casts the result back
+to the type of operand (see cast_to_ptr_to_empty_struct).
+*/
+{
+  a_type_ptr pointee = empty_struct_pointee(operand->type);
+
+  if (empty_struct_pointee_size_is_one(pointee)) {
+    if (is_prefix) write_tok_str(is_incr ? "++" : "--");
+    dump_lvalue_ptr_to_empty_struct(operand);
+    if (!is_prefix) write_tok_str(is_incr ? "++" : "--");
+  } else {
+    write_tok_ch('(');
+    if (!is_prefix) write_tok_ch('(');
+    dump_lvalue_ptr_to_empty_struct(operand);
+    write_tok_str(is_incr ? " += " : " -= ");
+    dump_empty_struct_pointee_size(pointee);
+    write_tok_ch(')');
+    if (!is_prefix) {
+      write_tok_str(is_incr ? " - " : " + ");
+      dump_empty_struct_pointee_size(pointee);
+      write_tok_ch(')');
+    }  /* if */
+  }  /* if */
+}  /* dump_incr_decr_of_ptr_to_empty_struct */
 
 #if SUNPRO_C_IS_C_GEN_BE_TARGET
 
@@ -5788,6 +5918,8 @@ there's some possibility of precedence confusion and need_parens is TRUE.
 #endif /* !C_GEN_BE_GENERATES_ANSI_C */
   a_boolean                      ptr_to_empty_struct_case = FALSE;
   a_boolean                      pointer_arithmetic_op = FALSE;
+  a_type_ptr                     empty_struct_pointee_type = NULL;
+  a_boolean                      scaled_pdiff = FALSE;
   an_expr_node_ptr               ptr_operand;
   a_boolean                      comma_case;
 
@@ -6034,13 +6166,13 @@ there's some possibility of precedence confusion and need_parens is TRUE.
           ptr_to_empty_struct_case = cast_to_ptr_to_empty_struct(expr->type,
                                                                  &need_parens);
           if (ptr_to_empty_struct_case) {
-            dump_lvalue_ptr_to_empty_struct(operand_1);
+            dump_incr_decr_of_ptr_to_empty_struct(operand_1,
+                                                  /*is_incr=*/TRUE,
+                                                  /*is_prefix=*/FALSE);
+            write_tok_ch(')');
           } else {
             dump_expr_with_parens(operand_1);
-          }  /* if */
-          write_tok_str("++");
-          if (ptr_to_empty_struct_case) {
-            write_tok_ch(')');
+            write_tok_str("++");
           }  /* if */
 #if !C_GEN_BE_GENERATES_ANSI_C
           end_adjust_bit_field_value(expr);
@@ -6055,11 +6187,13 @@ there's some possibility of precedence confusion and need_parens is TRUE.
 #endif /* !C_GEN_BE_GENERATES_ANSI_C */
           ptr_to_empty_struct_case = cast_to_ptr_to_empty_struct(expr->type,
                                                                  &need_parens);
-          write_tok_str("++");
           if (ptr_to_empty_struct_case) {
-            dump_lvalue_ptr_to_empty_struct(operand_1);
+            dump_incr_decr_of_ptr_to_empty_struct(operand_1,
+                                                  /*is_incr=*/TRUE,
+                                                  /*is_prefix=*/TRUE);
             write_tok_ch(')');
           } else {
+            write_tok_str("++");
             dump_expr_with_parens(operand_1);
           }  /* if */
 #if !C_GEN_BE_GENERATES_ANSI_C
@@ -6076,13 +6210,13 @@ there's some possibility of precedence confusion and need_parens is TRUE.
           ptr_to_empty_struct_case = cast_to_ptr_to_empty_struct(expr->type,
                                                                  &need_parens);
           if (ptr_to_empty_struct_case) {
-            dump_lvalue_ptr_to_empty_struct(operand_1);
+            dump_incr_decr_of_ptr_to_empty_struct(operand_1,
+                                                  /*is_incr=*/FALSE,
+                                                  /*is_prefix=*/FALSE);
+            write_tok_ch(')');
           } else {
             dump_expr_with_parens(operand_1);
-          }  /* if */
-          write_tok_str("--");
-          if (ptr_to_empty_struct_case) {
-            write_tok_ch(')');
+            write_tok_str("--");
           }  /* if */
 #if !C_GEN_BE_GENERATES_ANSI_C
           end_adjust_bit_field_value(expr);
@@ -6097,11 +6231,13 @@ there's some possibility of precedence confusion and need_parens is TRUE.
 #endif /* !C_GEN_BE_GENERATES_ANSI_C */
           ptr_to_empty_struct_case = cast_to_ptr_to_empty_struct(expr->type,
                                                                  &need_parens);
-          write_tok_str("--");
           if (ptr_to_empty_struct_case) {
-            dump_lvalue_ptr_to_empty_struct(operand_1);
+            dump_incr_decr_of_ptr_to_empty_struct(operand_1,
+                                                  /*is_incr=*/FALSE,
+                                                  /*is_prefix=*/TRUE);
             write_tok_ch(')');
           } else {
+            write_tok_str("--");
             dump_expr_with_parens(operand_1);
           }  /* if */
 #if !C_GEN_BE_GENERATES_ANSI_C
@@ -6307,9 +6443,12 @@ process_assignment:
             write_tok_str("(0,");
           }  /* if */
 #endif /* !C_GEN_BE_GENERATES_ANSI_C */
-          dump_expr_with_parens(operand_2);
           if (ptr_to_empty_struct_case) {
+            dump_possible_ptr_to_empty_struct(operand_2,
+                                        empty_struct_pointee(operand_1->type));
             write_tok_ch(')');
+          } else {
+            dump_expr_with_parens(operand_2);
           }  /* if */
 #if !C_GEN_BE_GENERATES_ANSI_C
           if (remainder_special_case) write_tok_ch(')');
@@ -6385,15 +6524,17 @@ process_assignment:
         case eok_subscript:
           ptr_operand = subscript_or_padd_pointer_operand(expr);
           check_assertion(is_pointer_type(ptr_operand->type));
-          if (f_skip_typerefs(type_pointed_to(ptr_operand->type))->
-                                                   generated_as_empty_struct) {
+          if (empty_struct_pointee(ptr_operand->type) != NULL) {
             /* In order to do the pointer arithmetic required for the
                subscripting operation, the pointer must be cast to char *
                to get the appropriate size for the elements, and the result
                must be cast back to the appropriate element type.  It's
                easier to deal with the casts in the pointer-addition form,
                so we use that instead of the subscript notation: if p is a
-               pointer to S, p[i] becomes (*(S *)(((char *)p)+i)). */
+               pointer to S, p[i] becomes (*(S *)(((char *)p)+i)).  (For a
+               pointer to an array of such structs, i is scaled by the size
+               of the array; see empty_struct_pointee.) */
+            a_type_ptr pointee = empty_struct_pointee(ptr_operand->type);
             if (!need_parens) {
               write_tok_ch('(');
               need_parens = TRUE;
@@ -6401,9 +6542,9 @@ process_assignment:
             write_tok_ch('*');
             dump_cast(ptr_operand->type);
             write_tok_ch('(');
-            dump_possible_ptr_to_empty_struct(operand_1);
+            dump_possible_ptr_to_empty_struct(operand_1, pointee);
             write_tok_str(" + ");
-            dump_possible_ptr_to_empty_struct(operand_2);
+            dump_possible_ptr_to_empty_struct(operand_2, pointee);
             write_tok_ch(')');
           } else {
             dump_expr_with_parens(operand_1);
@@ -6813,6 +6954,22 @@ process_assignment:
       if (pointer_arithmetic_op) {
         ptr_to_empty_struct_case = cast_to_ptr_to_empty_struct(expr->type,
                                                                &need_parens);
+        empty_struct_pointee_type = empty_struct_pointee(operand_1->type);
+        if (empty_struct_pointee_type == NULL && !is_unary) {
+          empty_struct_pointee_type = empty_struct_pointee(operand_2->type);
+        }  /* if */
+        if (op == eok_pdiff &&
+            empty_struct_pointee_type != NULL &&
+            !empty_struct_pointee_size_is_one(empty_struct_pointee_type)) {
+          /* The difference of the char * operands is in bytes, so divide
+             it by the size of the type pointed to. */
+          if (!need_parens) {
+            write_tok_ch('(');
+            need_parens = TRUE;
+          }  /* if */
+          write_tok_ch('(');
+          scaled_pdiff = TRUE;
+        }  /* if */
       }  /* if */
       if (is_unary) {
         /* Unary operator; operator goes first. */
@@ -6826,7 +6983,8 @@ process_assignment:
         comma_column = curr_output_column;
       }  /* if */
       if (pointer_arithmetic_op) {
-        dump_possible_ptr_to_empty_struct(operand_1);
+        dump_possible_ptr_to_empty_struct(operand_1,
+                                          empty_struct_pointee_type);
       } else {
         dump_expr_with_parens(operand_1);
       }  /* if */
@@ -6844,10 +7002,15 @@ process_assignment:
         }  /* if */
         if (pointer_comparison) write_tok_str(pointer_comparison_cast);
         if (pointer_arithmetic_op) {
-          dump_possible_ptr_to_empty_struct(operand_2);
+          dump_possible_ptr_to_empty_struct(operand_2,
+                                            empty_struct_pointee_type);
         } else {
           dump_expr_with_parens(operand_2);
         }  /* if */
+      }  /* if */
+      if (scaled_pdiff) {
+        write_tok_str(") / ");
+        dump_empty_struct_pointee_size(empty_struct_pointee_type);
       }  /* if */
       if (ptr_to_empty_struct_case) {
         write_tok_ch(')');
