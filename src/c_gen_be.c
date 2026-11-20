@@ -6439,8 +6439,7 @@ process_assignment:
           }  /* if */
 #endif /* !C_GEN_BE_GENERATES_ANSI_C */
           if (ptr_to_empty_struct_case) {
-            dump_possible_ptr_to_empty_struct(
-                                        operand_2,
+            dump_possible_ptr_to_empty_struct(operand_2,
                                         empty_struct_pointee(operand_1->type));
             write_tok_ch(')');
           } else {
