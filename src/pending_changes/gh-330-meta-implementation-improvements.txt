@@ -1,0 +1,52 @@
+//allowed_words: prot fct
+[GH #330]
+Various <meta> implementation improvements
+
+The following deviations of the <meta> implementation from N5046 have been
+fixed:
+
+  1) A protected member designated by a splice-expression (as in &[:r:] or
+     obj.[:r:]) is accessible from any point, and the protected member
+     access check no longer applies to it (N5046 [class.protected], as
+     clarified by CWG 3109).
+  2) std::meta::members_of now returns the members of a class or namespace
+     in declaration order (instead of grouped by kind), with the
+     implicitly-declared special members of a class last (N5046
+     [meta.reflection.member.queries]).
+  3) std::meta::source_location_of is now a constant expression for every
+     reflection: the result is a value-initialized std::source_location for
+     a reflection without a declaration (such as that of a value or of int),
+     and the location of the base-specifier or annotation for a direct base
+     class relationship or an annotation (N5046 [meta.reflection.names]).
+  4) std::meta::parent_of now accepts a reflection of a namespace or
+     namespace alias, returns the enclosing function for a function-local
+     entity, and is not a constant expression for a structured binding
+     (N5046 [meta.reflection.queries]).
+  5) std::meta::type_of of a nonstatic member function is now a plain
+     function type, including its cv-qualifiers and ref-qualifier, without
+     the class of the function (N5046 [dcl.fct]).
+
+For example, with --c++26 --set_flag=reflection:
+
+  #include <meta>
+  namespace N {
+    class C {
+    protected:
+      int prot;
+    public:
+      void f() const;
+      int b;
+    };
+  }
+  constexpr auto unchecked = std::meta::access_context::unchecked();
+  constexpr auto r =
+      std::meta::nonstatic_data_members_of(^^N::C, unchecked)[0];
+  int N::C::*pm = &[:r:];                // 1) Previously an error.
+  static_assert(std::meta::members_of(^^N::C, unchecked)[1] == ^^N::C::f);
+                                         // 2) Previously ^^N::C::b.
+  static_assert(std::meta::source_location_of(^^int).line() == 0);
+                                         // 3) Previously an error.
+  static_assert(std::meta::parent_of(^^N) == ^^::);
+                                         // 4) Previously an error.
+  static_assert(std::meta::type_of(^^N::C::f) == ^^void() const);
+                                         // 5) Previously failed.
