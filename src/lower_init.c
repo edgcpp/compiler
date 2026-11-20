@@ -6773,7 +6773,8 @@ dealt with).
          initializer (i.e., it is implicit); an explicitly specified element
          refers to the "this" of the enclosing context, as in:
            struct Y { unsigned k; unsigned n = Y{2, k}.n; };
-         where "k" in "Y{2, k}" designates the outer Y, not the temporary.
+         where "k" in "Y{2, k}" designates the outer Y, not the temporary;
+         the outer Y may also be the object of a constructor init.
          The default member initializers of the members of an anonymous
          union refer to the enclosing class, so an anonymous union does not
          affect the search. */
