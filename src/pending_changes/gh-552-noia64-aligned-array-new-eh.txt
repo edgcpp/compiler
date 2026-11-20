@@ -1,0 +1,11 @@
+[GH #552]
+Freeing over-aligned array new storage on an exception (non-IA-64 ABI)
+
+With the non-IA-64 ABI, when an element constructor threw during the brace or
+list initialization of an array new of an over-aligned class, e.g.,
+
+  struct alignas(64) A { A(); ~A(); };
+  new A[n]{};
+
+the storage was freed using the default array new prefix size instead of the
+alignment of the class: the wrong pointer was passed to operator delete[].
