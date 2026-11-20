@@ -6546,8 +6546,7 @@ to lower_dynamic_init_aggregate_constant; see their description there.
   /* Add the return statement at the end of the routine to the return memo
      list, so that any exception handling epilogue is added before it. */
   return_stmt = scope->assoc_block->variant.block.statements;
-  check_assertion(return_stmt != NULL &&
-                  return_stmt->kind == (a_statement_kind)stmk_return);
+  check_assertion(return_stmt != NULL && return_stmt->kind == stmk_return);
   add_to_return_memo_list(return_stmt);
   /* Create the parameters. */
   entity_var = make_lowered_param_variable(rtsp->param_type_list->type);
@@ -6633,7 +6632,7 @@ lower_dynamic_init_aggregate_constant; see their description there.
   a_boolean                     keep_constant = FALSE;
   a_boolean                     return_ptr;
 
-  check_assertion(dip->kind == (a_dynamic_init_kind)dik_nonconstant_aggregate);
+  check_assertion(dyn_init_is(dip, dik_nonconstant_aggregate));
   pointer_type = skip_typerefs(type);
   check_assertion(is_pointer_type(pointer_type));
 #if IA64_ABI
@@ -6653,8 +6652,7 @@ lower_dynamic_init_aggregate_constant; see their description there.
   /* Add the return statement at the end of the routine to the return memo
      list, so that any exception handling epilogue is added before it. */
   return_stmt = scope->assoc_block->variant.block.statements;
-  check_assertion(return_stmt != NULL &&
-                  return_stmt->kind == (a_statement_kind)stmk_return);
+  check_assertion(return_stmt != NULL && return_stmt->kind == stmk_return);
   add_to_return_memo_list(return_stmt);
   entity_var = make_lowered_param_variable(
                       rp->type->variant.routine.extra_info->param_type_list->
@@ -6726,13 +6724,11 @@ expression.
         used_node->next = node_for_host_large_integer(
                                              (a_host_large_integer)curr_elem,
                                              targ_size_t_int_kind);
-        used_node = make_operator_node((an_expr_operator_kind)eok_multiply,
-                                       count_type, used_node);
+        used_node = make_operator_node(eok_multiply, count_type, used_node);
         count_node = add_cast_if_necessary(ipdp->num_elem_node, count_type);
         count_node->next = used_node;
-        ipdp->num_elem_node =
-                   make_operator_node((an_expr_operator_kind)eok_subtract,
-                                      count_type, count_node);
+        ipdp->num_elem_node = make_operator_node(eok_subtract,
+                                                 count_type, count_node);
       }  /* if */
       ipdp->partial_initialization_starting_element = 0;
     } else {
@@ -7104,13 +7100,12 @@ dealt with).
                                                   ipmp->curr_elem, con_ptr,
                                                 /*strip_nested_repeats=*/TRUE);
           if (exceptions_enabled && !dtor_case &&
-              leaf_con->kind == (a_constant_repr_kind)ck_dynamic_init) {
+              constant_is(leaf_con, ck_dynamic_init)) {
             leaf_dip = leaf_con->variant.dynamic_init.ptr;
             init_leaf_sequence =
                   leaf_dip->destructor != NULL &&
-                  (leaf_dip->kind ==
-                              (a_dynamic_init_kind)dik_nonconstant_aggregate ||
-                   leaf_dip->kind == (a_dynamic_init_kind)dik_constructor);
+                  (dyn_init_is(leaf_dip, dik_nonconstant_aggregate) ||
+                   dyn_init_is(leaf_dip, dik_constructor));
           }  /* if */
           (void)set_init_pos_for_init_repeat(&ipd, ipdp, aggr_type,
                                              ipmp->curr_elem, con_ptr,
@@ -10294,7 +10289,7 @@ individual element values at *insert_location.
 
   check_assertion(dip->is_partially_initialized &&
                   has_variable_length_rows(type_from_init_pos_descr(ipdp)));
-  if (con->kind == (a_constant_repr_kind)ck_aggregate &&
+  if (constant_is(con, ck_aggregate) &&
       con->variant.aggregate.first_constant != NULL) {
     ipd = *ipdp;
     ipd.assign_constants = TRUE;
@@ -11124,8 +11119,7 @@ do_assignment:;
           if (exceptions_enabled && dip->destructor != NULL) {
             dtor_routine = dip->destructor;
 #if IA64_ABI
-            dtor_routine = alternate_entry_point(dtor_routine,
-                                             (a_ctor_or_dtor_kind)cdk_complete,
+            dtor_routine = alternate_entry_point(dtor_routine, cdk_complete,
                                                  /*define_now=*/FALSE);
 #endif /* IA64_ABI */
           }  /* if */
