@@ -15708,29 +15708,28 @@ of a subscript operation).
                     operand_2->variant.constant.folded_statement_expression;
         }  /* if */
       }  /* if */
-    } else if (op == eok_lor && constexpr_enabled &&
+    } else if ((op == eok_lor || op == eok_land) && constexpr_enabled &&
                !expr_stack->possible_rescan_context &&
                is_constant_operand(operand_1) &&
                constant_bool_value_known_at_compile_time(
                                                &operand_1->variant.constant) &&
-               !op_is_false_constant(operand_1)) {
-      /* (1 || nonconstant) produces true in C++11. */
-      eliminate_stmt_expr_refs_if_operand_dropped(operand_2);
+               op_is_false_constant(operand_1) == (op == eok_land)) {
+      /* The left operand determines the value of the operation.  Preserve
+         statement-expression entries if the right operand will appear in
+         the backing expression. */
+      a_boolean  record_backing_expr =
+                     curr_expr_kind_is_one_in_which_const_exprs_are_recorded();
+      if (!record_backing_expr) {
+        eliminate_stmt_expr_refs_if_operand_dropped(operand_2);
+      }  /* if */
       discard_operand(operand_2);
-      make_integer_constant_operand(result, (a_host_large_integer)1);
+      make_integer_constant_operand(result,
+                                    (a_host_large_integer)(op == eok_lor));
       cast_operand(result_type, result, /*is_implicit_cast=*/TRUE);
-      did_not_fold = FALSE;
-    } else if (op == eok_land && constexpr_enabled &&
-               !expr_stack->possible_rescan_context &&
-               is_constant_operand(operand_1) &&
-               constant_bool_value_known_at_compile_time(
-                                               &operand_1->variant.constant) &&
-               op_is_false_constant(operand_1)) {
-      /* (0 && nonconstant) produces false in C++11. */
-      eliminate_stmt_expr_refs_if_operand_dropped(operand_2);
-      discard_operand(operand_2);
-      make_integer_constant_operand(result, (a_host_large_integer)0);
-      cast_operand(result_type, result, /*is_implicit_cast=*/TRUE);
+      if (record_backing_expr) {
+        result->variant.constant.folded_statement_expression =
+                                         expr_stack->statement_expression_seen;
+      }  /* if */
       did_not_fold = FALSE;
 #if GNU_EXTENSIONS_ALLOWED
     } else if ((op == eok_pdiff || op == eok_eq || op == eok_ne) &&
