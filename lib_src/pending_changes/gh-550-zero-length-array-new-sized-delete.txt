@@ -1,0 +1,12 @@
+[GH #550]
+Sized delete[] size for a zero-length array new
+
+For an array new of zero elements of a class with a destructor (so that there
+is an array cookie), operator new[] was asked for one byte more than the size
+later passed to a sized operator delete[], e.g.
+
+  struct E { ~E(); };
+  delete[] new E[n];  // n == 0 at run time: new[] 9 bytes, delete[] 8.
+
+A zero-byte request is now only increased to one byte when there is no array
+cookie, as with __cxa_vec_new2 and g++.
