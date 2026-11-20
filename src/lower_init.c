@@ -12002,9 +12002,9 @@ arrays with class elements.
         /* get_prefix_size_node does not account for the alignment, so
            the code that frees the storage on an exception must use the
            same prefix size. */
-        aligned_prefix_size_node = make_reusable_copy(
-                                                  prefix_size_node,
-                                                  /*vars_can_change=*/FALSE);
+        aligned_prefix_size_node =
+                      make_reusable_copy(prefix_size_node,
+                                         /*vars_can_change=*/FALSE);
       } else
 #endif /* !IA64_ABI */
       /* Do not insert code here. */
