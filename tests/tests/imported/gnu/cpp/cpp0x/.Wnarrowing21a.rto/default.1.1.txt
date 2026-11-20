@@ -7,14 +7,6 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
   float f2{g ()}; /* { dg-warning "-Wnarrowing" } */
            ^
 
-"Test_name.c", line 9: error: unrecognized GCC pragma
-  #pragma GCC diagnostic push
-              ^
-
-"Test_name.c", line 10: error: unrecognized GCC pragma
-  #pragma GCC diagnostic ignored "-Wnarrowing"
-              ^
-
 "Test_name.c", line 11: error: invalid narrowing conversion from "int" to "float": constant value cannot be represented exactly in destination type
   float f3{123456789}; /* { dg-bogus "-Wnarrowing" } */
            ^
@@ -22,10 +14,6 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
 "Test_name.c", line 12: error: invalid narrowing conversion from "int" to "float"
   float f4{g ()}; /* { dg-bogus "-Wnarrowing" } */
            ^
-
-"Test_name.c", line 13: error: unrecognized GCC pragma
-  #pragma GCC diagnostic pop
-              ^
 
 "Test_name.c", line 14: error: invalid narrowing conversion from "int" to "float": constant value cannot be represented exactly in destination type
   float f5{123456789}; /* { dg-bogus "warning" "warning in place of error" } */
@@ -35,4 +23,4 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
   float f6{g ()}; /* { dg-warning "-Wnarrowing" } */
            ^
 
-9 errors detected in the compilation of "Test_name.c".
+6 errors detected in the compilation of "Test_name.c".

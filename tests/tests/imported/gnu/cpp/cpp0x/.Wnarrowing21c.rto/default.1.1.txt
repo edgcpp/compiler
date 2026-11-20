@@ -3,21 +3,9 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
   float f1{123456789}; /* { dg-warning "-Wnarrowing" } */
            ^
 
-"Test_name.c", line 7: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic push
-              ^
-
-"Test_name.c", line 8: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic ignored "-Wnarrowing"
-              ^
-
 "Test_name.c", line 9: warning: invalid narrowing conversion from "int" to "float": constant value cannot be represented exactly in destination type
   float f2{123456789}; /* { dg-bogus "-Wnarrowing" } */
            ^
-
-"Test_name.c", line 10: warning: unrecognized GCC pragma
-  #pragma GCC diagnostic pop
-              ^
 
 "Test_name.c", line 11: warning: invalid narrowing conversion from "int" to "float": constant value cannot be represented exactly in destination type
   float f3{123456789}; /* { dg-warning "-Wnarrowing" } */

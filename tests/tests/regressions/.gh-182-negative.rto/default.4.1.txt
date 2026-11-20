@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=4 --diag_error=unrecognized_gcc_pragma --diag_error=exp_string_literal --g++ --gnu_version=40500 Test_name.c
+"Test_name.c", line 5: error: unrecognized GCC pragma
+  #pragma GCC diagnostic                   // Error: kind missing.
+                                                                  ^
+
+"Test_name.c", line 6: error: unrecognized GCC pragma
+  #pragma GCC diagnostic bogus             // Error: kind unknown.
+                         ^
+
+"Test_name.c", line 7: error: expected a string literal
+  #pragma GCC diagnostic ignored           // Error: option missing.
+                                                                    ^
+
+"Test_name.c", line 8: error: expected a string literal
+  #pragma GCC diagnostic ignored -Wshadow  // Error: not a string literal.
+                                 ^
+
+"Test_name.c", line 9: error: expected a string literal
+  #pragma GCC diagnostic ignored L"-Wshadow"  // Error: not a narrow string.
+                                 ^
+
+"Test_name.c", line 11: error: unrecognized GCC pragma
+  #pragma GCC diagnostic push              // Error: GCC 4.6 and later only.
+                         ^
+
+"Test_name.c", line 12: error: unrecognized GCC pragma
+  #pragma GCC diagnostic pop               // Error: GCC 4.6 and later only.
+                         ^
+
+"Test_name.c", line 15: error: unrecognized GCC pragma
+  #pragma GCC diagnostic ignored_attributes "vendor::"  // Error: GCC 12+ only.
+                         ^
+
+"Test_name.c", line 18: error: unrecognized GCC pragma
+  #pragma GCC diagnostic fatal "-Wshadow"  // Error: clang only.
+                         ^
+
+9 errors detected in the compilation of "Test_name.c".
