@@ -1,5 +1,5 @@
 //type:rp
-//options_all:--c++14 --exceptions
+//options_all:--c++17 --exceptions
 
 // Throwing an aggregate whose initialization has cleanups for partially
 // constructed subobjects (e.g., "throw H{E(1)}" with two class members).
@@ -40,6 +40,10 @@ struct L3 { E a; int i; E b; };
 struct M { L l; E c; };
 struct X { E a; Thrower t; };
 struct X2 { E a; int i; Thrower t; };
+template <class F> struct LF { E a; F f; int i; };
+template <class F> LF(E, F, int) -> LF<F>;
+template <class F> struct XF { E a; F f; Thrower t; };
+template <class F> XF(E, F) -> XF<F>;
 
 template <class F> static void run(F f) {
   live = 0;
@@ -73,6 +77,12 @@ int main() {
   // must be destroyed (once), and no exception object is thrown.
   run([] { throw X{E(1)}; });
   run([] { throw X2{E(1), tv(T(3))}; });
+  // A lambda whose captures are all constant is initialized as a constant
+  // (without cleanups of its own); that must leave the cleanups of the
+  // enclosing initialization alone.
+  run([] { throw LF{E(1), [k = 1] { return k; }, 0}; });
+  run([] { throw XF{E(1), [k = 1] { return k; }}; });
+  run([] { L3{E(1), (throw [k = 1] { return k; }, 0), E(2)}; });
   // The cleanup state after a caught exception must be intact.
   run([] {
     E outer(1);

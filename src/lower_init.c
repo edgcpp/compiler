@@ -10979,7 +10979,10 @@ do_keep_constant:
                                                       eff_insert_location);
         }  /* if */
         if (!dip->variant.constant.non_constant) {
-          /* Analogous to dik_constant. */
+          /* Analogous to dik_constant.  Record the entry state anyway, so
+             that the completion processing below sees no change (rather
+             than removing cleanups recorded before this initialization). */
+          latest_initialization_on_entry = eff_context->latest_initialization;
           lower_constant(dip->variant.constant.ptr);
           goto do_assignment;
         }  /* if */
