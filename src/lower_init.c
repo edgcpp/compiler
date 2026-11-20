@@ -11109,8 +11109,13 @@ do_keep_constant:
        destroys the exception object) has been completely initialized.
        Remove the cleanups for its partially constructed subobjects from
        the cleanup state, so that they are not run (in addition to the
-       destruction of the exception object) when it is thrown. */
+       destruction of the exception object) when it is thrown.  The
+       aggregate has no init_expr_lifetime of its own (only constructor
+       initializations get one, for default arguments), so its temporaries
+       are in the current context, which is also the effective one. */
     a_boolean some_cloned, some_ordered;
+    check_assertion(init_expr_lifetime == NULL &&
+                    curr_context == eff_context);
     adjust_cleanup_state_for_aggregate_init(
                                             eff_context->latest_initialization,
                                             latest_initialization_on_entry,
