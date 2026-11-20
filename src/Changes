@@ -1,5 +1,66 @@
 Version 7.1
 
+11/19/26 [GH #546]
+C++-generating back end: dropped parentheses around co_await and co_yield
+
+In configurations with PARENS_IN_IL set to FALSE, the C++-generating back
+end could drop parentheses that are needed to keep the meaning of co_await
+and co_yield expressions, so the generated code was rejected or had a
+different meaning.  For example, with --c++20:
+
+  #include <coroutine>
+  struct S { int m; };
+  struct A {
+    bool await_ready();
+    void await_suspend(std::coroutine_handle<>);
+    S await_resume();
+  };
+  int f();
+  std::task<int> g(bool c, A x, A y) {
+    int i = (co_await x).m;     // Was generated as "co_await x.m".
+    co_await (c ? x : y);       // Was generated as "co_await c ? x : y".
+    co_yield (f(), i);          // Was generated as "co_yield f(), i".
+    co_return i;
+  }
+
+Additionally, in configurations with ALL_TEMPLATE_INFO_IN_IL set to TRUE, a
+dependent co_yield expression used as an operand, as in "(co_yield T{}) + 1",
+had the same problem.  Parentheses are now added where they are needed.
+
+
+11/19/26 [GH #514]
+C: pointer conversions adding qualifiers below the first level
+
+In C, the front end accepted an implicit conversion between pointer types
+that adds type qualifiers below the first level, such as "int **" to
+"const int *const *", without a diagnostic.  Such a conversion is valid in
+C++, but in C the types pointed to are not compatible, so it violates a
+constraint and requires a diagnostic (C23 6.5.17.2).  A warning is now
+issued; the conversion is still accepted.  For example:
+
+  void f(int **p) {
+    const int *const *q;
+    q = p;  // Now a warning.
+  }
+
+
+11/19/26 [GH #393]
+IL write/read check failure for [[assume]] with an inlinable call
+
+When lowering the argument of an [[assume]] attribute, the empty statement
+that carries the attribute was passed to the lowering of the expression as
+if the argument were the statement's own expression.  If the argument was a
+call that could be inlined (for example, a call to a constexpr function),
+the inlining turned the statement into a block and the attribute was lost.
+In a debug build, the IL write/read check then failed with "not all
+expected entries were read".  For example:
+
+  constexpr bool g(bool b) { return b; }
+  constexpr int f(bool b) { [[assume(g(b))]]; return 1; }
+
+The argument is now lowered without a statement, so the attribute is kept.
+
+
 11/18/26 [GH #216]
 Initial support for C++26 enumerating expansion statements (IL CHANGE)
 
