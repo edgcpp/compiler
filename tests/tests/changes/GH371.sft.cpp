@@ -1,5 +1,5 @@
 //type:fp
-//options:--c++26:--c++23:--c++26 --gnu=140200:--c++26 --clang_v=200100
+//options:--c++26:--c++23:--c++26 --gnu=140200:--c++26 --clang_v=200100:--c++26 --gnu=150100:--c++26 --clang_v=190100
 //remark:[GH #371] Omitting the comma before a variadic "..." (P3176R1)
 //
 // In C++26, an ellipsis that is not preceded by a comma, as in
