@@ -22,6 +22,9 @@ struct W { CD c; int i = 3; };
 struct DO { int v; ~DO() {} };
 struct S { int a, b; };
 struct Q { int S::*p; int v; };
+static int counter;
+static int next_value() { return ++counter; }
+struct NM { int v = next_value(); };
 
 static void empty_rows(int n) {
   int a[2][n] = {};
@@ -122,6 +125,20 @@ static void class_rows(int n) {
     }
 }
 
+static void dynamic_member_init_rows(int n) {
+  // The default member initializer is evaluated for each element.
+  counter = 0;
+  NM a[2][n] = {};
+  check(counter, 2 * n);
+  NM b[2][n][2] = {};
+  check(counter, 6 * n);
+  for (int i = 0; i < 2; i++)
+    for (int j = 0; j < n; j++) {
+      check(a[i][j].v >= 1 && a[i][j].v <= 2 * n, 1);
+      check(b[i][j][1].v > 2 * n, 1);
+    }
+}
+
 static void ptr_to_member_rows(int n) {
   // A null pointer to data member is not all-bits-zero in the IA-64 ABI.
   Q a[2][n] = {{{&S::b, 5}}};
@@ -144,6 +161,7 @@ int main() {
     string_rows(n);
     struct_rows(n);
     class_rows(n);
+    dynamic_member_init_rows(n);
     ptr_to_member_rows(n);
   }
   return errors != 0;
