@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=2 --c++20 --g++ --gnu_version=150200 Test_name.c
+"Test_name.c", line 13: error: argument of type "char **" is incompatible with parameter of type "const char **"
+    take(p);
+         ^
+
+"Test_name.c", line 14: error: a value of type "char **" cannot be used to initialize an entity of type "const char **"
+    const char **bad = p;
+                       ^
+
+"Test_name.c", line 16: error: argument of type "char ***" is incompatible with parameter of type "const char ***"
+    take3(q);
+          ^
+
+"Test_name.c", line 17: error: static_cast cannot cast away const or other type qualifiers
+    take(static_cast<const char **>(p));
+         ^
+
+4 errors detected in the compilation of "Test_name.c".
