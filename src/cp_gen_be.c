@@ -23128,6 +23128,45 @@ to add extra parentheses to disambiguate.
 }  /* expr_may_look_like_type */
 
 
+static a_boolean is_single_operand_cast_to_unnamed_closure(
+                                                   a_dynamic_init_ptr dip,
+                                                   a_type_ptr         type)
+/*
+dip is the dynamic initialization for an explicit cast to type.  Return TRUE
+if type is a closure type that has no name in the generated code (because no
+typedef was put out for it; see gen_variable_decl) and the cast has a single
+operand.
+*/
+{
+  a_boolean result = FALSE;
+
+  type = skip_non_naming_typerefs(type);
+  if (is_immediate_class_type(type) &&
+      class_type_supp(type)->is_lambda_closure_class &&
+      !type->has_been_declared) {
+    an_expr_node_ptr args;
+    switch (dip->kind) {
+      case dik_expression:
+      case dik_lambda:
+        result = TRUE;
+        break;
+      case dik_bitwise_copy:
+        result = (dip->variant.bitwise_copy.source != NULL);
+        break;
+      case dik_constructor:
+        args = dip->variant.constructor.args;
+        result = (args != NULL && !args->generated_default_arg &&
+                  !args->is_pack_expansion &&
+                  (args->next == NULL || args->next->generated_default_arg));
+        break;
+      default:
+        break;
+    }  /* switch */
+  }  /* if */
+  return result;
+}  /* is_single_operand_cast_to_unnamed_closure */
+
+
 static void handle_braced_init_list_ctor(an_expr_node_ptr arg)
 /*
 arg is the first constructor argument in a braced dik_constructor dynamic
@@ -23212,6 +23251,7 @@ when possible.
   an_expr_node_ptr expr = NULL;
   int              closing_parens_needed = 0;
   a_boolean        unnamed_type_case = FALSE;
+  a_boolean        unnamed_closure_case = FALSE;
   a_boolean        braced_init;
   a_boolean        is_value_init;
   a_type_ptr       bare_init_entity_type;
@@ -23353,6 +23393,13 @@ when possible.
       use_func_notation_cast = FALSE;
       unnamed_type_case = TRUE;
     }  /* if */
+    if (is_single_operand_cast_to_unnamed_closure(dip, init_entity_type)) {
+      /* The closure type has no name here, so the cast must have been
+         written "auto{x}" or "auto(x)", and it is put out that way. */
+      use_func_notation_cast = TRUE;
+      unnamed_type_case = FALSE;
+      unnamed_closure_case = TRUE;
+    }  /* if */
     /* We've now decided whether or not we want to use a functional-notation
        cast.  Change that decision in some cases to deal with deficiencies
        in some target compilers. */
@@ -23407,9 +23454,13 @@ when possible.
       /* Use a functional-notation cast. */
 output_functional_notation_cast:
       octl.suppress_template_args = suppress_template_args;
-      gen_type_reference(init_entity_type, /*suppress_typename_kwd=*/FALSE,
-                         /*is_declaration=*/FALSE,
-                         /*suppress_elab_type_spec=*/TRUE);
+      if (unnamed_closure_case) {
+        write_tok_str("auto");
+      } else {
+        gen_type_reference(init_entity_type, /*suppress_typename_kwd=*/FALSE,
+                           /*is_declaration=*/FALSE,
+                           /*suppress_elab_type_spec=*/TRUE);
+      }  /* if */
       octl.suppress_template_args = saved_suppress_template_args;
       /* In a case like "auto x = T{};", braced-init will be FALSE,
          reflecting the use of the "=" in the initializer.  However, if T
@@ -24772,7 +24823,8 @@ this one is such a continuation.
     adjust_current_namespace(orig_scope, common_scope);
   }  /* if */
   var->declaration_has_been_put_out = TRUE;
-  if (var->declared_with_auto_type_specifier && !for_init &&
+  if (var->declared_with_auto_type_specifier &&
+      !for_init && !is_condition && !is_iterator &&
       is_immediate_class_type(unqual_var_type) &&
       unqual_var_type->variant.class_struct_union.extra_info->
                                                      is_lambda_closure_class &&

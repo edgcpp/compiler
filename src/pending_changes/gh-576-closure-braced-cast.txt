@@ -1,0 +1,41 @@
+[GH #576]
+C++-generating back end: casts to unnamed closure types
+
+The C++-generating back end can name a closure type only through a typedef
+that it puts out after the declaration of a variable of that type.  A cast to
+a closure type for which there was no such typedef (which can be written
+only with "auto", in C++23) was put out with the closure type written as if
+it were a class name, which made the generated code ill-formed.  For
+example, with --c++23:
+
+  int x = auto{[](int a) { return a; }}(2);
+  auto g() { return [](int a) { return a; }; }
+  int y = auto{g()}(2);
+  int f() {
+    for (auto m = [n = 0]() mutable { return ++n; }; ; ) return auto{m}();
+  }
+
+was generated as
+
+  int x = class __T1{[](int a) { return a; } }(2);
+  auto g() { return [](int a) { return a; } ; }
+  int y = class __T2{g()}(2);
+  int f() {
+  for (auto m = [n = 0]() mutable { return ++n; } ; ;) {
+  return class __T3{m}(); }
+  }
+
+Such a cast is now put out as written, with "auto".
+
+Also, for a variable of closure type declared in the condition of an if,
+switch, or while statement, or in a range-based for statement, the typedef
+was put out inside the declaration.  For example,
+
+  if (auto m = [] { return 1; }) return m();
+
+was generated as
+
+  if (auto m = []{ return 1; } typedef decltype(m) __T4;) { return m(); }
+
+No typedef is put out for such a variable now (as was already the case for a
+variable declared in a for-init).
