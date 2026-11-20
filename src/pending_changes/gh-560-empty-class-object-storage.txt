@@ -1,0 +1,9 @@
+[GH #560]
+Storage of objects of an empty class in generated C
+
+When the C-generating back end used an empty struct for an empty class (for
+g++ ABI compatibility), objects of that class had size zero in the generated
+C although they have size one in C++: writing sizeof bytes to such an object
+(e.g., with memset) overwrote neighboring objects, and an address constant
+such as "&a[3]" evaluated to the address of the array.  Such variables are now
+declared as arrays of char of the C++ size.
