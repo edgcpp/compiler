@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --microsoft_version 1911 Test_name.c
+"Test_name.c", line 12: error: more than one instance of overloaded function "f" matches the argument list:
+            function template "void f(T *...)" (declared at line 4)
+            function template "int f(const T &)" (declared at line 7)
+            argument types are: (int *)
+      f(&i);
+      ^
+
+1 error detected in the compilation of "Test_name.c".

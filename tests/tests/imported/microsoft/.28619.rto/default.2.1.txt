@@ -1,0 +1,29 @@
+cpfe -DTEST_NUMBER=2 --c++23 -A Test_name.c
+"Test_name.c", line 67: warning: attribute "deprecated" does not apply here
+  auto c = function<void()>{[] ()[[deprecated]] {}};
+                                   ^
+
+"Test_name.c", line 20: warning: function "lambda []()->void" was declared deprecated
+      R invoke(Args... args) override { return f(static_cast<Args&&>(args)...); }
+                                                ^
+"Test_name.c", line 61: note: because of a "deprecated" attribute
+  function<void()> a = [] [[deprecated]] () {};
+                            ^
+          detected during instantiation of "R function<R (Args...)>::callable_impl<F>::invoke(Args...) [with R=void, Args=<>, F=lambda []()->void]" 
+
+"Test_name.c", line 20: warning: function "lambda []()->void" was declared deprecated
+      R invoke(Args... args) override { return f(static_cast<Args&&>(args)...); }
+                                                ^
+"Test_name.c", line 70: note: because of a "deprecated" attribute
+  auto d = function<void()>{[] [[deprecated]] (){}};
+                                 ^
+          detected during instantiation of "R function<R (Args...)>::callable_impl<F>::invoke(Args...) [with R=void, Args=<>, F=lambda []()->void]" 
+
+"Test_name.c", line 20: warning: function "lambda []()->void" was declared deprecated
+      R invoke(Args... args) override { return f(static_cast<Args&&>(args)...); }
+                                                ^
+"Test_name.c", line 73: note: because of a "deprecated" attribute
+  auto e = function<void()>{[] [[deprecated]] {}};
+                                 ^
+          detected during instantiation of "R function<R (Args...)>::callable_impl<F>::invoke(Args...) [with R=void, Args=<>, F=lambda []()->void]" 
+

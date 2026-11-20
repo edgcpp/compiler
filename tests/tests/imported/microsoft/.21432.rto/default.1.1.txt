@@ -1,0 +1,9 @@
+cpfe -DTEST_NUMBER=1 --c++20 --microsoft Test_name.c
+"Test_name.c", line 19: warning: variable "a" was declared but never referenced
+                Agg a{ .a = 1 }; // OK
+                    ^
+
+"Test_name.c", line 20: warning: variable "b" was declared but never referenced
+                Agg b{ .b = 1 }; // spurious error: class "Agg::<unnamed>" has no field 'b'
+                    ^
+

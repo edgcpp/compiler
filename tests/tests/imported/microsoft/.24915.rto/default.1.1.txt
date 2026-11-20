@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --microsoft_v 1920 --ms_c++14 Test_name.c
+"Test_name.c", line 7: error: a constexpr static data member declaration requires an in-class initializer
+      static constexpr bool foo = ns::does_not_exist<int, T>;
+                                                           ^
+
+"Test_name.c", line 7: error: expected a ";"
+      static constexpr bool foo = ns::does_not_exist<int, T>;
+                                                           ^
+
+2 errors detected in the compilation of "Test_name.c".

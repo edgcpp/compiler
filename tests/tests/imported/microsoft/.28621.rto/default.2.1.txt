@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=2 --microsoft_v 1944 Test_name.c
+"Test_name.c", line 5: error: variable in constexpr function does not have automatic storage duration
+      static constexpr int multiplier = 42;  // Now allowed in constexpr functions
+                           ^
+
+"Test_name.c", line 11: error: expression must have a constant value
+      constexpr auto static_result = with_static_constexpr(2);
+                                     ^
+"Test_name.c", line 11: note: cannot call non-constexpr function "with_static_constexpr" (declared at line 4)
+      constexpr auto static_result = with_static_constexpr(2);
+                                     ^
+
+"Test_name.c", line 11: warning: variable "static_result" was declared but never referenced
+      constexpr auto static_result = with_static_constexpr(2);
+                     ^
+
+2 errors detected in the compilation of "Test_name.c".

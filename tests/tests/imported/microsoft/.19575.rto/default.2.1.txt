@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=2 --microsoft_version 1914 --ms_c++17 Test_name.c
+"Test_name.c", line 17: error: more than one instance of constructor "D1::D1" matches the argument list:
+            function "B1::B1(double)" (declared at line 5), inherited via using decl at line 13
+            function "B2::B2(double)" (declared at line 9), inherited via using decl at line 14
+            argument types are: (double)
+  D1 d(1.0);
+       ^
+"Test_name.c", line 12: note: function "D1::D1(const D1 &)" does not match because argument #1 does not match parameter
+  struct D1 : B1, B2 {
+         ^
+"Test_name.c", line 12: note: function "D1::D1(D1 &&)" does not match because argument #1 does not match parameter
+  struct D1 : B1, B2 {
+         ^
+"Test_name.c", line 12: note: number of parameters of function "D1::D1()" does not match the call
+  struct D1 : B1, B2 {
+         ^
+
+1 error detected in the compilation of "Test_name.c".

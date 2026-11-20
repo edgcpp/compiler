@@ -1,0 +1,19 @@
+fe_only -DTEST_NUMBER=1 --c++17 Test_name.c
+"Test_name.c", line 4: error: class template and template parameter may not have the same name
+      template <class U> struct U {};
+                                ^
+
+"Test_name.c", line 7: error: class template "A" has already been defined (previous definition at line 3)
+  template <class T> struct A {
+                            ^
+
+"Test_name.c", line 10: error: no instance of constructor "A<T>::U [with T=double]" matches the argument list
+            argument types are: (int)
+  int i = A<double>::U(-23);
+                       ^
+
+"Test_name.c", line 10: error: cannot deduce class template arguments
+  int i = A<double>::U(-23);
+          ^
+
+4 errors detected in the compilation of "Test_name.c".
