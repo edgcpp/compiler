@@ -831,14 +831,12 @@ requires cleanup.
             element_addr = (a_sizeof_t*)(obj_addr_array[(ehrdp + 1)->handle]);
             elements = (an_element_count)*element_addr;
          }  /* if */
-#ifndef __EDG_IA64_ABI
-          __vec_delete(obj_addr, (an_element_count_param)elements,
-		       ehasp->element_size, dtor_ptr, /*delete_flag=*/FALSE,
-		       /*unused_arg=*/0);
-#else /* ifdef __EDG_IA64_ABI */
-          ABI_NAMESPACE::__cxa_vec_dtor(obj_addr, elements, 
-                                        ehasp->element_size, dtor_ptr);
-#endif /* ifdef __EDG_IA64_ABI */
+          /* Use the EDG-specific name in both ABIs: it cannot be resolved
+             by another runtime (e.g., libstdc++) and therefore links in
+             this library's preallocated-array routines whenever exception
+             handling is used. */
+          __edg_vec_dtor(obj_addr, (size_t)elements,
+                         ehasp->element_size, dtor_ptr);
         }  /* if */
       } else if (has_vtbl_ptr) {
         /* A non-array object for which a special destructor must be called
@@ -2047,4 +2045,3 @@ built without exception handling support.  This version does nothing.
 }  /* __eh_exit_processing */
 
 #endif /* EXCEPTION_HANDLING */
-

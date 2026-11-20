@@ -227,6 +227,15 @@ typedef struct an_init_pos_descr {
 			   lowered.  Such an element cannot refer to that
 			   aggregate through an implicit "this" (see
 			   lower_param_ref). */
+  a_byte_boolean
+		assign_constants;
+			/* TRUE if no part of the initialization can be kept
+			   as a constant, so that constants must be assigned
+			   by executable code even though the entity is a
+			   simple variable.  This is the case for an array
+			   with rows of variable length, which can be neither
+			   initialized by a C initializer nor copied from a
+			   static constant. */
   a_type_ptr	base_type;
 			/* Base entity type. */
   an_init_pos_modifier_ptr
@@ -337,6 +346,16 @@ typedef struct a_destructible_entity_descr {
 			   slightly different than the front end order
 			   (reflected by the dynamic init
 			   next_in_destruction_list pointer). */
+  a_variable_ptr
+		runtime_elem_count_var;
+			/* When exceptions are enabled and the entity is a
+			   sequence of array elements whose number is known
+			   only at run time (e.g., the default-initialized
+			   remainder of a row of a partially initialized
+			   multidimensional variable-length array), points to
+			   a size_t variable holding that number, which the
+			   region table entry refers to like the element count
+			   of a VLA.  NULL otherwise. */
 #endif /* GENERATE_EH_TABLES */
   a_byte_boolean
 		initialization_done;

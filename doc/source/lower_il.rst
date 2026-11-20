@@ -1991,28 +1991,46 @@ See ``lower_array_new`` and ``lower_array_delete``.
 Constructors and Destructors for Arrays
 ---------------------------------------
 
-Construction or destruction of an entire (static or automatic) array is done by
-calling runtime routines.  For the cfront-like ABI, ``__vec_new`` or
-``__vec_delete`` are used (see previous section).  The address of the array is
-passed into ``__vec_new``, thus suppressing allocation, and ``0`` for the flag
-``free`` is passed into ``__vec_delete``, thus suppressing freeing of the
-storage.  For the IA-64 ABI, there are specific runtime routines for these
-functions:
+For construction of an entire (static or automatic) array, lowering generates
+nested loops that call the element constructor when no exception cleanup is
+needed, the array is not variably sized, and nested bounds are known and
+nonzero.  The loops zero each element first when value-initialization requires
+it.  When construction needs
+exception cleanup, or for other construction cases handled by the runtime,
+the cfront-like ABI calls ``__edg_vec_ctor`` for preallocated storage.
+Array destruction uses ``__edg_vec_dtor``.  These entry points are
+implemented separately from the allocation-capable vector runtime, so a
+program that is compiled without exception handling and does not use array
+new does not link that runtime.  With exception handling, the unwinder's
+array cleanup (``__cleanup_vec_new_or_delete``) is part of the allocating
+vector runtime, which is then always linked.  Newly generated calls require a
+matching runtime library; the existing vector entry points remain available
+for previously generated code and dynamic allocation.
+
+The runtime traverses preallocated arrays using byte offsets from the supplied
+address.  For nested arrays, strict ISO C pointer-bounds portability of this
+traversal has not been established.
+
+Separating array construction from the allocation-capable vector runtime does
+not make exception handling allocation-free: the exception runtime can still
+allocate storage for thrown objects and its own bookkeeping.
+
+For the IA-64 ABI, the standard runtime routines for these functions are:
 
   | ``__cxa_vec_ctor(``\ *array, num_elems, elem_size, ctor_routine,*
     *dtor_routine*\ ``)``
   | ``__cxa_vec_dtor(``\ *array, num_elems, elem_size, dtor_routine*\ ``)``
 
 Copying of an entire array using a copy constructor is done in the cfront-like
-ABI by calling ``__vec_cctor``, passing the array address, the number of
-elements, the element size, the address of the routine to call, and the source
-array address.  [#f4]_ In the IA-64 ABI, the runtime routine is
-``__cxa_vec_cctor.``
+ABI by calling ``__vec_cctor``, or ``__edg_vec_cctor`` when exception cleanup
+is needed.  The call passes the array address, the number of elements, the
+element size, the routine to call, and the source array address.  [#f4]_ In
+the IA-64 ABI, the runtime routine is ``__cxa_vec_cctor``.
 
 If the constructor involved has default arguments, a wrapper routine is created
 that requires no arguments other than the "``this``" parameter and calls the
-constructor with the proper default arguments.  The wrapper routine is then
-passed to the runtime routine, which can call it like a normal constructor.
+constructor with the proper default arguments.  The generated loop or runtime
+routine can then call the wrapper like a normal constructor.
 
 See
 
