@@ -52,8 +52,23 @@ static void vla(int n) {
   CHECK(off(b[1][1], b) == 3 * n + 3);
   CHECK(off(r + 1, b) == 3 * n);
   CHECK((r + 1) - r == 1);
+  CHECK(r - (r + 1) == -1);
   Z (*s)[3] = b[1];
   CHECK(off(s + 1, b) == 3 * n + 3);
+
+  // Rows with more than one variable dimension, including one of unsigned
+  // type: the row size, and so the difference, must still be signed.
+  unsigned long m = n + 1;
+  Z d[3][n][m];
+  Z (*t)[n][m] = d;
+  CHECK(off(t + 2, d) == 2 * n * (long)m);
+  CHECK(off(&t[2][1][1], d) == (2 * n + 1) * (long)m + 1);
+  CHECK(t - (t + 2) == -2);
+  CHECK(&d[0] - &d[2] == -2);
+  Z e[3][n][n];
+  Z (*u)[n][n] = e + 2;
+  CHECK(off(u - 1, e) == n * n);
+  CHECK(e - u == -2);
 
   nctors = 0;
   C c[2][n];

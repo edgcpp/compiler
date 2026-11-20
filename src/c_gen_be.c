@@ -5502,25 +5502,35 @@ structs it contains, by which pointer arithmetic on char * is scaled.  For
 a variable-length array, this is the product of the dimensions, where each
 variable dimension is put out as in its array declarator (i.e., using the
 variable holding the value of the dimension, if any), e.g.,
-"((long)__T1*3)" for an array of type "S[n][3]".
+"((long)__T1*(long)__T2*3)" for an array of type "S[n][m][3]".  Except
+for the size 1, the number has the (signed) type ptrdiff_t, so that the
+scaling neither overflows a narrower integer operand nor makes a pointer
+difference unsigned.
 */
 {
+  const char *ptrdiff_name = int_kind_name_full(targ_ptrdiff_t_int_kind,
+                                                /*for_generated_code=*/TRUE);
+
   if (pointee->generated_as_empty_struct) {
     write_unsigned_num((a_host_large_unsigned)1);
   } else if (!is_vla_type(pointee)) {
+    write_tok_str("((");
+    write_tok_str(ptrdiff_name);
+    write_tok_ch(')');
     write_unsigned_num((a_host_large_unsigned)pointee->size);
+    write_tok_ch(')');
   } else {
     a_type_ptr    type = pointee;
     a_targ_size_t constant_factor = 1;
-    write_tok_str("((");
-    write_tok_str(int_kind_name_full(targ_ptrdiff_t_int_kind,
-                                     /*for_generated_code=*/TRUE));
-    write_tok_ch(')');
+    write_tok_ch('(');
     do {
       if (type->variant.array.is_vla) {
         a_vla_dimension_ptr vlap;
         check_assertion(type->variant.array.has_assoc_vla_dimension);
         vlap = find_vla_dimension(type);
+        write_tok_ch('(');
+        write_tok_str(ptrdiff_name);
+        write_tok_ch(')');
 #if DO_IL_LOWERING && !LOWER_VARIABLE_LENGTH_ARRAYS
         if (vlap->dimension_variable != NULL) {
           dump_variable_name(vlap->dimension_variable);
