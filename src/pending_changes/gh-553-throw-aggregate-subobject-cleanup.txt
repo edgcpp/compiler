@@ -1,0 +1,10 @@
+[GH #553]
+Subobjects of a thrown aggregate destroyed twice
+
+When an aggregate with class members that have destructors was thrown, e.g.,
+
+  struct H { E a, b; };
+  throw H{E(7)};
+
+the members were destroyed during stack unwinding and again when the
+exception object was destroyed.
