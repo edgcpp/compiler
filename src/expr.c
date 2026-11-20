@@ -49254,7 +49254,24 @@ suspend point.
   }  /* if */
   node->variant.await_info.ready_resume_suspend->next->next =
                                         make_node_from_operand(&suspend_call);
-  make_expression_operand(node, operand);
+  if (is_a_glvalue(&resume_call)) {
+    /* await_resume returns a reference, so the co_await expression is a
+       glvalue too (an lvalue or xvalue, like the await_resume call).  As
+       for a call, give the node the reference type and put a reference
+       indirection on top of it. */
+    an_expr_node_ptr call = strip_ref_indirect(
+                         node->variant.await_info.ready_resume_suspend->next,
+                         /*parens_also=*/FALSE);
+    if (is_any_reference_type(call->type)) {
+      node->type = call->type;
+      node = add_ref_indirection_to_node(node);
+      if (is_an_xvalue(&resume_call)) {
+        node->is_lvalue = FALSE;
+        node->is_xvalue = TRUE;
+      }  /* if */
+    }  /* if */
+  }  /* if */
+  make_lvalue_or_rvalue_expression_operand(node, operand);
 done:;
 }  /* add_await_to_operand */
 
