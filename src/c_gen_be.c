@@ -8965,8 +8965,7 @@ parameters.
           write_tok_str("char ");
           dump_declared_variable_name(variable);
           write_tok_ch('[');
-          write_unsigned_num(
-                     (a_host_large_unsigned)skip_typerefs(var_type)->size);
+          write_unsigned_num(skip_typerefs(var_type)->size);
           write_tok_ch(']');
         } else {
           dump_general_declaration_using_type(var_type,
@@ -9467,8 +9466,7 @@ given that are referenced via such storage (see param_has_char_storage).
       dump_declared_variable_name(param);
       write_str("__s");
       write_tok_ch('[');
-      write_unsigned_num(
-                (a_host_large_unsigned)skip_typerefs(param->type)->size);
+      write_unsigned_num(skip_typerefs(param->type)->size);
       write_tok_str("];");
     }  /* if */
   }  /* for */
