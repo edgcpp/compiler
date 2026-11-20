@@ -167,6 +167,12 @@ static a_boolean recompute_partially_initialized_flag(
                                                      a_constant_ptr aggr_con,
                                                      a_type_ptr     aggr_type);
 
+static void stretch_partial_initialization_if_necessary(
+                                   a_dynamic_init_ptr     dip,
+                                   an_init_pos_descr_ptr  ipdp,
+                                   a_boolean              have_complete_object,
+                                   an_insert_location_ptr insert_location);
+
 static a_type_ptr make_function_type(a_type_ptr return_type,
                                      a_type_ptr param_1_type,
                                      a_type_ptr param_2_type)
@@ -1133,6 +1139,7 @@ Clear an initialization position description entry to default values.
   ipdp->base_class_subobject      = FALSE;
   ipdp->base_of_complete_object   = FALSE;
   ipdp->not_this_candidate        = FALSE;
+  ipdp->assign_constants          = FALSE;
   ipdp->base_type                 = NULL;
   ipdp->modifiers                 = NULL;
   ipdp->array_element_count       = 0;
@@ -1251,6 +1258,7 @@ Clear the fields of a destructible entity description to default values.
   dedp->region_number = null_eh_region_number;
   dedp->region_table_entry = NULL;
   dedp->next_in_region_table = NULL;
+  dedp->runtime_elem_count_var = NULL;
 #endif /* GENERATE_EH_TABLES */
   dedp->initialization_done = FALSE;
   dedp->needs_subobject_construction_vtbl = FALSE;
@@ -1775,8 +1783,11 @@ initialization (when ipdp->array_element_sequence is TRUE).
     if (ipdp->array_element_count == 0) {
       num_elem_node = num_elem_node_if_array(ipdp);
     }  /* if */
-    /* Create a helper routine to do the initialization and call it. */
-    insert_call_to_initialize_entity(type_from_init_pos_descr(ipdp),
+    /* Create a helper routine to do the initialization and call it.  The
+       entity type is the type of each element of the sequence (the
+       position itself can be a variably-sized row of a multidimensional
+       array). */
+    insert_call_to_initialize_entity(ipdp->array_element_type,
                                      have_complete_object,
                                      add_address_of_to_node(entity_node),
                                      num_elem_node,
@@ -2771,8 +2782,8 @@ all dimensions.
   if (ipdp->variable != NULL &&
       ipdp->variable->is_vla &&
       !ipdp->indirect_through_variable &&
-      (ipdp->modifiers == NULL || ipdp->array_element_sequence)) {
-    /* The entity being accessed is a variable-length array (VLA). */
+      ipdp->modifiers == NULL) {
+    /* The entity being accessed is a whole variable-length array (VLA). */
     a_variable_ptr num_elem_var;
     /* Get the variable that has been set to the number of elements in the
        VLA.  For multi-dimensional arrays, it gives the total across all
@@ -2810,8 +2821,24 @@ all dimensions.
       if (ipdp->array_element_count == 0 && ipdp->num_elem_node != NULL) {
         /* For variably-sized arrays, use the expression that has already
            been created to describe the number of elements in the array. */
+        /* For a VLA variable, the expression was built (by
+           set_partial_initialization_start) from the VLA dimension
+           temporaries, which do not change once set, and it is not
+           otherwise evaluated, so it must not be replaced by an
+           assignment to a temporary. */
+        a_boolean vars_can_change = !(ipdp->variable != NULL &&
+                                      ipdp->variable->is_vla &&
+                                      !ipdp->indirect_through_variable);
         num_elem_node = make_reusable_copy(ipdp->num_elem_node,
-                                           /*vars_can_change=*/TRUE);
+                                           vars_can_change);
+        num_elem_node = add_cast_if_necessary(num_elem_node,
+                                              integer_type(
+#if IA64_ABI
+                                               targ_size_t_int_kind
+#else /* !IA64_ABI */
+                                               targ_runtime_elem_count_int_kind
+#endif /* IA64_ABI */
+                                               ));
       } else {
         num_elem_node = num_elem_node_from_count(array_element_count);
       }  /* if */
@@ -6493,7 +6520,7 @@ to lower_dynamic_init_aggregate_constant; see their description there.
   an_insert_location            insert_location, loop_insert_location;
   a_generated_routine_context   context;
   a_variable_ptr                entity_var, count_var = NULL;
-  a_statement_ptr               loop_stmt = NULL;
+  a_statement_ptr               loop_stmt = NULL, return_stmt;
   an_expr_node_ptr              ptr_increment, expr;
   a_param_type_ptr              count_param_type = NULL;
   an_init_pos_descr             ipd;
@@ -6516,6 +6543,11 @@ to lower_dynamic_init_aggregate_constant; see their description there.
   scope = make_routine_definition(rp, /*make_return=*/TRUE,
                                   curr_il_region_number, &il_region);
   push_generated_routine_context(scope, il_region, &context);
+  /* Add the return statement at the end of the routine to the return memo
+     list, so that any exception handling epilogue is added before it. */
+  return_stmt = scope->assoc_block->variant.block.statements;
+  check_assertion(return_stmt != NULL && return_stmt->kind == stmk_return);
+  add_to_return_memo_list(return_stmt);
   /* Create the parameters. */
   entity_var = make_lowered_param_variable(rtsp->param_type_list->type);
   count_var = make_lowered_param_variable(count_param_type->type);
@@ -6561,6 +6593,242 @@ to lower_dynamic_init_aggregate_constant; see their description there.
   pop_generated_routine_context(scope, il_region, &context);
   return rp;
 }  /* helper_routine_to_initialize_repeated_constant */
+
+
+static a_routine_ptr helper_routine_to_initialize_aggregate_element(
+                        a_dynamic_init_ptr               dip,
+                        a_type_ptr                       type,
+                        an_implied_copy_source           *source_desc,
+                        a_lower_dynamic_init_options_set options)
+/*
+Create, and return a pointer to, a "helper" routine that initializes one
+element of a sequence of array elements with the dik_nonconstant_aggregate
+dynamic initialization dip.  The routine is passed as the "constructor" to
+the runtime array construction routine (which loops over the elements and,
+if an exception is thrown, destroys the elements already constructed), so
+it has the generic constructor type (see make_ctor_type):
+
+  static void helper(type *ptr) {
+    <lowered code generated by lowering the aggregate of dip to initialize
+     *ptr>
+  }
+
+(returning ptr when constructors return a pointer).  Only the
+initialization of the element is done here; the destruction of the elements
+is handled for the whole sequence by the caller.  "type" is a pointer to the
+type of the element.  source_desc and options are passed through to
+lower_dynamic_init_aggregate_constant; see their description there.
+*/
+{
+  a_routine_ptr                 rp;
+  a_type_ptr                    pointer_type, return_type;
+  a_memory_region_number        il_region;
+  a_scope_ptr                   scope;
+  an_insert_location            insert_location;
+  a_generated_routine_context   context;
+  a_variable_ptr                entity_var;
+  a_statement_ptr               return_stmt;
+  an_init_pos_descr             ipd;
+  a_boolean                     keep_constant = FALSE;
+  a_boolean                     return_ptr;
+
+  check_assertion(dyn_init_is(dip, dik_nonconstant_aggregate));
+  pointer_type = skip_typerefs(type);
+  check_assertion(is_pointer_type(pointer_type));
+#if IA64_ABI
+  return_ptr = ctors_return_this;
+#else /* !IA64_ABI */
+  return_ptr = TRUE;
+#endif /* IA64_ABI */
+  return_type = return_ptr ? pointer_type : void_type();
+  rp = make_rout_entry((char *)NULL, (a_storage_class)sc_static,
+                       return_type, pointer_type);
+  /* Build the definition of the routine.  Note that the same memory region
+     is used (because lowering of the aggregate may involve IL that is
+     already in the current memory region). */
+  scope = make_routine_definition(rp, /*make_return=*/TRUE,
+                                  curr_il_region_number, &il_region);
+  push_generated_routine_context(scope, il_region, &context);
+  /* Add the return statement at the end of the routine to the return memo
+     list, so that any exception handling epilogue is added before it. */
+  return_stmt = scope->assoc_block->variant.block.statements;
+  check_assertion(return_stmt != NULL && return_stmt->kind == stmk_return);
+  add_to_return_memo_list(return_stmt);
+  entity_var = make_lowered_param_variable(
+                      rp->type->variant.routine.extra_info->param_type_list->
+                                                                        type);
+  scope->variant.routine.parameters = entity_var;
+  if (return_ptr) return_stmt->expr = var_rvalue_expr(entity_var);
+  set_block_start_insert_location(scope->assoc_block, &insert_location);
+  /* Mark the location where any generated stmk_init statements should go. */
+  set_insert_location_mark(&insert_location);
+  /* Insert any generated stmk_inits at the previously marked location. */
+  insert_pending_stmk_init_statements_at_mark(&insert_location);
+  /* Set ipd to point to the element being passed in. */
+  set_var_indirect_init_pos_descr(entity_var, &ipd);
+  if (dip->is_partially_initialized) {
+    stretch_partial_initialization_if_necessary(dip, &ipd,
+                                                /*have_complete_object=*/TRUE,
+                                                &insert_location);
+  }  /* if */
+  lower_dynamic_init_aggregate_constant(dip->variant.constant.ptr, &ipd,
+                                        /*dtor_case=*/FALSE, source_desc,
+                                        /*others_follow_in_aggr=*/FALSE,
+                                        &insert_location, &keep_constant,
+                                        options);
+  check_assertion(!keep_constant);
+  /* Clean up. */
+  pop_generated_routine_context(scope, il_region, &context);
+  return rp;
+}  /* helper_routine_to_initialize_aggregate_element */
+
+
+static void set_partial_initialization_start(an_init_pos_descr_ptr ipdp,
+                                             a_type_ptr            aggr_type,
+                                             a_targ_size_t         curr_elem)
+/*
+ipdp describes the elements of the variably-sized array type aggr_type that
+remain to be default initialized, beginning with element curr_elem, to
+complete a partial initialization.  Set ipdp->num_elem_node and
+ipdp->partial_initialization_starting_element so that num_elem_node_if_array
+yields the number of remaining elements, counted (like the total number of
+elements) in elements of the innermost array.  When the element type of
+aggr_type is itself a VLA (e.g., "A a[2][n] = {{A()}};"), the size of an
+element is known only at runtime, so the remaining count is computed as an
+expression.
+*/
+{
+  a_type_ptr       elem_type = array_element_type(aggr_type);
+  a_type_ptr       count_type;
+  an_expr_node_ptr count_node, used_node;
+
+  if (is_vla_type(aggr_type)) {
+    /* For VLA types (e.g., "A a[n] = {A()};"), determine the number
+       of elements in the array from the VLA type (which is assumed
+       to have been lowered already, if needed). */
+    ipdp->num_elem_node = vla_dimension_expr_for_type(aggr_type);
+  }  /* if */
+  check_assertion(ipdp->num_elem_node != NULL);
+  ipdp->partial_initialization_starting_element =
+                                             (a_host_large_integer)curr_elem;
+  if (is_array_type(elem_type)) {
+    /* For the multi-dimensional array case, ensure that the starting
+       element takes into account all of the elements that have already
+       been initialized. */
+    if (is_vla_type(elem_type)) {
+      if (curr_elem != 0) {
+        count_type = integer_type(targ_size_t_int_kind);
+        used_node = add_cast_if_necessary(
+                                        vla_dimension_expr_for_type(elem_type),
+                                        count_type);
+        used_node->next = node_for_host_large_integer(
+                                             (a_host_large_integer)curr_elem,
+                                             targ_size_t_int_kind);
+        used_node = make_operator_node(eok_multiply, count_type, used_node);
+        count_node = add_cast_if_necessary(ipdp->num_elem_node, count_type);
+        count_node->next = used_node;
+        ipdp->num_elem_node = make_operator_node(eok_subtract,
+                                                 count_type, count_node);
+      }  /* if */
+      ipdp->partial_initialization_starting_element = 0;
+    } else {
+      ipdp->partial_initialization_starting_element *=
+                       (a_host_large_integer)num_array_elements(elem_type);
+    }  /* if */
+  }  /* if */
+}  /* set_partial_initialization_start */
+
+
+static a_constant_ptr set_init_pos_for_init_repeat(
+                                     an_init_pos_descr_ptr ipdp,
+                                     an_init_pos_descr_ptr outer_ipdp,
+                                     a_type_ptr            aggr_type,
+                                     a_targ_size_t         curr_elem,
+                                     a_constant_ptr        repeat_con,
+                                     a_boolean             strip_nested_repeats)
+/*
+repeat_con is a ck_init_repeat constant that initializes elements of the
+array type aggr_type, beginning with element curr_elem.  outer_ipdp describes
+the array and ipdp (a copy of it positioned at element curr_elem) is updated
+to describe the sequence of elements initialized by repeat_con.  This is the
+only place where lowering decodes the repeat count (see il_def.h); all users
+of the resulting sequence get the number of elements from
+num_elem_node_if_array (or ipdp->array_element_count when that is nonzero).
+A count of zero means that the remaining elements of a variably-sized array
+(possibly a nested row of one) are initialized; the number is known only at
+run time, and the repeated constant then initializes the innermost elements.
+A leaf entity repeated with a nonzero count for an array whose rows have
+variable length (as for "A a[2][n];") initializes the whole array; the count
+then covers only the constant dimensions and the number of innermost elements
+is likewise known only at run time.
+If strip_nested_repeats is TRUE and the repeated constant is an aggregate
+consisting of a single repeat (as for a multidimensional array), the nested
+repeats are folded into the count.  Return the constant to be repeated.
+*/
+{
+  a_constant_ptr repeated_con = repeat_con->variant.init_repeat.constant;
+  a_targ_size_t  count = repeat_con->variant.init_repeat.count;
+
+  ipdp->array_element_sequence = TRUE;
+  ipdp->array_element_type = repeated_con->type;
+  if (count == 0) {
+    /* This initialization completes a partial initialization of a
+       variably-sized array.  Make a note of the starting element that
+       needs initialization (which could be zero, in cases like
+       "new A[n] {}"). */
+    check_assertion(!is_array_type(repeated_con->type));
+    set_partial_initialization_start(ipdp, aggr_type, curr_elem);
+  } else if (is_vla_type(array_element_type(aggr_type)) &&
+             !is_array_type(repeated_con->type)) {
+    /* A leaf entity repeated for all the elements of an array with rows of
+       variable length (e.g., "A a[2][n];").  The count is the number of
+       leaf elements known at compile time, i.e., the product of the
+       constant dimensions; the actual number, which also depends on the
+       variable dimensions, is known only at run time. */
+    a_type_ptr   type;
+    a_targ_size_t const_elems = 1;
+
+    check_assertion(!outer_ipdp->array_element_sequence && curr_elem == 0);
+    for (type = skip_typerefs(aggr_type); is_array_type(type);
+         type = skip_typerefs(array_element_type(type))) {
+      if (!type->variant.array.is_vla) {
+        const_elems *= type->variant.array.variant.number_of_elements;
+      }  /* if */
+    }  /* for */
+    check_assertion(const_elems == count);
+    ipdp->num_elem_node = add_cast_if_necessary(
+                                  vla_dimension_expr_for_type(aggr_type),
+                                  integer_type(targ_size_t_int_kind));
+    ipdp->array_element_count = 0;
+    ipdp->partial_initialization_starting_element = 0;
+  } else {
+    if (outer_ipdp->array_element_sequence) {
+      /* Flatten multi-dimensional arrays. */
+      ipdp->array_element_count = outer_ipdp->array_element_count *
+                                                    (a_targ_ptrdiff_t)count;
+    } else {
+      ipdp->array_element_count = (a_targ_ptrdiff_t)count;
+    }  /* if */
+    if (strip_nested_repeats) {
+      /* See if the constant is a repeated aggregate (used to initialize
+         multi-dimensional arrays).  If so, strip any applicable
+         ck_init_repeat constants and increase the count accordingly. */
+      while (repeated_con->kind == ck_aggregate &&
+             repeated_con->variant.aggregate.first_constant->kind ==
+                                                             ck_init_repeat &&
+             repeated_con->variant.aggregate.first_constant ==
+                               repeated_con->variant.aggregate.last_constant) {
+        a_constant_ptr rcon = repeated_con->variant.aggregate.first_constant;
+        check_assertion(rcon->variant.init_repeat.count != 0);
+        ipdp->array_element_count *=
+                             (a_targ_ptrdiff_t)rcon->variant.init_repeat.count;
+        repeated_con = rcon->variant.init_repeat.constant;
+        ipdp->array_element_type = repeated_con->type;
+      }  /* while */
+    }  /* if */
+  }  /* if */
+  return repeated_con;
+}  /* set_init_pos_for_init_repeat */
 
 
 static void lower_dynamic_init_aggregate_constant(
@@ -6794,13 +7062,15 @@ dealt with).
                  "lower_dynamic_init_aggregate_constant: repeat on non-array");
       repeated_con = con_ptr->variant.init_repeat.constant;
       elem_type = array_element_type(aggr_type);
-      if (has_aggregate_with_dynamic(repeated_con) &&
+      if (con_ptr->variant.init_repeat.count != 0 &&
+          has_aggregate_with_dynamic(repeated_con) &&
           !identical_types_ignoring_qualifiers(elem_type,
                                                repeated_con->type)) {
         /* As a shortcut, the IL allows a single "leaf" entity to be
            repeated for a multi-dimensional aggregate constant.  Remove
            this shortcut and create IL that represents the structure of the
-           multi-dimensional array. */
+           multi-dimensional array.  (A run-time count, i.e., zero, is
+           instead handled as a flattened sequence of leaf entities.) */
         handle_multidimensional_ck_init_repeat(con_ptr, elem_type);
         /* Update information about the revised repeated constant. */
         check_assertion(con_ptr->kind == (a_constant_repr_kind)ck_init_repeat);
@@ -6817,43 +7087,29 @@ dealt with).
             aggr_type->variant.array.bound_is_zero) {
           /* Nothing to initialize here. */
         } else {
-          ipd.array_element_sequence = TRUE;
-          ipd.array_element_type = repeated_con->type;
-          if (con_ptr->variant.init_repeat.count == 0) {
-            /* If the repeat count is zero, this initialization is being used
-               to complete a partial-initialization of a variably-sized array.
-               Make a note of the starting element that needs initialization
-               (which could be zero, in cases like "new A[n] {}"). */
-            if (is_vla_type(aggr_type)) {
-              /* For VLA types (e.g., "A a[n] = {A()};"), determine the number
-                 of elements in the array from the VLA type (which is assumed
-                 to have been lowered already, if needed). */
-              ipd.num_elem_node = vla_dimension_expr_for_type(aggr_type);
-            }  /* if */
-            check_assertion(ipd.num_elem_node != NULL);
-            ipd.partial_initialization_starting_element =
-                                         (a_host_large_integer)ipmp->curr_elem;
-            if (!is_variably_modified_type(aggr_type) &&
-                is_array_type(array_element_type(aggr_type))) {
-              /* For the multi-dimensional array case, ensure that the
-                 starting element takes into account all of the elements
-                 that have already been initialized. */
-              a_host_large_integer num_elems =
-                          (a_host_large_integer)num_array_elements(
-                                                array_element_type(aggr_type));
-
-              ipd.partial_initialization_starting_element *= num_elems;
-            }  /* if */
-          } else {
-            if (ipdp->array_element_sequence) {
-              /* Flatten multi-dimensional arrays. */
-              ipd.array_element_count = ipdp->array_element_count *
-                          (a_targ_ptrdiff_t)con_ptr->variant.init_repeat.count;
-            } else {
-              ipd.array_element_count =
-                          (a_targ_ptrdiff_t)con_ptr->variant.init_repeat.count;
-            }  /* if */
+          an_init_pos_descr  leaf_ipd;
+          a_constant_ptr     leaf_con;
+          a_dynamic_init_ptr leaf_dip;
+          a_boolean          init_leaf_sequence = FALSE;
+          /* Determine the repeated leaf entity (stripping the repeats of
+             a multi-dimensional array), and whether it must be destroyed
+             if an exception occurs during the initialization of a later
+             element. */
+          leaf_ipd = ipd;
+          leaf_con = set_init_pos_for_init_repeat(&leaf_ipd, ipdp, aggr_type,
+                                                  ipmp->curr_elem, con_ptr,
+                                                /*strip_nested_repeats=*/TRUE);
+          if (exceptions_enabled && !dtor_case &&
+              constant_is(leaf_con, ck_dynamic_init)) {
+            leaf_dip = leaf_con->variant.dynamic_init.ptr;
+            init_leaf_sequence =
+                  leaf_dip->destructor != NULL &&
+                  (dyn_init_is(leaf_dip, dik_nonconstant_aggregate) ||
+                   dyn_init_is(leaf_dip, dik_constructor));
           }  /* if */
+          (void)set_init_pos_for_init_repeat(&ipd, ipdp, aggr_type,
+                                             ipmp->curr_elem, con_ptr,
+                                             /*strip_nested_repeats=*/FALSE);
           if (repeated_con->kind == (a_constant_repr_kind)ck_dynamic_init &&
               repeated_con->variant.dynamic_init.ptr->kind !=
                               (a_dynamic_init_kind)dik_nonconstant_aggregate) {
@@ -6875,30 +7131,39 @@ dealt with).
                will be re-invoked to lower repeated_con, but in the context of
                a different function). */
             an_expr_node_ptr  args;
-            /* Call the routine: helper(ptr, count); */
             check_assertion(con_ptr->variant.init_repeat.constant != NULL);
-            args = make_address_of_init_entity_node(&ipd,
-                                                    /*using_as_dest=*/FALSE);
-            if (con_ptr->variant.init_repeat.count == 0) {
-              /* The repeat count isn't known at compilation time; use
-                 ipd.num_elem_node for the count. */
-              check_assertion(ipd.num_elem_node != NULL);
-              args->next = make_reusable_copy(ipd.num_elem_node,
-                                              /*vars_can_change=*/TRUE);
+            if (init_leaf_sequence) {
+              /* The elements must be destroyed if the initialization of
+                 a later element throws an exception.  Lower the leaf
+                 initialization for the whole (flattened) sequence of
+                 elements; lower_dynamic_init uses the runtime array
+                 construction routine for that, and arranges for the
+                 destruction of the sequence. */
+              lower_ck_dynamic_init(leaf_con, &leaf_ipd, dtor_case,
+                                    source_desc, others_follow,
+                                    insert_location, keep_constant, options);
             } else {
-              args->next = node_for_host_large_integer(
+              /* Call the routine: helper(ptr, count); */
+              args = make_address_of_init_entity_node(&ipd,
+                                                      /*using_as_dest=*/FALSE);
+              if (con_ptr->variant.init_repeat.count == 0) {
+                /* The repeat count isn't known at compilation time; use
+                   the run-time count of the remaining elements. */
+                args->next = num_elem_node_if_array(&ipd);
+                check_assertion(args->next != NULL);
+              } else {
+                args->next = node_for_host_large_integer(
                       (a_host_large_integer)con_ptr->variant.init_repeat.count,
                       targ_size_t_int_kind);
+              }  /* if */
+              make_call_statement(
+                          helper_routine_to_initialize_repeated_constant(
+                                                     repeated_con, args->type,
+                                                     dtor_case, source_desc,
+                                                     others_follow,
+                                                     keep_constant, options),
+                          args, (an_expr_node_ptr)NULL, insert_location);
             }  /* if */
-            make_call_statement(helper_routine_to_initialize_repeated_constant(
-                                                                 repeated_con,
-                                                                 args->type,
-                                                                 dtor_case,
-                                                                 source_desc,
-                                                                 others_follow,
-                                                                 keep_constant,
-                                                                 options),
-                                args, (an_expr_node_ptr)NULL, insert_location);
             /* Remove the ck_init_repeat constant, in case the overall
                aggregate is kept for the constant parts. */
             remove_constant = TRUE;
@@ -6912,65 +7177,21 @@ dealt with).
         } else {
           lower_constant(repeated_con);
         }  /* if */
-        if (ipd.indirect_through_variable) {
+        if (ipd.indirect_through_variable || ipd.assign_constants ||
+            con_ptr->variant.init_repeat.count == 0) {
           /* The entity being initialized is not a simple variable, so we
              don't want to keep any part of the initialization as a constant
              aggregate initialization.  This can occur when initializing
              a (portion of a) variably-sized array with a constant value
-             (from a constexpr constructor).  Generate executable statements
-             to perform the initialization. */
+             (from a constexpr constructor).  A run-time count (zero) cannot
+             be represented in a constant either, even for a simple
+             variable.  Generate executable statements to perform the
+             initialization. */
           an_expr_node_ptr entity_node;
-          ipd.array_element_sequence = TRUE;
-          ipd.array_element_type = repeated_con->type;
-          if (con_ptr->variant.init_repeat.count == 0) {
-            /* If the repeat count is zero, this initialization is being used
-               to complete a partial-initialization of a variably-sized array.
-               Make a note of the starting element that needs initialization
-               (which could be zero, in cases like "new A[n] {}"). */
-            if (is_vla_type(aggr_type)) {
-              /* For VLA types (e.g., "A a[n] = {A()};"), determine the number
-                 of elements in the array from the VLA type (which is assumed
-                 to have been lowered already, if needed). */
-              ipd.num_elem_node = vla_dimension_expr_for_type(aggr_type);
-            }  /* if */
-            check_assertion(ipd.num_elem_node != NULL);
-            ipd.partial_initialization_starting_element =
-                                         (a_host_large_integer)ipmp->curr_elem;
-            if (is_array_type(array_element_type(aggr_type))) {
-              /* For the multi-dimensional array case, ensure that the
-                 starting element takes into account all of the elements
-                 that have already been initialized. */
-              a_host_large_integer num_elems =
-                        (a_host_large_integer)num_array_elements(
-                                                array_element_type(aggr_type));
-
-              ipd.partial_initialization_starting_element *= num_elems;
-            }  /* if */
-          } else {
-            if (ipdp->array_element_sequence) {
-              /* Flatten multi-dimensional arrays. */
-              ipd.array_element_count = ipdp->array_element_count *
-                          (a_targ_ptrdiff_t)con_ptr->variant.init_repeat.count;
-            } else {
-              ipd.array_element_count =
-                          (a_targ_ptrdiff_t)con_ptr->variant.init_repeat.count;
-            }  /* if */
-            /* See if the constant is a repeated aggregate (used to initialize
-               multi-dimensional arrays).  If so, strip any applicable
-               ck_init_repeat constants and increase the count accordingly. */
-            while (repeated_con->kind == ck_aggregate &&
-                   repeated_con->variant.aggregate.first_constant->kind ==
-                                                             ck_init_repeat &&
-                   repeated_con->variant.aggregate.first_constant ==
-                               repeated_con->variant.aggregate.last_constant) {
-              a_constant_ptr rcon =
-                                repeated_con->variant.aggregate.first_constant;
-              ipd.array_element_count *=
-                             (a_targ_ptrdiff_t)rcon->variant.init_repeat.count;
-              repeated_con = rcon-> variant.init_repeat.constant;
-              ipd.array_element_type = repeated_con->type;
-            }  /* while */
-          }  /* if */
+          repeated_con = set_init_pos_for_init_repeat(
+                                             &ipd, ipdp, aggr_type,
+                                             ipmp->curr_elem, con_ptr,
+                                             /*strip_nested_repeats=*/TRUE);
           entity_node = make_init_entity_node(&ipd,
                                               /*result_is_lvalue=*/TRUE,
                                               /*using_as_dest=*/TRUE);
@@ -6981,6 +7202,11 @@ dealt with).
                               insert_location,
                               /*is_lambda_capture=*/FALSE,
                               &ipd);
+          if (con_ptr->variant.init_repeat.count == 0) {
+            /* Remove the ck_init_repeat constant, in case the overall
+               aggregate is kept for the constant parts. */
+            remove_constant = TRUE;
+          }  /* if */
         } else {
           /* Repeated non-dynamic constants are possible with designators and
              when constexpr default constructors are folded.  Either way, leave
@@ -7000,7 +7226,10 @@ dealt with).
            in the initialization, but if that's not possible, rewrite the
            initialization with executable statements. */
         mark_as_visited(con_ptr);
-        if (ipd.indirect_through_variable) {
+        if (ipd.assign_constants) {
+          /* The entire array has already been zeroed (see
+             lower_vla_rows_constant_init). */
+        } else if (ipd.indirect_through_variable) {
           insert_call_to_zero_entity(con_ptr->type,
                                      /*have_complete_object=*/TRUE,
                                      make_address_of_init_entity_node(&ipd,
@@ -7028,7 +7257,7 @@ dealt with).
         /* C++ mode. */
         lower_constant(con_ptr);
       }  /* if */
-      if (ipd.indirect_through_variable) {
+      if (ipd.indirect_through_variable || ipd.assign_constants) {
         /* The entity being initialized is not a simple variable, so we
            don't want to keep any part of the initialization as a constant
            aggregate initialization.  This comes up with return value
@@ -7722,6 +7951,28 @@ Any code needed is inserted at *insert_location.
   context->latest_initialization = dip;
   if (exceptions_enabled) {
 #if GENERATE_EH_TABLES
+    if (ipdp->array_element_sequence &&
+        ipdp->array_element_count == 0 &&
+        ipdp->num_elem_node != NULL &&
+        ipdp->variable != NULL &&
+        ipdp->variable->is_vla &&
+        !ipdp->indirect_through_variable &&
+        !is_dynamic_init_for_vla(dip)) {
+      /* The entity is a sequence of elements of a variable-length array
+         (e.g., the default-initialized remainder of a row of
+         "A a[2][n] = {{A()}};") whose number is computed at run time.  If
+         an exception occurs later, the runtime needs that number to destroy
+         the elements, so save it in a variable that the region table entry
+         can refer to.  (For a new-expression, such a sequence is the last
+         part of the initialization, so its cleanup is done by the
+         construction routine itself.) */
+      an_expr_node_ptr count_node = num_elem_node_if_array(ipdp);
+      count_node = add_cast_if_necessary(count_node,
+                                         integer_type(targ_size_t_int_kind));
+      dedp->runtime_elem_count_var = make_lowered_temporary(count_node->type);
+      (void)insert_var_assignment_statement(dedp->runtime_elem_count_var,
+                                            count_node, insert_location);
+    }  /* if */
     /* Make a region table entry for the entity (and for its conditional
        flag, if it has one). */
     make_dyn_init_region_table_entry(dip,
@@ -10007,6 +10258,51 @@ statement/expression lowering process (mostly by lower_dynamic_init).
 
 #endif /* LOWERING_REMOVES_UNNEEDED_CONSTRUCTIONS_AND_DESTRUCTIONS */
 
+static a_boolean has_variable_length_rows(a_type_ptr type)
+/*
+Return TRUE if type is an array whose element type is a VLA, i.e., an
+array with rows of variable length (e.g., "int[2][n]" or "int[n][n]").
+*/
+{
+  type = skip_typerefs(type);
+  return is_array_type(type) &&
+         is_vla_type(type->variant.array.element_type);
+}  /* has_variable_length_rows */
+
+
+static void lower_vla_rows_constant_init(a_dynamic_init_ptr     dip,
+                                         an_init_pos_descr_ptr  ipdp,
+                                         an_insert_location_ptr
+                                                            insert_location)
+/*
+The dik_constant dynamic initialization dip initializes the entity described
+by ipdp, an array whose rows have variable length (e.g., "int a[2][n] = {
+{1}, {2, 3} };").  The entity is always treated as partially initialized, so
+it has already been zeroed in full (see
+stretch_partial_initialization_if_necessary); insert assignments of the
+individual element values at *insert_location.
+*/
+{
+  a_constant_ptr       con = dip->variant.constant.ptr;
+  an_init_pos_descr    ipd;
+  a_boolean            keep_constant = FALSE;
+
+  check_assertion(dip->is_partially_initialized &&
+                  has_variable_length_rows(type_from_init_pos_descr(ipdp)));
+  if (constant_is(con, ck_aggregate) &&
+      con->variant.aggregate.first_constant != NULL) {
+    ipd = *ipdp;
+    ipd.assign_constants = TRUE;
+    lower_dynamic_init_aggregate_constant(con, &ipd, /*dtor_case=*/FALSE,
+                                          (an_implied_copy_source *)NULL,
+                                          /*others_follow_in_aggr=*/FALSE,
+                                          insert_location, &keep_constant,
+                                          (a_lower_dynamic_init_options_set)0);
+    check_assertion(!keep_constant);
+  }  /* if */
+}  /* lower_vla_rows_constant_init */
+
+
 static void stretch_partial_initialization_if_necessary(
                                    a_dynamic_init_ptr     dip,
                                    an_init_pos_descr_ptr  ipdp,
@@ -10065,12 +10361,30 @@ un-initialized.
     }  /* if */
   }  /* if */
   if (needs_initializing) {
-    insert_call_to_zero_entity(entity_type,
+    a_type_ptr       zero_type = entity_type;
+    an_expr_node_ptr num_elem_node = ipdp->num_elem_node;
+    a_targ_size_t    array_element_count = 0;
+    if (ipdp->array_element_sequence) {
+      /* A sequence of array elements (e.g., the remaining elements of an
+         array with rows of variable length, "A a[2][n] = {{A()}};"): zero
+         that many elements of the sequence element type, as for dik_zero
+         in lower_dynamic_init. */
+      check_assertion(ipdp->array_element_count >= 0);
+      array_element_count = (a_targ_size_t)ipdp->array_element_count;
+      num_elem_node = array_element_count != 0 ? (an_expr_node_ptr)NULL :
+                                                 num_elem_node_if_array(ipdp);
+      zero_type = ipdp->array_element_type;
+    } else if (is_vla_type(entity_type)) {
+      /* insert_call_to_zero_entity gets the number of elements of a VLA
+         from the type itself. */
+      num_elem_node = NULL;
+    }  /* if */
+    insert_call_to_zero_entity(zero_type,
                                have_complete_object,
                                make_address_of_init_entity_node(ipdp,
                                                    /*using_as_dest=*/TRUE),
-                               ipdp->num_elem_node,
-                               (a_targ_size_t)0,
+                               num_elem_node,
+                               array_element_count,
                                insert_location);
   }  /* if */
 }  /* stretch_partial_initialization_if_necessary */
@@ -10500,12 +10814,17 @@ C99 mode for the same reason.
             is_or_was_ptr_to_member_function_type(entity_type) ||
             ipdp->array_element_sequence) {
           /* Aggregate.  Use a runtime routine call to zero it. */
-          a_targ_size_t array_element_count = 0;
+          a_targ_size_t    array_element_count = 0;
+          an_expr_node_ptr num_elem_node = NULL;
           if (ipdp->array_element_sequence) {
             /* If this assertion fails the array element count is unknown and
                no call to initialize the entity can be formed. */
             check_assertion(ipdp->array_element_count >= 0);
             array_element_count = (a_targ_size_t)ipdp->array_element_count;
+            if (array_element_count == 0) {
+              /* The count is determined at run time. */
+              num_elem_node = num_elem_node_if_array(ipdp);
+            }  /* if */
             entity_type = ipdp->array_element_type;
           }  /* if */
           entity_node = make_address_of_init_entity_node(ipdp, 
@@ -10513,7 +10832,7 @@ C99 mode for the same reason.
           insert_call_to_zero_entity(entity_type,
                                      have_complete_object,
                                      entity_node,
-                                     (an_expr_node_ptr)NULL,
+                                     num_elem_node,
                                      array_element_count,
                                      eff_insert_location);
         } else {
@@ -10547,6 +10866,14 @@ C99 mode for the same reason.
         stretch_partial_initialization_if_necessary(dip, ipdp,
                                                     have_complete_object,
                                                     eff_insert_location);
+      }  /* if */
+      if (has_variable_length_rows(type_from_init_pos_descr(ipdp))) {
+        /* The constant can be neither kept as an initializer nor copied from
+           a static temporary, because its layout differs from that of the
+           entity (whose rows have a length known only at run time); assign
+           its elements individually. */
+        lower_vla_rows_constant_init(dip, ipdp, eff_insert_location);
+        break;
       }  /* if */
       /* For the normal cases, go on and generate an assignment. */
       goto do_assignment;
@@ -10768,6 +11095,8 @@ do_assignment:;
       break;
     case dik_nonconstant_aggregate:
       {
+        an_init_pos_descr     vla_ipd;
+        an_init_pos_descr_ptr agg_ipdp;
         /* Initialization with a nonconstant aggregate constant.  This is
            usually a whole-variable initialization, but can be used in a
            ctor-initializer or lambda capture to iterate over an array
@@ -10776,12 +11105,62 @@ do_assignment:;
           latest_initialization_on_entry = eff_context->latest_initialization;
         }  /* if */
         keep_constant = FALSE;
-        if (dip->is_partially_initialized &&
-            (variable == NULL || !is_vla_type(variable->type))) {
+        if (ipdp->array_element_sequence) {
+          /* A sequence of array elements, each initialized with the
+             aggregate (see lower_dynamic_init_aggregate_constant).  Use the
+             runtime array construction routine, which destroys the elements
+             already constructed if an exception is thrown, with a helper
+             routine that initializes one element:
+               __cxa_vec_ctor(ptr, count, size, helper, dtor);
+             The destruction of the sequence is arranged below, as for an
+             array constructor call. */
+          a_routine_ptr    helper, dtor_routine = NULL;
+          an_expr_node_ptr num_elem_node;
+          if (exceptions_enabled && dip->destructor != NULL) {
+            dtor_routine = dip->destructor;
+#if IA64_ABI
+            dtor_routine = alternate_entry_point(dtor_routine, cdk_complete,
+                                                 /*define_now=*/FALSE);
+#endif /* IA64_ABI */
+          }  /* if */
+          /* For a multi-dimensional array, the address is that of the first
+             row; convert it to a pointer to the first element. */
+          entity_node = make_address_of_init_entity_node(ipdp,
+                                                       /*using_as_dest=*/TRUE);
+          entity_node = add_cast_if_necessary(
+                                  entity_node,
+                                  make_pointer_type(ipdp->array_element_type));
+          num_elem_node = num_elem_node_if_array(ipdp);
+          check_assertion(num_elem_node != NULL);
+          helper = helper_routine_to_initialize_aggregate_element(
+                                                           dip,
+                                                           entity_node->type,
+                                                           source_desc,
+                                                           options);
+          (void)insert_expr_statement_set_pos(
+                    make_vec_new_call(entity_node, entity_node->type,
+                                      num_elem_node, helper, dtor_routine,
+                                      (a_routine_ptr)NULL,
+                                      (a_routine_ptr)NULL,
+                                      /*zero_storage=*/FALSE),
+                    eff_insert_location);
+          break;
+        }  /* if */
+        agg_ipdp = ipdp;
+        if (variable != NULL && is_vla_type(variable->type)) {
+          /* The back end cannot be relied on to complete the initialization
+             of a VLA: nothing zeroes it if no constant is kept, and zeroing
+             gives the wrong null pointer-to-data-member value for the
+             IA-64 ABI.  Initialize the whole VLA here and assign (rather
+             than keep) the constant parts. */
+          vla_ipd = *ipdp;
+          vla_ipd.assign_constants = TRUE;
+          agg_ipdp = &vla_ipd;
+        }  /* if */
+        if (dip->is_partially_initialized) {
           /* For cases where the initialization only partially covers the
              entity being initialized, initialize the remaining portion
-             of the entity if necessary.  No need to stretch VLA
-             initialization; the back end will do that. */
+             of the entity if necessary. */
           stretch_partial_initialization_if_necessary(dip, ipdp,
                                                       have_complete_object,
                                                       eff_insert_location);
@@ -10816,12 +11195,14 @@ do_assignment:;
                                             copy_node(init_entity_expr));
           insert_expr(master_entry_assignment, eff_insert_location);
         }  /* if */
-        lower_dynamic_init_aggregate_constant(dip->variant.constant.ptr, ipdp,
+        lower_dynamic_init_aggregate_constant(dip->variant.constant.ptr,
+                                              agg_ipdp,
                                               /*dtor_case=*/FALSE, source_desc,
                                               others_follow_in_aggr,
                                               eff_insert_location,
                                               &keep_constant,
                                               options);
+        check_assertion(agg_ipdp == ipdp || !keep_constant);
 do_keep_constant:
         if (keep_constant) {
           /* There is a constant part of the initialization to be kept. */

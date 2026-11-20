@@ -1,0 +1,10 @@
+[GH #557]
+Partially initialized multidimensional variable-length arrays
+
+A partially initialized multidimensional GNU variable-length array of a class
+type, e.g.,
+
+  E a[3][n] = {{E(1)}, {}};
+
+could be constructed and destroyed with the wrong number of elements (writing
+past the end of the array), and some shapes caused an internal error.
