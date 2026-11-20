@@ -6954,7 +6954,7 @@ process_assignment:
         if (empty_struct_pointee_type == NULL && !is_unary) {
           empty_struct_pointee_type = empty_struct_pointee(operand_2->type);
         }  /* if */
-        if (op == (an_expr_operator_kind)eok_pdiff &&
+        if (op == eok_pdiff &&
             empty_struct_pointee_type != NULL &&
             !empty_struct_pointee_size_is_one(empty_struct_pointee_type)) {
           /* The difference of the char * operands is in bytes, so divide
