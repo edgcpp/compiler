@@ -8539,6 +8539,15 @@ which constant is the value.
     /* Figure out the kind of aggregate so we can track the type as we
        work through constants. */
     type = skip_typerefs(type);
+    if (type_is(type, tk_pointer) && type->variant.pointer.is_reference) {
+      a_type_ptr  referenced_type = skip_typerefs(type_pointed_to(type));
+      if (type_is(referenced_type, tk_array) ||
+          is_immediate_class_type(referenced_type)) {
+        /* The aggregate initializes the object bound to the reference, as in
+           "R{1, 2}" with R being "const int(&)[2]". */
+        type = referenced_type;
+      }  /* if */
+    }  /* if */
     switch (type->kind) {
       case tk_array:
 #if GNU_VECTOR_TYPES_ALLOWED
@@ -23545,9 +23554,11 @@ output_functional_notation_cast_arguments:
       /* Constant (simple or aggregate). */
       con = dip->variant.constant.ptr;
       if (is_reference_type(init_entity_type) &&
+          !con->explicit_cast_applied &&
           !((assoc_expr != NULL && is_glvalue_node(assoc_expr)) ||
             is_reference_type(con->type))) {
-        /* A reference initialized by a prvalue. */
+        /* A reference initialized by a prvalue (other than by a cast like
+           "R{1, 2}", which is put out with the reference type). */
         a_type_ptr referred_to_type = type_pointed_to(init_entity_type);
         if (is_array_type(referred_to_type) ||
             (is_class_struct_union_type(referred_to_type) &&
@@ -24068,7 +24079,12 @@ Output the initializer, if any, for the indicated variable.
             }  /* if */
           } else {
             dip = expr->variant.init.dynamic_init;
-            init_type = expr->type;
+            /* As in gen_temp_init, use the type of a braced cast as written
+               (e.g., a reference type, as in "R{1, 2}"). */
+            init_type = expr->variant.init.source.type;
+            if (init_type == NULL) {
+              init_type = expr->type;
+            }  /* if */
             goto handle_dynamic_init;
           }  /* if */
         } else if (con->explicit_parentheses_on_aggregate &&

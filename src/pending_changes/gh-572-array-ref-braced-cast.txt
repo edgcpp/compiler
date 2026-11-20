@@ -1,0 +1,44 @@
+[GH #572]
+Braced casts to references to aggregates
+
+The C++-generating back end dropped the type of a braced functional-notation
+cast to a reference to an array, so the generated code had a different
+meaning or was rejected, and it issued an internal error for such a cast to a
+reference to a const array or to a class, and for a braced initializer of
+such a reference.  Also, when such a cast to a reference to an array was the
+constant initializer of a variable, it was generated as a compound literal
+(a GNU extension).  For example, with --c++17:
+
+  struct S { int a, b; };
+  using RA = int(&&)[2];
+  using CA = const int(&)[2];
+  template<class T> int size(T&&) { return sizeof(T); }
+  int n1 = size(RA{1, 2});  // Was generated as "size({1, 2})".
+  int n2 = size(CA{1, 2});  // Internal error.
+  const S &r{1, 2};         // Internal error.
+  CA c = CA{1, 2};          // Was generated as "(const int [2]){1, 2}".
+
+Such casts and initializers are now generated as written.
+
+Similarly, in configurations that generate templates from their prototype
+instantiations (rather than from their source text), the type of a braced
+cast to a reference to a class of dependent type was dropped.  For example,
+
+  template<class T> struct S2 { T x, y; };
+  template<class T> using R = const S2<T>&;
+  template<class T> void f(T x) {
+    auto &&r = R<T>{x, x};  // Was generated as "auto &&r = {x, x};".
+  }
+
+Such a cast is now generated as written as well.
+
+Also, the front end treated a braced functional-notation cast to an rvalue
+reference to an array as an lvalue rather than an xvalue.  For example, with
+"RA" as above, "decltype((RA{1, 2}))" was "int(&)[2]" instead of
+"int(&&)[2]", and in
+
+  int h(const int (&)[2]);
+  int h(const int (&&)[2]);
+  int n3 = h(RA{1, 2});
+
+the first "h" was selected.  The second one is now selected.

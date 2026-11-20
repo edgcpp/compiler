@@ -30795,18 +30795,49 @@ previously-scanned braced initializer.
   }  /* if */
   expr = expr_node_from_operand(result);
   if (expr != NULL) {
+    an_expr_node_ptr  temp_expr = expr;
     /* Record source form information in the associated IL entries if
        needed. */
     expr->is_brace_notation_cast = TRUE;
-    if (expr->kind == (an_expr_node_kind)enk_temp_init) {
-      a_dynamic_init_ptr  dip = expr->variant.init.dynamic_init;
+    if (is_any_reference_type(type_cast_to) && is_array_type(expr->type) &&
+        is_operation_node(expr) &&
+        node_operator_is(expr, eok_lvalue_adjust)) {
+      /* A reference bound to an array temporary, as in "R{1, 2}" with R
+         being "int(&&)[2]", is "*" applied to the decayed temporary (under
+         the eok_lvalue_adjust).  Record the cast on the temporary. */
+      an_expr_node_ptr  opnd = expr->variant.operation.operands;
+      if (is_operation_node(opnd) && node_operator_is(opnd, eok_indirect)) {
+        opnd = opnd->variant.operation.operands;
+        if (is_operation_node(opnd) &&
+            node_operator_is(opnd, eok_array_to_pointer)) {
+          temp_expr = opnd->variant.operation.operands;
+        }  /* if */
+      }  /* if */
+    } else if (is_any_reference_type(type_cast_to) &&
+               is_operation_node(expr) &&
+               node_operator_is(expr, eok_lvalue)) {
+      /* In a template, a reference bound to a temporary of dependent type,
+         as in "R<T>{x, x}" with R<T> being "const S<T>&", is the temporary
+         under an eok_lvalue.  Record the cast on the temporary. */
+      temp_expr = expr->variant.operation.operands;
+    }  /* if */
+    if (node_is(temp_expr, enk_temp_init)) {
+      a_dynamic_init_ptr  dip = temp_expr->variant.init.dynamic_init;
       dip->is_explicit_cast = TRUE;
       dip->is_braced_initializer = TRUE;
       if (dip->kind == (a_dynamic_init_kind)dik_constant ||
           dip->kind == (a_dynamic_init_kind)dik_nonconstant_aggregate) {
         dip->variant.constant.ptr->explicit_cast_applied = TRUE;
       }  /* if */
-      expr->variant.init.source.type = type_cast_to;
+      temp_expr->variant.init.source.type = type_cast_to;
+    }  /* if */
+    if (is_rvalue_reference_type(type_cast_to) &&
+        !is_function_type(type_pointed_to(type_cast_to)) &&
+        is_expression_operand(result) && is_an_lvalue(result)) {
+      /* The result of a cast to an rvalue reference to an object type is
+         an xvalue, but binding the reference produced an lvalue (e.g., for
+         an array temporary, as in "R{1, 2}" with R being "int(&&)[2]"). */
+      conv_rvalue_reference_result_to_xvalue(result);
     }  /* if */
   }  /* if */
 #if EXTRA_SOURCE_POSITIONS_IN_IL
