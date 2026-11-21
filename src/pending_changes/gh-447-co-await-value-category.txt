@@ -13,3 +13,8 @@ category of the await_resume call, so code like this is accepted:
   task f() {
     (co_await bool_ref_awaiter{}) = false;
   }
+
+Also, an internal error in lowering is fixed for a co_await whose
+await_ready and await_resume are both constexpr when await_resume returns a
+reference (both calls are then folded, and the awaiter was wrongly cloned
+for the await_suspend call).
