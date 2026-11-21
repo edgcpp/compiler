@@ -59,6 +59,14 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
   }
   ^
 
+"Test_name.c", line 167: error: expression must have a constant value
+    constinit int &z = x; // expected-error {{variable does not have a constant initializer}} \
+                       ^
+
+"Test_name.c", line 176: error: expression must have a constant value
+    constexpr A g = {x}; // expected-error {{constexpr variable 'g' must be initialized by a constant expression}} \
+                    ^
+
 "Test_name.c", line 184: warning: expression has no effect
     constinit int& g = (x,y); // expected-warning {{left operand of comma operator has no effect}}
                         ^
@@ -337,4 +345,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     constexpr int bases = (void*)(X*)&z <= (Y*)&z; // expected-error {{constexpr variable 'bases' must be initialized by a constant expression}} \
                   ^
 
-30 errors detected in the compilation of "Test_name.c".
+32 errors detected in the compilation of "Test_name.c".
