@@ -1,0 +1,20 @@
+[GH #447]
+Value category of co_await and co_yield expressions
+
+A co_await or co_yield expression was always treated as a prvalue, even
+when the await_resume call returns a reference.  It now has the value
+category of the await_resume call, so code like this is accepted:
+
+  struct bool_ref_awaiter {
+    bool await_ready() noexcept;
+    void await_suspend(std::coroutine_handle<>) noexcept;
+    bool &await_resume() noexcept;
+  };
+  task f() {
+    (co_await bool_ref_awaiter{}) = false;
+  }
+
+Also, an internal error in lowering is fixed for a co_await whose
+await_ready and await_resume are both constexpr when await_resume returns a
+reference (both calls are then folded, and the awaiter was wrongly cloned
+for the await_suspend call).
