@@ -24626,7 +24626,8 @@ void call_named_member_function(an_operand           *selector_operand,
                                 a_template_arg_ptr   templ_arg_list,
                                 an_arg_list_elem_ptr alep,
                                 an_operand           *orig_operand,
-                                an_operand           *result)
+                                an_operand           *result,
+                                a_boolean            *p_folded)
 /*
 Create in *result the representation of a call of the form
 
@@ -24641,6 +24642,7 @@ the explicit template arguments (if any) are represented by templ_arg_list,
 and a1, a2, ... is represented by alep (possibly NULL).  Operand details other
 than the bound_function and virtual_function flags will be copied from
 orig_operand to the function operand created before assembling the final call.
+If p_folded is non-NULL, *p_folded indicates whether the call was folded.
 */
 {
   a_type_ptr        class_type;
@@ -24650,6 +24652,7 @@ orig_operand to the function operand created before assembling the final call.
   an_expr_node_ptr  arg_node_list = NULL;
   an_operand        function_operand;
 
+  if (p_folded != NULL) *p_folded = FALSE;
   class_type = skip_typerefs_not_dependent_decltypes(selector_operand->type);
   if (class_type->kind == (a_type_kind)tk_typeref) {
     /* A dependent "decltype": Use an associated proxy class. */
@@ -24742,8 +24745,7 @@ orig_operand to the function operand created before assembling the final call.
                              /*start_position=*/&null_source_position,
                              /*operator_position=*/&selector_operand->position,
                              /*end_position=*/&null_source_position,
-                             result, /*p_folded=*/(a_boolean*)NULL,
-                             &func_call_node);
+                             result, p_folded, &func_call_node);
       if (nonreal_case && func_call_node != NULL &&
           node_operator_is(func_call_node, eok_call)) {
         func_call_node->variant.operation.kind =

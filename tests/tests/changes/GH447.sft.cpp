@@ -78,3 +78,15 @@ task g() {
   bool x = co_await constexpr_ref_awaiter<true>{};
   (void)x;
 }
+
+// A reference to a function gives an lvalue, even for an rvalue reference.
+void fn();
+task h() {
+  void (&l)() = co_await awaiter<void (&)()>{};
+  void (&r)() = co_await awaiter<void (&&)()>{};
+  decltype(auto) d = co_await awaiter<void (&&)()>{};
+  static_assert(std::is_same<decltype(d), void (&)()>::value);
+  l();
+  r();
+  d();
+}

@@ -31,7 +31,6 @@ expr.c -- Expression scanning routines.
 #include "interpret.h"
 #include "layout.h"
 #include "ifc_modules.h"
-#include "il_walk.h"
 #if MICROSOFT_EXTENSIONS_ALLOWED
 /* The Microsoft-specific predefined identifier __FUNCDNAME__ refers to the
    mangled name of the current function.  Hence, we may need access to the
@@ -49054,55 +49053,6 @@ variable.
 
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 
-/* The expression node add_await_to_operand is looking for; see
-   call_contains_await_operand. */
-static an_expr_node_ptr await_operand_sought;
-
-static void find_await_operand(an_expr_node_ptr                    expr,
-                               an_expr_or_stmt_traversal_block_ptr tblock)
-/*
-Called from traverse_expr: stop with a TRUE result if expr is the node being
-looked for.
-*/
-{
-  if (expr == await_operand_sought) {
-    tblock->result = TRUE;
-    tblock->terminate = TRUE;
-  }  /* if */
-}  /* find_await_operand */
-
-
-static a_boolean call_contains_await_operand(an_operand *call,
-                                             an_operand *await_operand)
-/*
-Return TRUE if the result of one of the calls generated for a co_await (call)
-still contains the expression of the awaiter operand (await_operand), i.e.,
-if the call was not folded away.  A call folded to a constant does not, and
-neither does a folded call returning a reference to a variable, whose result
-is just an lvalue for that variable.
-*/
-{
-  a_boolean result;
-
-  if (is_constant_operand(call)) {
-    result = FALSE;
-  } else if (!is_expression_operand(call) ||
-             !is_expression_operand(await_operand)) {
-    /* Keep the earlier behavior: assume the call uses the operand. */
-    result = TRUE;
-  } else {
-    an_expr_or_stmt_traversal_block tblock;
-    clear_expr_or_stmt_traversal_block(&tblock);
-    tblock.process_expr = find_await_operand;
-    await_operand_sought = await_operand->variant.expression;
-    traverse_expr(call->variant.expression, &tblock);
-    await_operand_sought = NULL;
-    result = tblock.result;
-  }  /* if */
-  return result;
-}  /* call_contains_await_operand */
-
-
 void add_await_to_operand(an_operand_ptr          operand,
                           a_source_position       *pos,
                           a_token_sequence_number tok_seq_number,
@@ -49235,14 +49185,16 @@ suspend point.
     an_operand orig_operand;
     an_operand resume_operand;
     an_operand suspend_operand;
+    a_boolean  ready_call_folded, resume_call_folded;
     copy_operand(operand, &orig_operand);
     /* Call the await_ready, await_suspend, and await_resume member
        functions. */
     call_named_member_function(operand, "await_ready",
                                (a_template_arg_ptr)NULL,
                                (an_arg_list_elem_ptr)NULL,
-                               &orig_operand, &ready_call);
-    if (call_contains_await_operand(&ready_call, &orig_operand)) {
+                               &orig_operand, &ready_call,
+                               &ready_call_folded);
+    if (!ready_call_folded) {
       /* We can't use the original operand because it's been incorporated
          into the await_ready call, so make a clone for use in the
          await_resume call. */
@@ -49256,9 +49208,9 @@ suspend point.
     call_named_member_function(&resume_operand, "await_resume",
                                (a_template_arg_ptr)NULL,
                                (an_arg_list_elem_ptr)NULL,
-                               &orig_operand, &resume_call);
-    if (call_contains_await_operand(&ready_call, &orig_operand) ||
-        call_contains_await_operand(&resume_call, &orig_operand)) {
+                               &orig_operand, &resume_call,
+                               &resume_call_folded);
+    if (!ready_call_folded || !resume_call_folded) {
       /* The original operand has been incorporated into one of the
          preceding calls, so clone it for use in the await_suspend call. */
       clone_operand(&orig_operand, &suspend_operand, /*vars_can_change=*/TRUE,
@@ -49303,11 +49255,12 @@ suspend point.
   }  /* if */
   node->variant.await_info.ready_resume_suspend->next->next =
                                         make_node_from_operand(&suspend_call);
-  if (is_a_glvalue(&resume_call)) {
+  if (is_a_glvalue(&resume_call) || is_a_function_designator(&resume_call)) {
     /* await_resume returns a reference, so the co_await expression is a
-       glvalue too (an lvalue or xvalue, like the await_resume call).  As
-       for a call, give the node the reference type and put a reference
-       indirection on top of it. */
+       glvalue too (an lvalue or xvalue, like the await_resume call; a
+       reference to a function gives an lvalue even if it is an rvalue
+       reference).  As for a call, give the node the reference type and put a
+       reference indirection on top of it. */
     an_expr_node_ptr call = strip_ref_indirect(
                          node->variant.await_info.ready_resume_suspend->next,
                          /*parens_also=*/FALSE);
