@@ -299,6 +299,21 @@ llvm_gen_be_error_t llvm_lower_decimal_float_cast(
     llvm::Type* dest_ty,
     llvm::Value** out_val) noexcept;
 
+/**
+ * @brief Materializes a valid null `llvm::Constant*` for a lowered expression type.
+ * @details Guards against `llvm::Constant::getNullValue` undefined behavior (`llvm_unreachable`)
+ *          when synthetic or unannotated IL expression nodes lower to `void` or a raw `FunctionType`,
+ *          substituting @p fallback_ty in those non-first-class value cases.
+ * @param[in] expr_llvm_ty Lowered LLVM type of the expression node.
+ * @param[in] fallback_ty First-class fallback LLVM type used when @p expr_llvm_ty cannot form a null constant.
+ * @param[out] out_val Receives the materialized null `llvm::Constant*` as an `llvm::Value*`.
+ * @return `llvm_gen_be_error_t::ok` on success, or `invalid_argument` if any pointer argument is null.
+ */
+llvm_gen_be_error_t llvm_materialize_null_constant(
+    llvm::Type* expr_llvm_ty,
+    llvm::Type* fallback_ty,
+    llvm::Value** out_val) noexcept;
+
 END_EDG_NAMESPACE
 
 #endif /* LLVM_GEN_BE_EXPR_H */

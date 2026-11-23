@@ -5,6 +5,8 @@
 
 cmake_minimum_required(VERSION 3.20)
 
+include(${CMAKE_SOURCE_DIR}/cmake/softfloat.cmake)
+
 option(EDG_DRIVER_ENABLE_COVERAGE "Build Stage-0 shared driver tests with Clang source coverage" OFF)
 
 add_executable(test_edg_be_driver
@@ -12,6 +14,8 @@ add_executable(test_edg_be_driver
   ${CMAKE_SOURCE_DIR}/src/edg_be_sdk.cpp
   ${CMAKE_SOURCE_DIR}/src/edg_be_driver.cpp
 )
+
+add_softfloat_to_target(test_edg_be_driver)
 
 target_include_directories(test_edg_be_driver PRIVATE
   ${CMAKE_SOURCE_DIR}/src

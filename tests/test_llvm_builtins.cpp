@@ -145,6 +145,7 @@ namespace edg {
       *out_const = llvm::ConstantInt::get(ty, v);
     }
     else if (ty->isFloatingPointTy()) *out_const = llvm::ConstantFP::get(ty, 1.0);
+    else if (ty->isVoidTy() || ty->isFunctionTy()) *out_const = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*be_state->context), 0);
     else *out_const = llvm::Constant::getNullValue(ty);
     return llvm_gen_be_error_t::ok; 
   }
@@ -856,6 +857,20 @@ int main(void) {
   // Unhandled bok (bok_last)
   bok_node.variant.builtin_operation.kind = bok_last;
   assert(llvm_lower_expression(&bok_node, &val) == llvm_gen_be_error_t::unsupported_expr);
+
+  // Exhaustive branch coverage for llvm_materialize_null_constant
+  llvm::Type* i32_ll_ty = llvm::Type::getInt32Ty(*state.context);
+  llvm::Type* void_ll_ty = llvm::Type::getVoidTy(*state.context);
+  llvm::FunctionType* fn_ll_ty = llvm::FunctionType::get(void_ll_ty, false);
+  assert(llvm_materialize_null_constant(nullptr, i32_ll_ty, &val) == llvm_gen_be_error_t::invalid_argument);
+  assert(llvm_materialize_null_constant(i32_ll_ty, nullptr, &val) == llvm_gen_be_error_t::invalid_argument);
+  assert(llvm_materialize_null_constant(i32_ll_ty, i32_ll_ty, nullptr) == llvm_gen_be_error_t::invalid_argument);
+  assert(llvm_materialize_null_constant(void_ll_ty, i32_ll_ty, &val) == llvm_gen_be_error_t::ok);
+  assert(val != nullptr && val->getType() == i32_ll_ty);
+  assert(llvm_materialize_null_constant(fn_ll_ty, llvm::PointerType::getUnqual(*state.context), &val) == llvm_gen_be_error_t::ok);
+  assert(val != nullptr && val->getType()->isPointerTy());
+  assert(llvm_materialize_null_constant(i32_ll_ty, llvm::PointerType::getUnqual(*state.context), &val) == llvm_gen_be_error_t::ok);
+  assert(val != nullptr && val->getType() == i32_ll_ty);
 
   printf("PASS\n");
   return 0;

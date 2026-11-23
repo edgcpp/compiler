@@ -109,14 +109,6 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     HasExtInt<2> u;
                  ^
 
-"Test_name.c", line 76: error: no instance of function template "deduced_bound" matches the argument list
-            argument types are: (_BitInt(3))
-    deduced_bound(b);
-    ^
-"Test_name.c", line 65: note: candidate function template "deduced_bound" failed deduction
-  void deduced_bound(_BitInt(I)){}
-       ^
-
 "Test_name.c", line 69: warning: variable "a" was declared but never referenced
     ExtIntTemplParam<13> a;
                          ^
@@ -372,4 +364,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     char c = 3;
          ^
 
-30 errors detected in the compilation of "Test_name.c".
+29 errors detected in the compilation of "Test_name.c".

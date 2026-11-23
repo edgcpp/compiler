@@ -1513,11 +1513,11 @@ llvm_gen_be_error_t test_lifecycle(void) noexcept {
       llvm::sys::fs::remove_directories(sr1);
       touch_file(sr1 + "/usr/lib/x86_64-linux-gnu/crti.o");
       touch_file(sr1 + "/usr/lib/x86_64-linux-gnu/Scrt1.o");
-      // Create 99 first and 05/12/13 so regardless of FS iteration order (ascending or descending/hash), at least one entry has ver_leaf <= best_ver AND one has ver_leaf > best_ver when 3+ entries exist in non-monotonic creation/hash order ("20", "10", "30")
+      // Populate candidate_gcc_bases[0] ("30") and candidate_gcc_bases[1] ("10") so vector iteration order deterministically exercises both ver_leaf > best_ver (True) and ver_leaf <= best_ver (False) on every filesystem.
+      touch_file(sr1 + "/usr/lib/gcc/x86_64-unknown-linux-gnu/30/crtbeginS.o");
+      touch_file(sr1 + "/usr/lib/gcc/x86_64-unknown-linux-gnu/30/crtendS.o");
       touch_file(sr1 + "/usr/lib/gcc/x86_64-linux-gnu/20/crtbegin.o");
       touch_file(sr1 + "/usr/lib/gcc/x86_64-linux-gnu/10/crtbegin.o");
-      touch_file(sr1 + "/usr/lib/gcc/x86_64-linux-gnu/30/crtbeginS.o");
-      touch_file(sr1 + "/usr/lib/gcc/x86_64-linux-gnu/30/crtendS.o");
       touch_file(sr1 + "/usr/lib/gcc/x86_64-linux-gnu/05/crtbegin.o");
       touch_file(sr1 + "/usr/lib/gcc/x86_64-linux-gnu/09_empty/README");
 

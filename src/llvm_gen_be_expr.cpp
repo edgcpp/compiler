@@ -4666,8 +4666,8 @@ llvm_gen_be_error_t llvm_lower_expression(
        if (err != llvm_gen_be_error_t::ok) return err;
        a_constant_ptr con = expr->variant.constant.ptr;
        if (!con) {
-           *out_val = llvm::Constant::getNullValue(expr_llvm_ty);
-           return llvm_gen_be_error_t::ok;
+           return llvm_materialize_null_constant(
+               expr_llvm_ty, llvm::Type::getInt32Ty(*be_state->context), out_val);
        }
        llvm::Constant* out_const = nullptr;
        err = evaluate_constant(con, expr_llvm_ty, &out_const);
@@ -4681,8 +4681,8 @@ llvm_gen_be_error_t llvm_lower_expression(
            llvm::Type* expr_llvm_ty = nullptr;
            llvm_gen_be_error_t err = get_llvm_type(expr->type, &expr_llvm_ty);
            if (err != llvm_gen_be_error_t::ok) return err;
-           *out_val = llvm::Constant::getNullValue(expr_llvm_ty);
-           return llvm_gen_be_error_t::ok;
+           return llvm_materialize_null_constant(
+               expr_llvm_ty, llvm::PointerType::getUnqual(*be_state->context), out_val);
        }
        llvm::Function* func = be_state->module->getFunction(routine->source_corresp.name);
        if (!func) {
@@ -6884,6 +6884,29 @@ llvm_gen_be_error_t llvm_lower_decimal_float_cast(
   }
 
   return llvm_gen_be_error_t::unsupported_type;
+}
+
+/**
+ * @brief Materializes a valid null `llvm::Constant*` for a lowered expression type.
+ * @details Guards against `llvm::Constant::getNullValue` undefined behavior (`llvm_unreachable`)
+ *          when synthetic or unannotated IL expression nodes lower to `void` or a raw `FunctionType`,
+ *          substituting @p fallback_ty in those non-first-class value cases.
+ * @param[in] expr_llvm_ty Lowered LLVM type of the expression node.
+ * @param[in] fallback_ty First-class fallback LLVM type used when @p expr_llvm_ty cannot form a null constant.
+ * @param[out] out_val Receives the materialized null `llvm::Constant*` as an `llvm::Value*`.
+ * @return `llvm_gen_be_error_t::ok` on success, or `invalid_argument` if any pointer argument is null.
+ */
+llvm_gen_be_error_t llvm_materialize_null_constant(
+    llvm::Type* expr_llvm_ty,
+    llvm::Type* fallback_ty,
+    llvm::Value** out_val) noexcept {
+  if (!expr_llvm_ty || !fallback_ty || !out_val) {
+    return llvm_gen_be_error_t::invalid_argument;
+  }
+  llvm::Type* target_ty =
+      (expr_llvm_ty->isVoidTy() || expr_llvm_ty->isFunctionTy()) ? fallback_ty : expr_llvm_ty;
+  *out_val = llvm::Constant::getNullValue(target_ty);
+  return llvm_gen_be_error_t::ok;
 }
 
 END_EDG_NAMESPACE

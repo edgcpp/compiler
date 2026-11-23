@@ -149,13 +149,12 @@ static llvm_gen_be_error_t discover_linux_gcc_crt_and_ldso(
             if (llvm::sys::fs::exists(ver_dir + "/" + begin_name) ||
                 llvm::sys::fs::exists(ver_dir + "/crtbegin.o")) {
                 std::string ver_leaf = ver_dir.substr(base_dir.size() + 1);
-                if (gcc_crt_dir.empty() || ver_leaf > best_ver) {
+                if (ver_leaf > best_ver) {
                     best_ver = ver_leaf;
                     gcc_crt_dir = ver_dir;
                 }
             }
         }
-        if (!gcc_crt_dir.empty()) break;
     }
 
     if (!gcc_crt_dir.empty()) {
