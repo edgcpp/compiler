@@ -70,7 +70,7 @@ enum class edg_toolchain_flavor_t : uint8_t {
 typedef edg_be_driver_error_t (*edg_be_path_exists_fn_t)(
     const char* path,
     void* user_data,
-    bool* out_exists) noexcept;
+    bool* out_exists) EDG_BE_NOEXCEPT;
 
 /**
  * @struct edg_be_sdk_probe_env_t

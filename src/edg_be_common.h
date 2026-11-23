@@ -35,10 +35,10 @@
 /**
  * @def EDG_BE_NODISCARD
  * @brief Marks an error type or function return value as mandatory to inspect.
- * @details Expands to `[[nodiscard]]` in C++17+, `__attribute__((warn_unused_result))`
- * on GCC/Clang C compilers, and `_Check_return_` on MSVC C compilers.
+ * @details Expands to `[[nodiscard]]` in C++17+ (including MSVC via `_MSVC_LANG`),
+ * `__attribute__((warn_unused_result))` on GCC/Clang C, and `_Check_return_` on MSVC C.
  */
-#if defined(__cplusplus) && __cplusplus >= 201703L
+#if (defined(__cplusplus) && __cplusplus >= 201703L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
 #define EDG_BE_NODISCARD [[nodiscard]]
 #elif defined(__GNUC__) || defined(__clang__)
 #define EDG_BE_NODISCARD __attribute__((warn_unused_result))
@@ -51,9 +51,10 @@
 /**
  * @def EDG_BE_NOEXCEPT
  * @brief Marks a function declaration or definition as non-throwing.
- * @details Expands to `noexcept` when compiled as C++11 or later, and empty in C.
+ * @details Expands to `noexcept` when compiled as C++11 or later (checking both
+ * `__cplusplus` and `_MSVC_LANG` for MSVC without `/Zc:__cplusplus`), and empty in C.
  */
-#if defined(__cplusplus) && __cplusplus >= 201103L
+#if (defined(__cplusplus) && __cplusplus >= 201103L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 201103L)
 #define EDG_BE_NOEXCEPT noexcept
 #else
 #define EDG_BE_NOEXCEPT

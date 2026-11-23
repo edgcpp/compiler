@@ -289,6 +289,10 @@ jobs:
           pkg_name="${{ matrix.backend.flavor }}-${ver}-${{ matrix.platform.os_name }}-${{ matrix.platform.arch }}"
           mkdir -p "dist/${pkg_name}/bin"
           cp -r build/release/bin/* "dist/${pkg_name}/bin/"
+          if [ -f build/release/lib/libedg_gcc_eh_rt.a ]; then
+            mkdir -p "dist/${pkg_name}/lib"
+            cp build/release/lib/libedg_gcc_eh_rt.a "dist/${pkg_name}/lib/"
+          fi
           cp -r include_c++ include_c99 LICENSE.txt README.md "dist/${pkg_name}/"
           mkdir -p artifacts
           if [ "${{ matrix.platform.archive_ext }}" = "zip" ]; then

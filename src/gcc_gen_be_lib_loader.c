@@ -39,6 +39,7 @@ void *p_gcc_jit_context_acquire = NULL;
 void *p_gcc_jit_context_release = NULL;
 void *p_gcc_jit_context_set_int_option = NULL;
 void *p_gcc_jit_context_set_bool_option = NULL;
+void *p_gcc_jit_context_set_bool_allow_unreachable_blocks = NULL;
 void *p_gcc_jit_context_set_str_option = NULL;
 void *p_gcc_jit_context_add_command_line_option = NULL;
 void *p_gcc_jit_context_add_driver_option = NULL;
@@ -47,6 +48,7 @@ void *p_gcc_jit_type_get_pointer = NULL;
 void *p_gcc_jit_type_get_const = NULL;
 void *p_gcc_jit_type_get_volatile = NULL;
 void *p_gcc_jit_type_get_size = NULL;
+void *p_gcc_jit_type_is_integral = NULL;
 void *p_gcc_jit_type_is_pointer = NULL;
 void *p_gcc_jit_type_is_struct = NULL;
 void *p_gcc_jit_type_unqualified = NULL;
@@ -250,6 +252,7 @@ gcc_gen_be_error_t load_libgccjit_windows(void) GCC_GEN_BE_NOEXCEPT {
   LOAD_SYM(gcc_jit_context_release)
   LOAD_SYM(gcc_jit_context_set_int_option)
   LOAD_SYM(gcc_jit_context_set_bool_option)
+  LOAD_SYM(gcc_jit_context_set_bool_allow_unreachable_blocks)
   LOAD_SYM(gcc_jit_context_set_str_option)
   LOAD_SYM(gcc_jit_context_add_command_line_option)
   LOAD_SYM(gcc_jit_context_add_driver_option)
@@ -258,6 +261,7 @@ gcc_gen_be_error_t load_libgccjit_windows(void) GCC_GEN_BE_NOEXCEPT {
   LOAD_SYM(gcc_jit_type_get_const)
   LOAD_SYM(gcc_jit_type_get_volatile)
   LOAD_SYM(gcc_jit_type_get_size)
+  LOAD_SYM(gcc_jit_type_is_integral)
   LOAD_SYM(gcc_jit_type_is_pointer)
   LOAD_SYM(gcc_jit_type_is_struct)
   LOAD_SYM(gcc_jit_type_unqualified)

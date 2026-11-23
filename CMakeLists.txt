@@ -214,15 +214,28 @@ if(BUILD_TESTING AND EDG_ENABLE_GCC_BACKEND)
   add_subdirectory(tests/gcc_be)
 endif()
 
-if(EDG_ENABLE_GCC_BACKEND AND NOT TARGET gcc_be_eh_rt)
+if(EDG_ENABLE_GCC_BACKEND AND NOT WIN32 AND NOT TARGET gcc_be_eh_rt)
+  enable_language(C CXX)
   add_library(gcc_be_eh_rt STATIC "${CMAKE_SOURCE_DIR}/lib_src/gcc_be_eh_rt.c")
   set_target_properties(gcc_be_eh_rt PROPERTIES
     OUTPUT_NAME "edg_gcc_eh_rt"
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    C_STANDARD 11
-    C_STANDARD_REQUIRED ON
   )
-  target_include_directories(gcc_be_eh_rt PUBLIC "${CMAKE_SOURCE_DIR}/lib_src")
+  target_include_directories(gcc_be_eh_rt PUBLIC
+    "${CMAKE_SOURCE_DIR}/lib_src"
+    "${CMAKE_SOURCE_DIR}/src"
+  )
+  target_compile_definitions(gcc_be_eh_rt PRIVATE BACK_END_IS_GCC_GEN_BE=1)
+  target_compile_options(gcc_be_eh_rt PRIVATE
+    "-x" "c++"
+    "-std=c++17"
+    "-fno-exceptions"
+    "-fno-rtti"
+    "-funwind-tables"
+    "-fasynchronous-unwind-tables"
+    "-Wunused-result"
+    "-Werror=unused-result"
+  )
 endif()
 
 if(EDG_ENABLE_GCC_BACKEND AND TARGET cpfe AND TARGET gcc_be_eh_rt)

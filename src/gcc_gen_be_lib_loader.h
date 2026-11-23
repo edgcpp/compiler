@@ -50,6 +50,8 @@ extern void *p_gcc_jit_context_set_int_option;
 #define gcc_jit_context_set_int_option(...) ((__typeof__(gcc_jit_context_set_int_option) *)p_gcc_jit_context_set_int_option)(__VA_ARGS__)
 extern void *p_gcc_jit_context_set_bool_option;
 #define gcc_jit_context_set_bool_option(...) ((__typeof__(gcc_jit_context_set_bool_option) *)p_gcc_jit_context_set_bool_option)(__VA_ARGS__)
+extern void *p_gcc_jit_context_set_bool_allow_unreachable_blocks;
+#define gcc_jit_context_set_bool_allow_unreachable_blocks(...) ((__typeof__(gcc_jit_context_set_bool_allow_unreachable_blocks) *)p_gcc_jit_context_set_bool_allow_unreachable_blocks)(__VA_ARGS__)
 extern void *p_gcc_jit_context_set_str_option;
 #define gcc_jit_context_set_str_option(...) ((__typeof__(gcc_jit_context_set_str_option) *)p_gcc_jit_context_set_str_option)(__VA_ARGS__)
 extern void *p_gcc_jit_context_add_command_line_option;
@@ -66,6 +68,8 @@ extern void *p_gcc_jit_type_get_volatile;
 #define gcc_jit_type_get_volatile(...) ((__typeof__(gcc_jit_type_get_volatile) *)p_gcc_jit_type_get_volatile)(__VA_ARGS__)
 extern void *p_gcc_jit_type_get_size;
 #define gcc_jit_type_get_size(...) ((__typeof__(gcc_jit_type_get_size) *)p_gcc_jit_type_get_size)(__VA_ARGS__)
+extern void *p_gcc_jit_type_is_integral;
+#define gcc_jit_type_is_integral(...) ((__typeof__(gcc_jit_type_is_integral) *)p_gcc_jit_type_is_integral)(__VA_ARGS__)
 extern void *p_gcc_jit_type_is_pointer;
 #define gcc_jit_type_is_pointer(...) ((__typeof__(gcc_jit_type_is_pointer) *)p_gcc_jit_type_is_pointer)(__VA_ARGS__)
 extern void *p_gcc_jit_type_is_struct;

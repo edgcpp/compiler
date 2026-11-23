@@ -75,12 +75,73 @@ static edg_be_driver_error_t mock_path_exists_cb(
 }
 
 /**
+ * @brief Verifies C++17 `noexcept` function-type and callback-pointer contracts across headers.
+ * @details Asserts at compile time that every `EDG_BE_NOEXCEPT` declaration in `edg_be_common.h`,
+ * `edg_be_sdk.h`, and `edg_be_driver.h` carries a `noexcept` exception specification (catching
+ * compilers such as MSVC without `/Zc:__cplusplus` where `__cplusplus` defaults to `199711L`),
+ * and verifies runtime invocation of `edg_be_host_path_exists` through `edg_be_path_exists_fn_t`.
+ * @return `edg_be_driver_error_t::ok` on success, or percolated `edg_be_driver_error_t` on failure.
+ */
+static edg_be_driver_error_t test_noexcept_function_type_contracts(void) noexcept
+{
+  static_assert(
+      noexcept(edg_be_driver_error_to_string(edg_be_driver_error_t::ok, nullptr)),
+      "edg_be_driver_error_to_string must be noexcept");
+  static_assert(
+      noexcept(edg_be_invocation_options_init(nullptr)),
+      "edg_be_invocation_options_init must be noexcept");
+  static_assert(
+      noexcept(edg_be_host_path_exists(nullptr, nullptr, nullptr)),
+      "edg_be_host_path_exists must be noexcept");
+  static_assert(
+      noexcept(edg_be_sdk_probe_env_init(nullptr)),
+      "edg_be_sdk_probe_env_init must be noexcept");
+  static_assert(
+      noexcept(edg_be_sdk_discover(nullptr, nullptr)),
+      "edg_be_sdk_discover must be noexcept");
+  static_assert(
+      noexcept(edg_be_translated_command_init(nullptr)),
+      "edg_be_translated_command_init must be noexcept");
+  static_assert(
+      noexcept(edg_be_expand_response_files(0, nullptr, nullptr)),
+      "edg_be_expand_response_files must be noexcept");
+  static_assert(
+      noexcept(edg_be_translate_command_line(0, nullptr, nullptr, nullptr)),
+      "edg_be_translate_command_line must be noexcept");
+  static_assert(
+      noexcept(edg_be_translate_command_line_bounded(0, nullptr, nullptr, 0U, 0U, 0U, nullptr)),
+      "edg_be_translate_command_line_bounded must be noexcept");
+  static_assert(
+      noexcept(edg_be_execute_driver_query(nullptr, nullptr, nullptr)),
+      "edg_be_execute_driver_query must be noexcept");
+  static_assert(
+      noexcept(edg_be_derive_cwd_object_name(nullptr, false, nullptr, 0U)),
+      "edg_be_derive_cwd_object_name must be noexcept");
+  static_assert(
+      noexcept(edg_be_format_depfile_buffer(nullptr, nullptr, nullptr, 0U, nullptr, 0U, nullptr)),
+      "edg_be_format_depfile_buffer must be noexcept");
+  static_assert(
+      noexcept(edg_be_write_depfile_stream(nullptr, nullptr, nullptr, 0U, nullptr)),
+      "edg_be_write_depfile_stream must be noexcept");
+  static_assert(
+      noexcept(edg_be_write_depfile(nullptr, nullptr, nullptr, 0U)),
+      "edg_be_write_depfile must be noexcept");
+
+  const edg_be_path_exists_fn_t host_probe_fn = &edg_be_host_path_exists;
+  bool exists = true;
+  EDG_BE_DRIVER_CHECK(host_probe_fn("", nullptr, &exists));
+  TEST_ASSERT(!exists);
+  return edg_be_driver_error_t::ok;
+}
+
+/**
  * @brief Verifies `edg_be_driver_error_to_string` and initialization helpers across all branches.
  * @details Checks all 17 defined enumerators, unknown enumerator fallback, and null-pointer guards.
  * @return `edg_be_driver_error_t::ok` on success.
  */
 static edg_be_driver_error_t test_error_strings_and_inits(void) noexcept
 {
+  EDG_BE_DRIVER_CHECK(test_noexcept_function_type_contracts());
   TEST_ASSERT(edg_be_driver_error_to_string(edg_be_driver_error_t::ok, nullptr) ==
               edg_be_driver_error_t::invalid_argument);
   for (int32_t code = 0; code <= 17; ++code) {

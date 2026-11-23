@@ -39,7 +39,7 @@ extern "C" {
  * Applies the `warn_unused_result` attribute to ensure that functions returning
  * an error code are properly checked by the caller.
  */
-#if defined(__cplusplus) && __cplusplus >= 201703L
+#if (defined(__cplusplus) && __cplusplus >= 201703L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
 #define GCC_GEN_BE_NODISCARD [[nodiscard]]
 #elif defined(__GNUC__) || defined(__clang__)
 #define GCC_GEN_BE_NODISCARD __attribute__((warn_unused_result))
@@ -50,7 +50,7 @@ extern "C" {
 #endif
 
 /** @brief Macro to mark GCC backend functions as non-throwing in C++11+. */
-#if defined(__cplusplus) && __cplusplus >= 201103L
+#if (defined(__cplusplus) && __cplusplus >= 201103L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 201103L)
 #define GCC_GEN_BE_NOEXCEPT noexcept
 #else
 /** @brief Macro to mark GCC backend functions as non-throwing in C / C++98. */
@@ -64,7 +64,7 @@ extern "C" {
  * @details Decorated with GCC_GEN_BE_NODISCARD so that any function returning
  * gcc_gen_be_error_t automatically enforces non-discardable return values.
  */
-#if defined(__cplusplus) && __cplusplus >= 201703L
+#if (defined(__cplusplus) && __cplusplus >= 201703L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
 enum GCC_GEN_BE_NODISCARD gcc_gen_be_error {
 #else
 enum gcc_gen_be_error {

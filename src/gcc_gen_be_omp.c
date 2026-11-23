@@ -22,6 +22,7 @@
 #include "gcc_gen_be_expr.h"
 #include "gcc_gen_be_stmt.h"
 #include "gcc_gen_be_atomic.h"
+#include "gcc_gen_be_lib_loader.h"
 #include <libgccjit.h>
 #include <ctype.h>
 #include <limits.h>

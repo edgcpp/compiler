@@ -1981,6 +1981,18 @@ gcc_gen_be_error_t gcc_gen_be_lower_statement(a_statement_ptr stmt, struct gcc_j
                           GCC_GEN_BE_CHECK(gcc_gen_be_get_current_block(&cblock));
                           gcc_jit_type *sz_t = gcc_jit_context_get_type(ctx, GCC_JIT_TYPE_SIZE_T);
                           gcc_jit_lvalue *dim_lv = NULL;
+#if LOWER_VARIABLE_LENGTH_ARRAYS
+                          if (dim->total_number_of_elements != NULL) {
+                              void *cached_dv = NULL;
+                              GCC_GEN_BE_CHECK(cache_lookup(GCC_GEN_BE_CACHE_VAR, dim->total_number_of_elements, &cached_dv));
+                              dim_lv = (gcc_jit_lvalue *)cached_dv;
+                              if (!dim_lv && func) {
+                                  GCC_GEN_BE_CHECK(gcc_gen_be_lower_local_variable_decl(func, dim->total_number_of_elements, &dim_lv));
+                              }
+                          } else if (func) {
+                              dim_lv = gcc_jit_function_new_local(func, loc, sz_t, "__vla_dim");
+                          }
+#else
                           if (dim->dimension_variable != NULL) {
                               void *cached_dv = NULL;
                               GCC_GEN_BE_CHECK(cache_lookup(GCC_GEN_BE_CACHE_VAR, dim->dimension_variable, &cached_dv));
@@ -1991,6 +2003,7 @@ gcc_gen_be_error_t gcc_gen_be_lower_statement(a_statement_ptr stmt, struct gcc_j
                           } else if (func) {
                               dim_lv = gcc_jit_function_new_local(func, loc, sz_t, "__vla_dim");
                           }
+#endif
                           if (dim_lv && cblock) {
                               gcc_jit_type *lvt = gcc_jit_rvalue_get_type(gcc_jit_lvalue_as_rvalue(dim_lv));
                               gcc_jit_rvalue *cast_rv = (gcc_jit_rvalue_get_type(dim_rv) == lvt)
@@ -2411,6 +2424,24 @@ gcc_gen_be_error_t gcc_gen_be_lower_vla_decl(struct gcc_jit_function *func, a_va
                 if (dim->type == curr_type) break;
                 dim = dim->next;
             }
+#if LOWER_VARIABLE_LENGTH_ARRAYS
+            while (dim && !dim->total_number_of_elements && dim->original_dimension) {
+                dim = dim->original_dimension;
+            }
+            if (dim && dim->total_number_of_elements) {
+                gcc_jit_lvalue *dim_lval = NULL;
+                void *cached = NULL;
+                GCC_GEN_BE_CHECK(cache_lookup(GCC_GEN_BE_CACHE_VAR, dim->total_number_of_elements, &cached));
+                if (cached) dim_lval = (gcc_jit_lvalue *)cached;
+                else GCC_GEN_BE_CHECK(gcc_gen_be_lower_local_variable_decl(func, dim->total_number_of_elements, &dim_lval));
+
+                if (dim_lval) {
+                    gcc_jit_rvalue *dim_val = gcc_jit_lvalue_as_rvalue(dim_lval);
+                    dim_val = gcc_jit_context_new_cast(ctx, loc, dim_val, size_type);
+                    total_elements = gcc_jit_context_new_binary_op(ctx, loc, GCC_JIT_BINARY_OP_MULT, size_type, total_elements, dim_val);
+                }
+            }
+#else
             while (dim && !dim->dimension_variable && dim->original_dimension) {
                 dim = dim->original_dimension;
             }
@@ -2427,6 +2458,7 @@ gcc_gen_be_error_t gcc_gen_be_lower_vla_decl(struct gcc_jit_function *func, a_va
                     total_elements = gcc_jit_context_new_binary_op(ctx, loc, GCC_JIT_BINARY_OP_MULT, size_type, total_elements, dim_val);
                 }
             }
+#endif
         } else if (curr_type->variant.array.variant.number_of_elements > 0) {
             gcc_jit_rvalue *dim_val = gcc_jit_context_new_rvalue_from_long(ctx, size_type, (long)curr_type->variant.array.variant.number_of_elements);
             total_elements = gcc_jit_context_new_binary_op(ctx, loc, GCC_JIT_BINARY_OP_MULT, size_type, total_elements, dim_val);

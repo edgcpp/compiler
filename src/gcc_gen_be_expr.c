@@ -1047,6 +1047,23 @@ GCC_GEN_BE_NODISCARD static gcc_gen_be_error_t scale_vla_subarray_index(
         } else if (cur->variant.array.has_assoc_vla_dimension && innermost_function_scope) {
             a_vla_dimension_ptr dim = innermost_function_scope->vla_dimensions;
             while (dim && dim->type != cur) dim = dim->next;
+#if LOWER_VARIABLE_LENGTH_ARRAYS
+            while (dim && !dim->total_number_of_elements && dim->original_dimension) {
+                dim = dim->original_dimension;
+            }
+            if (dim && dim->total_number_of_elements) {
+                void *cached_d = NULL;
+                GCC_GEN_BE_CHECK(cache_lookup(GCC_GEN_BE_CACHE_VAR, dim->total_number_of_elements, &cached_d));
+                gcc_jit_lvalue *dim_lv = (gcc_jit_lvalue *)cached_d;
+                if (!dim_lv && cur_fn) {
+                    GCC_GEN_BE_CHECK(gcc_gen_be_lower_local_variable_decl(cur_fn, dim->total_number_of_elements, &dim_lv));
+                }
+                if (dim_lv) {
+                    gcc_jit_rvalue *dv = gcc_jit_context_new_cast(ctx, loc, gcc_jit_lvalue_as_rvalue(dim_lv), idx_t);
+                    scaled = gcc_jit_context_new_binary_op(ctx, loc, GCC_JIT_BINARY_OP_MULT, idx_t, scaled, dv);
+                }
+            }
+#else
             while (dim && !dim->dimension_variable && dim->original_dimension) {
                 dim = dim->original_dimension;
             }
@@ -1062,6 +1079,7 @@ GCC_GEN_BE_NODISCARD static gcc_gen_be_error_t scale_vla_subarray_index(
                     scaled = gcc_jit_context_new_binary_op(ctx, loc, GCC_JIT_BINARY_OP_MULT, idx_t, scaled, dv);
                 }
             }
+#endif
         } else if (cur->variant.array.variant.number_of_elements > 0) {
             gcc_jit_rvalue *dv = gcc_jit_context_new_rvalue_from_long(
                 ctx, idx_t, (long)cur->variant.array.variant.number_of_elements);
@@ -6231,6 +6249,23 @@ gcc_gen_be_error_t gcc_gen_be_lower_expr_rvalue(an_expr_node_ptr expr, gcc_jit_r
                       if (cur->variant.array.has_assoc_vla_dimension && innermost_function_scope) {
                           a_vla_dimension_ptr dim = innermost_function_scope->vla_dimensions;
                           while (dim && dim->type != cur) dim = dim->next;
+#if LOWER_VARIABLE_LENGTH_ARRAYS
+                          while (dim && !dim->total_number_of_elements && dim->original_dimension) {
+                              dim = dim->original_dimension;
+                          }
+                          if (dim && dim->total_number_of_elements) {
+                              void *cached_d = NULL;
+                              GCC_GEN_BE_CHECK(cache_lookup(GCC_GEN_BE_CACHE_VAR, dim->total_number_of_elements, &cached_d));
+                              gcc_jit_lvalue *dim_lv = (gcc_jit_lvalue *)cached_d;
+                              if (!dim_lv && cur_fn) {
+                                  GCC_GEN_BE_CHECK(gcc_gen_be_lower_local_variable_decl(cur_fn, dim->total_number_of_elements, &dim_lv));
+                              }
+                              if (dim_lv) {
+                                  gcc_jit_rvalue *dv = gcc_jit_context_new_cast(ctx, loc, gcc_jit_lvalue_as_rvalue(dim_lv), res_t);
+                                  total_elems = gcc_jit_context_new_binary_op(ctx, loc, GCC_JIT_BINARY_OP_MULT, res_t, total_elems, dv);
+                              }
+                          }
+#else
                           while (dim && !dim->dimension_variable && dim->original_dimension) {
                               dim = dim->original_dimension;
                           }
@@ -6246,6 +6281,7 @@ gcc_gen_be_error_t gcc_gen_be_lower_expr_rvalue(an_expr_node_ptr expr, gcc_jit_r
                                   total_elems = gcc_jit_context_new_binary_op(ctx, loc, GCC_JIT_BINARY_OP_MULT, res_t, total_elems, dv);
                               }
                           }
+#endif
                       } else {
                           gcc_jit_rvalue *dv = gcc_jit_context_new_rvalue_from_long(
                               ctx, res_t, (long)cur->variant.array.variant.number_of_elements);

@@ -1306,7 +1306,11 @@ gcc_gen_be_error_t gcc_gen_be_emit_artifact(gcc_jit_context *ctx, const char *ou
     remove(output_path);
     gcc_jit_context_compile_to_file(ctx, kind, output_path);
     const char *first_err = gcc_jit_context_get_first_error(ctx);
+#if defined(_WIN32)
+    int out_missing = (_access(output_path, 0) != 0);
+#else
     int out_missing = (access(output_path, F_OK) != 0);
+#endif
     int has_jit_err = (first_err != NULL);
     if ((has_jit_err | out_missing) != 0) {
         return GCC_GEN_BE_ERROR_COMPILATION_FAILED;
