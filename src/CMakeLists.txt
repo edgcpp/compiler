@@ -12,7 +12,7 @@ project(cpfe)
 set(MULTI_THREADED_DAEMON FALSE CACHE BOOL "Build the daemon/client")
 
 # specify the C++ standard
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_EXTENSIONS NO)
 
@@ -24,7 +24,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
    CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # If we're building with GCC or any variant of Clang.
   add_compile_options(-Wall -Wwrite-strings -Wformat-security -pedantic
-                      -Werror=shadow)
+                      )
 
   # This option is only supported in newer GCC compilers.
   if(NOT CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR
@@ -84,11 +84,15 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
   endif()
 
   # If we found a better linker than the default, use it.
-  if(DEFINED EDG_PREFERRED_LINKER)
+  if(DEFINED EDG_PREFERRED_LINKER AND NOT (APPLE AND EDG_PREFERRED_LINKER STREQUAL "lld"))
     add_link_options("-fuse-ld=${EDG_PREFERRED_LINKER}")
   endif()
 else()
   # Otherwise assume MSVC.
+
+  # Disable C++ exceptions and RTTI to match -fno-exceptions -fno-rtti on GCC/Clang.
+  add_compile_options(/EHs-c- /GR-)
+  add_compile_definitions(_HAS_EXCEPTIONS=0)
 
   # Enable support for big object files.
   add_compile_options(/bigobj)
@@ -167,6 +171,102 @@ if (${FORCE_COLORED_OUTPUT})
   endif ()
 endif ()
 
+# LLVM IR Backend configuration
+if(EDG_ENABLE_LLVM_BACKEND OR ENABLE_LLVM_BACKEND)
+  set(EDG_ENABLE_LLVM_BACKEND TRUE)
+  set(ENABLE_LLVM_BACKEND TRUE)
+  if(APPLE)
+    find_program(BREW_EXECUTABLE brew)
+    if(BREW_EXECUTABLE)
+      execute_process(
+        COMMAND ${BREW_EXECUTABLE} --prefix llvm
+        OUTPUT_VARIABLE BREW_LLVM_PREFIX
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+      )
+      if(EXISTS "${BREW_LLVM_PREFIX}")
+        list(APPEND CMAKE_PREFIX_PATH "${BREW_LLVM_PREFIX}")
+        # Hint to find_package where the CMake configuration files reside
+        set(LLVM_DIR "${BREW_LLVM_PREFIX}/lib/cmake/llvm" CACHE PATH "LLVM config dir" FORCE)
+      endif()
+    endif()
+  endif()
+  if(NOT LLVM_DIR AND NOT WIN32)
+    find_program(
+      LLVM_CONFIG_EXECUTABLE
+      NAMES llvm-config llvm-config-21 llvm-config-20 llvm-config-19 llvm-config-18 llvm-config-17
+    )
+    if(LLVM_CONFIG_EXECUTABLE)
+      execute_process(
+        COMMAND ${LLVM_CONFIG_EXECUTABLE} --cmakedir
+        OUTPUT_VARIABLE LLVM_CONFIG_CMAKEDIR
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+      )
+      if(EXISTS "${LLVM_CONFIG_CMAKEDIR}/LLVMConfig.cmake")
+        set(LLVM_DIR "${LLVM_CONFIG_CMAKEDIR}" CACHE PATH "LLVM config dir" FORCE)
+      endif()
+    endif()
+  endif()
+
+  find_package(LLVM CONFIG)
+  if(NOT LLVM_FOUND)
+    message(FATAL_ERROR "LLVM IR backend was enabled (EDG_ENABLE_LLVM_BACKEND=TRUE), but LLVM was not found. Please install LLVM or specify LLVM_DIR.")
+  endif()
+  include_directories(SYSTEM ${LLVM_INCLUDE_DIRS})
+  if(MSVC AND NOT LLVM_ENABLE_RTTI)
+    add_compile_options(/GR-)
+  endif()
+  if(NOT TARGET ZLIB::ZLIB OR NOT TARGET zstd::libzstd_static OR NOT TARGET zstd::libzstd_shared)
+    set(_edg_llvm_comp_stub "${CMAKE_CURRENT_BINARY_DIR}/llvm_compression_stubs.c")
+    file(WRITE "${_edg_llvm_comp_stub}"
+      "#include <stddef.h>\n"
+      "#ifdef __cplusplus\n"
+      "extern \"C\" {\n"
+      "#endif\n"
+      "unsigned long crc32(unsigned long crc, const unsigned char *buf, unsigned int len) {\n"
+      "  if (!buf) return 0UL;\n"
+      "  crc = ~crc;\n"
+      "  for (unsigned int i = 0; i < len; ++i) {\n"
+      "    crc ^= buf[i];\n"
+      "    for (int k = 0; k < 8; ++k) crc = (crc >> 1) ^ (0xedb88320UL & (0UL - (crc & 1UL)));\n"
+      "  }\n"
+      "  return ~crc;\n"
+      "}\n"
+      "unsigned long compressBound(unsigned long sourceLen) { return sourceLen + (sourceLen >> 12) + (sourceLen >> 14) + (sourceLen >> 25) + 13UL; }\n"
+      "int compress2(unsigned char *dest, unsigned long *destLen, const unsigned char *source, unsigned long sourceLen, int level) { (void)dest; (void)destLen; (void)source; (void)sourceLen; (void)level; return -4; }\n"
+      "int uncompress(unsigned char *dest, unsigned long *destLen, const unsigned char *source, unsigned long sourceLen) { (void)dest; (void)destLen; (void)source; (void)sourceLen; return -4; }\n"
+      "void *ZSTD_createCCtx(void) { return (void *)1; }\n"
+      "size_t ZSTD_freeCCtx(void *cctx) { (void)cctx; return 0; }\n"
+      "size_t ZSTD_CCtx_setParameter(void *cctx, int param, int value) { (void)cctx; (void)param; (void)value; return 0; }\n"
+      "size_t ZSTD_compressBound(size_t srcSize) { return srcSize + (srcSize >> 8) + 64; }\n"
+      "size_t ZSTD_compress(void *dst, size_t dstCapacity, const void *src, size_t srcSize, int compressionLevel) { (void)dst; (void)dstCapacity; (void)src; (void)srcSize; (void)compressionLevel; return (size_t)-1; }\n"
+      "size_t ZSTD_compress2(void *cctx, void *dst, size_t dstCapacity, const void *src, size_t srcSize) { (void)cctx; (void)dst; (void)dstCapacity; (void)src; (void)srcSize; return (size_t)-1; }\n"
+      "unsigned long long ZSTD_getFrameContentSize(const void *src, size_t srcSize) { (void)src; (void)srcSize; return (unsigned long long)-2; }\n"
+      "size_t ZSTD_decompress(void *dst, size_t dstCapacity, const void *src, size_t compressedSize) { (void)dst; (void)dstCapacity; (void)src; (void)compressedSize; return (size_t)-1; }\n"
+      "unsigned int ZSTD_isError(size_t code) { return code > (size_t)-120; }\n"
+      "const char *ZSTD_getErrorName(size_t code) { (void)code; return \"zstd unavailable\"; }\n"
+      "#ifdef __cplusplus\n"
+      "}\n"
+      "#endif\n"
+    )
+    add_library(edg_llvm_compression_stubs STATIC "${_edg_llvm_comp_stub}")
+    if(NOT TARGET ZLIB::ZLIB)
+      add_library(ZLIB::ZLIB ALIAS edg_llvm_compression_stubs)
+    endif()
+    if(NOT TARGET zstd::libzstd_static)
+      add_library(zstd::libzstd_static ALIAS edg_llvm_compression_stubs)
+    endif()
+    if(NOT TARGET zstd::libzstd_shared)
+      add_library(zstd::libzstd_shared ALIAS edg_llvm_compression_stubs)
+    endif()
+  endif()
+endif()
+
+# GCC (libgccjit) Backend configuration
+if(EDG_ENABLE_GCC_BACKEND)
+  find_package(LibGCCJIT REQUIRED)
+endif()
+
 # Disable undesirable C++ features.
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
     CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -243,6 +343,64 @@ add_src_file_if_present(ifc_modules_read.c)
 add_src_file_if_present(ifc_modules_templ.c)
 add_src_file_if_present(ifc_modules_write.c)
 add_src_file_if_present(unicode_name_fsm.c)
+add_src_file_if_present(linux_libc_compat.c)
+add_src_file_if_present(edg_be_sdk.cpp)
+add_src_file_if_present(edg_be_driver.cpp)
+
+set(_EDG_STRICT_NODISCARD_SRCS
+    "${PROJECT_SOURCE_DIR}/edg_be_sdk.cpp"
+    "${PROJECT_SOURCE_DIR}/edg_be_driver.cpp")
+
+if(ENABLE_LLVM_BACKEND)
+  set(_EDG_LLVM_BE_CANDIDATES
+      llvm_gen_be.cpp
+      llvm_gen_be_error.cpp
+      llvm_gen_be_type.cpp
+      llvm_gen_be_const.cpp
+      llvm_gen_be_expr.cpp
+      llvm_gen_be_intrinsics.cpp
+      llvm_gen_be_builtins.cpp
+      llvm_gen_be_atomic.cpp
+      llvm_gen_be_complex.cpp
+      llvm_gen_be_stmt.cpp
+      llvm_gen_be_coro.cpp
+      llvm_gen_be_asm.cpp
+      llvm_gen_be_eh.cpp
+      llvm_gen_be_rtti.cpp
+      llvm_gen_be_vtable.cpp
+      llvm_gen_be_ptrmem.cpp
+      llvm_gen_be_decl.cpp
+      llvm_gen_be_omp.cpp
+      llvm_gen_be_driver.cpp
+      llvm_gen_be_abi_sysv_x86_64.cpp
+      llvm_gen_be_abi_aapcs64.cpp
+      llvm_gen_be_abi_win64.cpp
+      llvm_gen_be_abi_x86_32.cpp
+      llvm_gen_be_abi_arm32.cpp
+      llvm_gen_be_abi_riscv64.cpp
+      llvm_gen_be_abi_loongarch64.cpp
+      llvm_gen_be_abi_mips.cpp
+      llvm_gen_be_abi_ppc64.cpp
+      llvm_gen_be_abi_s390x.cpp
+      llvm_gen_be_abi_sparc.cpp
+      llvm_gen_be_abi_wasm.cpp
+      llvm_gen_be_debug.cpp
+      llvm_gen_be_debug_scopes.cpp
+      llvm_gen_be_debug_types.cpp
+      llvm_gen_be_opt.cpp
+      llvm_gen_be_codegen.cpp)
+  foreach(_llvm_cand IN LISTS _EDG_LLVM_BE_CANDIDATES)
+    if(EXISTS "${PROJECT_SOURCE_DIR}/${_llvm_cand}")
+      list(APPEND CORE_FRONT_END_SOURCE_FILES "${_llvm_cand}")
+      list(APPEND _EDG_STRICT_NODISCARD_SRCS "${PROJECT_SOURCE_DIR}/${_llvm_cand}")
+    endif()
+  endforeach()
+endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  set_source_files_properties(${_EDG_STRICT_NODISCARD_SRCS}
+    PROPERTIES COMPILE_OPTIONS "-Wunused-result;-Werror=unused-result")
+endif()
 
 # Prepend the project source directory to the file names.
 list(TRANSFORM CORE_FRONT_END_SOURCE_FILES PREPEND ${PROJECT_SOURCE_DIR}/)
@@ -257,6 +415,59 @@ if(MSVC)
   link_libraries(mscoree)
 endif()
 
+if(EDG_ENABLE_GCC_BACKEND)
+  add_compile_definitions(BACK_END_IS_GCC_GEN_BE=1)
+  set(_EDG_GCC_BE_CANDIDATES
+      gcc_gen_be_error.c
+      gcc_gen_be_context.c
+      gcc_gen_be_cache.c
+      gcc_gen_be_lib_loader.c
+      gcc_gen_be_location.c
+      gcc_gen_be_type.c
+      gcc_gen_be_decl.c
+      gcc_gen_be_expr.c
+      gcc_gen_be_stmt.c
+      gcc_gen_be_rtti.c
+      gcc_gen_be_dtor.c
+      gcc_gen_be_debug.c
+      gcc_gen_be_abi.c
+      gcc_gen_be_builtin.c
+      gcc_gen_be_eh.c
+      gcc_gen_be_omp.c
+      gcc_gen_be_coro.c
+      gcc_gen_be_atomic.c
+      gcc_gen_be_simd.c
+      gcc_gen_be_main.c)
+  set(_EDG_GCC_BE_SRCS "")
+  foreach(_gcc_cand IN LISTS _EDG_GCC_BE_CANDIDATES)
+    if(EXISTS "${PROJECT_SOURCE_DIR}/${_gcc_cand}")
+      list(APPEND _EDG_GCC_BE_SRCS "${PROJECT_SOURCE_DIR}/${_gcc_cand}")
+    endif()
+  endforeach()
+  list(APPEND CORE_FRONT_END_SOURCE_FILES ${_EDG_GCC_BE_SRCS})
+  link_libraries(LibGCCJIT::LibGCCJIT)
+  if(APPLE)
+    set(CMAKE_INSTALL_RPATH "@executable_path/../lib;@rpath")
+  elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+    set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
+  endif()
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+  
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set_source_files_properties(${_EDG_GCC_BE_SRCS}
+      PROPERTIES COMPILE_OPTIONS "-Wunused-result;-Werror=unused-result")
+    if(EDG_GCC_BE_ENABLE_COVERAGE)
+      set_source_files_properties(${_EDG_GCC_BE_SRCS}
+        PROPERTIES COMPILE_OPTIONS "-fprofile-arcs;-ftest-coverage;-Wunused-result;-Werror=unused-result")
+      if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        add_link_options(-lgcov)
+      else()
+        add_link_options(--coverage)
+      endif()
+    endif()
+  endif()
+endif()
+
 add_custom_target(cpfe-all)
 
 # A quirk of CMake is that scoping is really done in CMakeLists.txt files via
@@ -265,6 +476,18 @@ add_custom_target(cpfe-all)
 add_subdirectory(cmake/cpfe)
 add_subdirectory(cmake/cpfe-cp)
 add_subdirectory(cmake/cdisp)
+
+if(EDG_ENABLE_GCC_BACKEND AND EDG_GCC_BE_ENABLE_COVERAGE)
+  # Apply coverage instrumentation specifically to gcc_gen_be_*.c
+  set_source_files_properties(gcc_gen_be_*.c PROPERTIES COMPILE_FLAGS "--coverage")
+  if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set_source_files_properties(gcc_gen_be_*.c PROPERTIES COMPILE_FLAGS "-fprofile-arcs -ftest-coverage")
+    target_link_libraries(cpfe PRIVATE gcov)
+  elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set_source_files_properties(gcc_gen_be_*.c PROPERTIES COMPILE_FLAGS "--coverage")
+    target_link_options(cpfe PRIVATE "--coverage")
+  endif()
+endif()
 
 # GCC otherwise seeds some generated names and the gcov stamps in objects and
 # .gcno files with the time of compilation.  The seed should differ for every

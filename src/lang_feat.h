@@ -189,13 +189,13 @@ by default.  This is the default value for the global flag exceptions_enabled,
 which can be modified by the "-x" command line option.
 */
 #ifndef DEFAULT_EXCEPTIONS_ENABLED
-/* If the C++-generating back end is being used, there is no cost to
-   enabling exceptions by default. */
-#ifdef BACK_END_IS_CP_GEN_BE
-#if BACK_END_IS_CP_GEN_BE
+/* If the C++-generating, LLVM IR-generating, or GCC-generating back end is
+   being used, there is no cost to enabling exceptions by default. */
+#if (defined(BACK_END_IS_CP_GEN_BE) && BACK_END_IS_CP_GEN_BE) || \
+    (defined(BACK_END_IS_LLVM_GEN_BE) && BACK_END_IS_LLVM_GEN_BE) || \
+    (defined(BACK_END_IS_GCC_GEN_BE) && BACK_END_IS_GCC_GEN_BE)
 #define DEFAULT_EXCEPTIONS_ENABLED TRUE
-#endif /* BACK_END_IS_CP_GEN_BE */
-#endif /* ifdef BACK_END_IS_CP_GEN_BE */
+#endif /* BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE */
 #ifndef DEFAULT_EXCEPTIONS_ENABLED
 #define DEFAULT_EXCEPTIONS_ENABLED FALSE
 #endif /* ifndef DEFAULT_EXCEPTIONS_ENABLED */

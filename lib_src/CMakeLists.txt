@@ -89,3 +89,41 @@ add_subdirectory(cmake/macos_arm64)
 add_subdirectory(cmake/macos_x86_64)
 add_subdirectory(cmake/win32)
 add_subdirectory(cmake/win64)
+
+if(EDG_ENABLE_GCC_BACKEND AND NOT TARGET gcc_be_eh_rt)
+  enable_language(C CXX)
+  add_library(gcc_be_eh_rt STATIC gcc_be_eh_rt.c)
+  set_target_properties(gcc_be_eh_rt PROPERTIES
+    OUTPUT_NAME "edg_gcc_eh_rt"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+  )
+  target_include_directories(gcc_be_eh_rt PUBLIC
+    "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_SOURCE_DIR}/src"
+  )
+  target_compile_definitions(gcc_be_eh_rt PRIVATE BACK_END_IS_GCC_GEN_BE=1)
+  target_compile_options(gcc_be_eh_rt PRIVATE
+    "-x" "c++"
+    "-std=c++17"
+    "-fno-exceptions"
+    "-fno-rtti"
+    "-funwind-tables"
+    "-fasynchronous-unwind-tables"
+    "-Wunused-result"
+    "-Werror=unused-result"
+  )
+  if(EDG_GCC_BE_ENABLE_COVERAGE)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+      include(CheckCXXCompilerFlag)
+      check_cxx_compiler_flag("-fprofile-update=atomic" _GCC_BE_RT_HAS_ATOMIC_PROF)
+      target_compile_options(gcc_be_eh_rt PRIVATE
+        "-O0" "-g" "-fprofile-instr-generate" "-fcoverage-mapping" "-fno-inline")
+      if(_GCC_BE_RT_HAS_ATOMIC_PROF)
+        target_compile_options(gcc_be_eh_rt PRIVATE "-fprofile-update=atomic")
+      endif()
+    else()
+      target_compile_options(gcc_be_eh_rt PRIVATE
+        "-O0" "-g" "--coverage" "-fprofile-arcs" "-ftest-coverage" "-fno-inline")
+    endif()
+  endif()
+endif()

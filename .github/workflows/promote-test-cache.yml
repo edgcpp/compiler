@@ -79,7 +79,7 @@ jobs:
         record: ${{ fromJSON(needs.find.outputs.records) }}
     steps:
       - name: Download ${{ matrix.record }}
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ${{ matrix.record }}
           path: .tmp/tested

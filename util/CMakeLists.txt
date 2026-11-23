@@ -9,7 +9,7 @@ cmake_minimum_required(VERSION 3.19)
 project(util)
 
 # If we found a better linker than the default, use it.
-if(DEFINED EDG_PREFERRED_LINKER)
+if(DEFINED EDG_PREFERRED_LINKER AND NOT (APPLE AND EDG_PREFERRED_LINKER STREQUAL "lld"))
   add_link_options("-fuse-ld=${EDG_PREFERRED_LINKER}")
 endif()
 

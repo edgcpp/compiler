@@ -445,6 +445,22 @@ location of such input or output.
      - | When using the C-generating back end or the C++-generating back end,
          this option specifies the file name to be used for the generated
          output.
+   * - | ``--gen_llvm_file_name`` *file-name*
+       |
+     - | When using the LLVM back end, this option specifies the file name to
+         be used for the generated LLVM IR text file (``.ll``).
+   * - | ``--gen_llvm_bc_file_name`` *file-name*
+       |
+     - | When using the LLVM back end, this option specifies the file name to
+         be used for the generated LLVM bitcode file (``.bc``).
+   * - | ``--gen_obj_file_name`` *file-name*
+       |
+     - | When using the LLVM back end, this option specifies the file name to
+         be used for the generated machine object file (``.o`` or ``.obj``).
+   * - | ``--gen_asm_file_name`` *file-name*
+       |
+     - | When using the LLVM back end, this option specifies the file name to
+         be used for the generated assembly file (``.s``).
    * - | ``--dependencies``
        | ``-M``
      - | Do preprocessing only.  Instead of the normal preprocessing output,

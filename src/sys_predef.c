@@ -1977,7 +1977,11 @@ instead of being mapped on an actual header file.
     /* Use type_underlying_va_list if it has been configured. */
     tp = type_underlying_va_list;
   } else {
-    if (target_is_arm_based() && !ms_compat) {
+    if (target_is_arm_based() && !ms_compat
+#if defined(__APPLE__) && defined(__aarch64__)
+        && FALSE
+#endif /* defined(__APPLE__) && defined(__aarch64__) */
+       ) {
       /* The ARM __builtin_va_list type is struct __va_list. */
       tp = make_va_list_tag_type();
     } else if (target_is_x86_based() && target_is_64_bits() && !ms_compat) {

@@ -46,7 +46,7 @@ env:
 jobs:
   client:
     name: Deploy client
-    if: github.ref == 'refs/heads/main'
+    if: github.repository == 'edgcpp/compiler' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: acknowledg
@@ -118,7 +118,7 @@ jobs:
 
   server:
     name: Deploy server
-    if: github.ref == 'refs/heads/main'
+    if: github.repository == 'edgcpp/compiler' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: acknowledg
@@ -129,7 +129,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@v10.3.0
+        uses: astral-sh/setup-uv@v10.3.3
 
       - name: Build server wheel
         id: build

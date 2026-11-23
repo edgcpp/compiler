@@ -97,8 +97,9 @@ BEGIN_EDG_NAMESPACE
 {									\
   int se_shift_bits = (int)(BITS_IN_AN_INTEGER_VALUE - (bits));         \
   a_signed_integer_value se_work;					\
-  se_work = *(value) << se_shift_bits;					\
-  *(value) = signed_shift_right(se_work, se_shift_bits);		\
+  se_work = (a_signed_integer_value)(*(value) << se_shift_bits);	\
+  *(value) = (an_integer_value)signed_shift_right(se_work,		\
+                                                  se_shift_bits);	\
 }
 
 

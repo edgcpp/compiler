@@ -265,23 +265,23 @@ static void store_host_fp_value(a_host_fp_value         temp,
 
 /* A union to map the float32_t SoftFloat type to "float". */
 typedef union softfloat32_t {
-  float32_t     soft;
-  float         hard;
+  edg_softfloat32_t soft;
+  float             hard;
 } softfloat32_t;
 
 /* A union to map the float64_t SoftFloat type to "double". */
 typedef union softfloat64_t {
-  float64_t     soft;
-  double        hard;
+  edg_softfloat64_t soft;
+  double            hard;
 } softfloat64_t;
 
 STATIC_THREAD float16_t
 		f16_zero;
 			/* The value 0.0F16. */
-STATIC_THREAD float32_t
+STATIC_THREAD edg_softfloat32_t
 		f32_zero;
 			/* The value 0.0F. */
-STATIC_THREAD float64_t
+STATIC_THREAD edg_softfloat64_t
 		f64_zero;
 			/* The value 0.0. */
 
@@ -871,7 +871,7 @@ underflow.  If the conversion can be done, return the result in "result".
       }  /* if */
 #if USE_LONG_DOUBLE_FOR_HOST_FP_VALUE
       (void)read_long_double((unsigned char *)&host_fp_flt_max, str_flt_max,
-                             len);
+                             (int)len);
 #else /* !USE_LONG_DOUBLE_FOR_HOST_FP_VALUE */
       (void)read_double((unsigned char *)&host_fp_flt_max, str_flt_max,
                         (int)len);
@@ -1164,9 +1164,10 @@ underflow.  If the conversion can be done, return the result in "result".
       }  /* if */
 #if USE_LONG_DOUBLE_FOR_HOST_FP_VALUE
       ret = read_long_double((unsigned char *)&host_fp_dbl_max, str_dbl_max,
-                             len);
+                             (int)len);
 #else /* !USE_LONG_DOUBLE_FOR_HOST_FP_VALUE */
-      ret = read_double((unsigned char *)&host_fp_dbl_max, str_dbl_max, len);
+      ret = read_double((unsigned char *)&host_fp_dbl_max, str_dbl_max,
+                        (int)len);
 #endif /* USE_LONG_DOUBLE_FOR_HOST_FP_VALUE */
       check_assertion_str2(ret == fp_ret_valid, "conv_host_fp_to_double:",
                            "error on conversion of DBL_MAX");

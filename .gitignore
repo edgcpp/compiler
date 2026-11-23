@@ -22,6 +22,8 @@ TAGS
 # Ignore some common archive formats that show up from time to time:
 *.tar
 *.tar.gz
+*.tgz
+*.gz
 *.zip
 
 # EDG-specific items to ignore:
@@ -31,6 +33,14 @@ TAGS
 *.int.c
 *.rt
 *.lck
+*.ll
+*.bc
+*.profraw
+*.profdata
+*.gcda
+*.gcno
+*.gcov
+coverage.info
 /dev-pref.json
 cfe
 src/cpfe
@@ -48,6 +58,16 @@ util/mk_errinfo
 bin
 !dev_tools/bin
 .last_make_targets
+
+# Python caches and coverage items to ignore:
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
 
 # CMake items to ignore
 CMakeFiles/
@@ -69,3 +89,4 @@ CLAUDE.md
 
 # macOS specific items to ignore:
 *.DS_Store
+*.dSYM/

@@ -506,14 +506,17 @@ class PrePushChecker:
     if not self.abort and first_new_commit is not None:
       self.check_changed_files(first_new_commit)
 
-    return 0 if (self.errors == 0 and not self.abort) else 1
+    print('Checking documentation coverage for LLVM Backend...')
+    mono_repo_dir = edgutil.find_mono_repo_or_exit()
+    doc_check_proc = subprocess.run(
+        [sys.executable, 'dev_tools/check_doc_coverage.py', 'src/llvm_gen_be.cpp', 'src/llvm_gen_be_abi_aapcs64.cpp', 'src/llvm_gen_be_abi_arm32.cpp', 'src/llvm_gen_be_abi_loongarch64.cpp', 'src/llvm_gen_be_abi_mips.cpp', 'src/llvm_gen_be_abi_ppc64.cpp', 'src/llvm_gen_be_abi_riscv64.cpp', 'src/llvm_gen_be_abi_s390x.cpp', 'src/llvm_gen_be_abi_sparc.cpp', 'src/llvm_gen_be_abi_sysv_x86_64.cpp', 'src/llvm_gen_be_abi_wasm.cpp', 'src/llvm_gen_be_abi_win64.cpp', 'src/llvm_gen_be_abi_x86_32.cpp', 'src/llvm_gen_be_asm.cpp', 'src/llvm_gen_be_codegen.cpp', 'src/llvm_gen_be_const.cpp', 'src/llvm_gen_be_coro.cpp', 'src/llvm_gen_be_debug.cpp', 'src/llvm_gen_be_debug_scopes.cpp', 'src/llvm_gen_be_debug_types.cpp', 'src/llvm_gen_be_decl.cpp', 'src/llvm_gen_be_eh.cpp', 'src/llvm_gen_be_error.cpp', 'src/llvm_gen_be_expr.cpp', 'src/llvm_gen_be_omp.cpp', 'src/llvm_gen_be_opt.cpp', 'src/llvm_gen_be_ptrmem.cpp', 'src/llvm_gen_be_rtti.cpp', 'src/llvm_gen_be_stmt.cpp', 'src/llvm_gen_be_type.cpp', 'src/llvm_gen_be_vtable.cpp'],
+        cwd = mono_repo_dir
+    )
+    if doc_check_proc.returncode != 0:
+        print('  [POLICY] LLVM Backend documentation coverage check failed.')
+        self.errors += 1
 
-def wait_for_minimum_run_time() -> None:
-  '''Sleep until the hook has been running for MIN_RUN_SECONDS.'''
-  remaining = MIN_RUN_SECONDS - (time.monotonic() - START_TIME)
-  if remaining > 0:
-    print(f"Pushing in {remaining:.0f}s (Ctrl-C to cancel)...")
-    time.sleep(remaining)
+    return 0 if (self.errors == 0 and not self.abort) else 1
 
 def wait_for_minimum_run_time() -> None:
   '''Sleep until the hook has been running for MIN_RUN_SECONDS.'''

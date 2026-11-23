@@ -734,7 +734,7 @@ reStructuredText documentation file.
 
   /* Write the item command containing the number. */
   me_output_rst_doc_string(" * - ", 0, fk_normal);
-  sprintf(buffer, "%04d", number);
+  snprintf(buffer, sizeof(buffer), "%04d", number);
   me_output_rst_doc_string(buffer, 4, fk_tt);
   /* Write the content cell. */
   me_output_rst_doc_string("\n   - | ", 0, fk_normal);
