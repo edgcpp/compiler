@@ -1,0 +1,25 @@
+[GH #588]
+Microsoft mode: Qualified call via inline namespace finding a global function
+
+In Microsoft permissive mode (where dependent name processing is not done),
+a nonmember function called in a template is looked up again when the
+template is instantiated, so that declarations appearing after the template
+are found.  For a namespace-qualified name, that lookup is done in the
+qualifying namespace.  However, when the name was found through an inline
+namespace or a using-directive, an unqualified lookup was done instead, which
+could find a function of the same name in the global namespace.  For example,
+with --ms_c++17:
+
+  double f(float, double);
+  namespace N { inline namespace I { template<class T> T f(T, T); } }
+  template<class T, class = void> struct S { static const int n = 1; };
+  template<class T> struct S<T, decltype(void(N::f(T(), 1.0)))> {
+    static const int n = 2;
+  };
+  static_assert(S<float>::n == 1);  // Previously failed.
+
+The lookup is now done in the qualifying namespace in those cases too.
+Similarly, for a name qualified by "::" in a template declared in a
+namespace, an unqualified lookup was done, which could find a function of
+the same name in the enclosing namespace instead of the global one.  That
+lookup is now done in the global namespace.

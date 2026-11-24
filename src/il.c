@@ -21498,13 +21498,23 @@ for the copy/substitution.
       a_symbol_ptr     new_sym;
       make_locator_for_symbol(sym, &locator);
       locator.specific_symbol = NULL;
-      if (!symbol_is(sym, sk_namespace_projection) &&
-          con->source_corresp.parent_scope != NULL &&
-          scope_is(con->source_corresp.parent_scope, sck_namespace)) {
+      /* A namespace projection symbol (e.g., for a function found through
+         an inline namespace or a using-directive) created by an unqualified
+         lookup has as its parent the namespace in which that lookup was
+         done.  One created by a qualified lookup has the qualifying
+         namespace as its parent, or no parent if the qualifier is "::". */
+      if (symbol_is(sym, sk_namespace_projection) && !sym->qualified_lookup) {
+        new_sym = normal_id_lookup(&locator, IDL_NO_OPTIONS);
+      } else if (con->source_corresp.parent_scope != NULL &&
+                 scope_is(con->source_corresp.parent_scope, sck_namespace)) {
         a_namespace_ptr ns_ptr;
         ns_ptr = con->source_corresp.parent_scope->variant.assoc_namespace;
         new_sym = namespace_qualified_id_lookup(&locator, ns_ptr,
                                                 IDL_NO_OPTIONS);
+      } else if (con->variant.template_param.is_qualified_name) {
+        /* The name is qualified by "::". */
+        new_sym = file_scope_id_lookup(il_header.primary_scope, &locator,
+                                       IDL_NO_OPTIONS);
       } else {
         new_sym = normal_id_lookup(&locator, IDL_NO_OPTIONS);
       }  /* if */
