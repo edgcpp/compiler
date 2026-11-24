@@ -1,0 +1,18 @@
+[GH #619]
+C++-generating back end: compound literals that invoke constructors
+
+The fix for EDGcpfe/19463 in version 5.0 covered compound literals that
+invoke a constructor in variable initializers.  A compound literal used as
+a temporary, for example on the right side of an assignment, could still
+cause the C++-generating back end to fail an assertion.  The back end now
+emits the constructor arguments in that case as well.  For example, with
+--clang --c++17:
+
+  struct S {
+    S() = default;
+    S(int, int);
+  };
+  void f(int n) {
+    S x, y;
+    x = y = (S){n, 0};
+  }

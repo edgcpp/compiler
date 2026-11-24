@@ -727,6 +727,10 @@ static void gen_initializer_expr(an_expr_node_ptr expr,
                                  a_type_ptr       type,
                                  a_boolean        need_parens,
                                  a_boolean        mbr_fcn_default_arg_expr);
+static a_boolean gen_argument_list_no_parens(an_expr_node_ptr arg,
+                                             a_type_ptr       rout_type,
+                                             int              skip_num);
+static void handle_braced_init_list_ctor(an_expr_node_ptr arg);
 static void gen_dynamic_init(a_dynamic_init_ptr dip,
                              a_type_ptr         init_entity_type,
                              an_expr_node_ptr   assoc_expr,
@@ -7974,8 +7978,7 @@ compound literal.
     }  /* if */
   }  /* if */
   if (!is_aggregate && !is_compound_literal_string) {
-    /* Scalar initialization.  Put an extra set of braces around the
-       initializer. */
+    /* Supply the braces for scalar and constructor initializers. */
     write_tok_ch('{');
   }  /* if */
   if (literal_con != NULL) {
@@ -8002,9 +8005,15 @@ compound literal.
       dip2->is_explicit_cast = TRUE;
       sub_con->explicit_cast_applied = TRUE;
     }  /* if */
+  } else if (dyn_init_is(dip, dik_constructor)) {
+    a_routine_ptr    ctor = dip->variant.constructor.ptr;
+    an_expr_node_ptr args = dip->variant.constructor.args;
+    handle_braced_init_list_ctor(args);
+    (void)gen_argument_list_no_parens(args, ctor == NULL ? NULL : ctor->type,
+                                      /*skip_num=*/0);
   } else {
     a_boolean parens_needed;
-    check_assertion(dip->kind == (a_dynamic_init_kind)dik_expression);
+    check_assertion(dyn_init_is(dip, dik_expression));
     parens_needed = expr_has_comma_operation(dip->variant.expression);
     gen_expr(dip->variant.expression, parens_needed,
              /*obj_expr_of_mfunc_operator=*/FALSE);
@@ -10697,10 +10706,6 @@ current access mode in the class.  Otherwise, do nothing.
 
 static void gen_temp_init(an_expr_node_ptr expr,
                           a_boolean        obj_expr_of_mfunc_operator);
-
-static a_boolean gen_argument_list_no_parens(an_expr_node_ptr arg,
-                                             a_type_ptr       rout_type,
-                                             int              skip_num);
 
 static void gen_custom_ms_attribute(an_ms_attribute_ptr msap)
 /*
@@ -23518,18 +23523,9 @@ output_functional_notation_cast_arguments:
   } else if (dip->is_compound_literal) {
     /* This is a compound literal, a C99 feature that is also available
        in some C++ modes. */
-    if (dip->kind == (a_dynamic_init_kind)dik_constructor) {
-      /* Handle this case directly, since we'll need the logic below for
-         generating the constructor invocation.  Just generate the cast
-         part of the compound literal notation and fall through to process
-         the constructor call. */
-      gen_cast(init_entity_type);
-    } else {
-      /* Handle non-constructor cases. */
-      gen_compound_literal((a_constant_ptr)NULL, dip, init_entity_type,
-                           /*transparent_case=*/FALSE);
-      goto end_of_routine;
-    }  /* if */
+    gen_compound_literal((a_constant_ptr)NULL, dip, init_entity_type,
+                         /*transparent_case=*/FALSE);
+    goto end_of_routine;
   }  /* if */
   /* Now put out an expression for the dynamic init entry.  For a cast, the
      cast prefix has been put out above, and the code below is putting out
