@@ -104,11 +104,14 @@ static llvm_gen_be_error_t classify_internal(
   }
 
   if (ty->kind == tk_float) {
-    if (ty->variant.float_kind == fk_long_double && size == 16) {
+    const bool is_android = llvm::Triple(be_state->module->getTargetTriple()).isAndroid();
+    if (ty->variant.float_kind == fk_float80 ||
+        (ty->variant.float_kind == fk_long_double && size == 16 && !is_android)) {
       uint64_t idx = offset / 8;
       LLVM_GEN_BE_CHECK(merge_classes(classes[idx], x86_64_abi_class_t::x87, &classes[idx]));
       LLVM_GEN_BE_CHECK(merge_classes(classes[idx + 1], x86_64_abi_class_t::x87up, &classes[idx + 1]));
-    } else if (ty->variant.float_kind == fk_float128 || ty->variant.float_kind == fk_std_float128) {
+    } else if (ty->variant.float_kind == fk_float128 || ty->variant.float_kind == fk_std_float128 ||
+               (ty->variant.float_kind == fk_long_double && size == 16)) {
       uint64_t idx = offset / 8;
       LLVM_GEN_BE_CHECK(merge_classes(classes[idx], x86_64_abi_class_t::sse, &classes[idx]));
       LLVM_GEN_BE_CHECK(merge_classes(classes[idx + 1], x86_64_abi_class_t::sseup, &classes[idx + 1]));
@@ -123,15 +126,10 @@ static llvm_gen_be_error_t classify_internal(
   }
 
   if (ty->kind == tk_complex) {
-    if (ty->variant.float_kind == fk_long_double) {
-      classes[0] = x86_64_abi_class_t::complex_x87;
-      classes[1] = x86_64_abi_class_t::complex_x87;
-    } else {
-      uint64_t idx = offset / 8;
-      LLVM_GEN_BE_CHECK(merge_classes(classes[idx], x86_64_abi_class_t::sse, &classes[idx]));
-      if (size > 8) {
-        LLVM_GEN_BE_CHECK(merge_classes(classes[idx + 1], x86_64_abi_class_t::sse, &classes[idx + 1]));
-      }
+    uint64_t idx = offset / 8;
+    LLVM_GEN_BE_CHECK(merge_classes(classes[idx], x86_64_abi_class_t::sse, &classes[idx]));
+    if (size > 8) {
+      LLVM_GEN_BE_CHECK(merge_classes(classes[idx + 1], x86_64_abi_class_t::sse, &classes[idx + 1]));
     }
     return llvm_gen_be_error_t::ok;
   }
@@ -186,6 +184,48 @@ static llvm_gen_be_error_t classify_internal(
 }
 
 /**
+ * @brief Determines whether an EDG type represents System V AMD64 `COMPLEX_X87` (`_Complex long double` / `_Complex __float80`).
+ * @details Recognizes both unlowered `tk_complex` nodes and IL-lowered `_Complex` representations
+ *          (`_Complex_long_double` and `_Complex_float80` structs synthesized by `lower_c99.c`), while
+ *          preserving `MEMORY` (`sret`) classification for user-defined `struct { long double a[2]; }`
+ *          aggregates and Android `fp128` `_Complex long double` per System V psABI §3.2.3.
+ * @param[in] ty The EDG type to inspect.
+ * @param[out] out_is_complex_x87 Receives `true` if `ty` has `COMPLEX_X87` ABI class, `false` otherwise.
+ * @return llvm_gen_be_error_t::ok on success, `invalid_argument` if `ty` or `out_is_complex_x87` is null,
+ *         or `out_of_memory` on allocation budget exhaustion.
+ */
+llvm_gen_be_error_t is_sysv_complex_x87_type(
+    a_type_ptr ty,
+    bool* out_is_complex_x87) noexcept {
+  if (ty == nullptr || out_is_complex_x87 == nullptr) {
+    return llvm_gen_be_error_t::invalid_argument;
+  }
+  LLVM_GEN_BE_CHECK(llvm_gen_be_step_oom_budget());
+  *out_is_complex_x87 = false;
+
+  ty = skip_typerefs(ty);
+  const bool is_android = llvm::Triple(be_state->module->getTargetTriple()).isAndroid();
+
+  if (ty->kind == tk_complex) {
+    *out_is_complex_x87 =
+        (ty->variant.float_kind == fk_float80) ||
+        (ty->variant.float_kind == fk_long_double && ty->size >= 20 && !is_android);
+    return llvm_gen_be_error_t::ok;
+  }
+
+  if (ty->kind == tk_struct && ty->source_corresp.name != nullptr) {
+    llvm::StringRef sname = ty->source_corresp.name;
+    if (sname == "_Complex_float80") {
+      *out_is_complex_x87 = true;
+    } else if (sname == "_Complex_long_double") {
+      *out_is_complex_x87 = (ty->size >= 20 && !is_android);
+    }
+  }
+
+  return llvm_gen_be_error_t::ok;
+}
+
+/**
  * @brief Classifies a single EDG type into System V AMD64 ABI eightbyte classes.
  * @details Evaluates scalars, arrays, pointers, and aggregates against the ABI rules
  * to determine register or memory allocation. Empty structs map to no_class. Types
@@ -215,6 +255,8 @@ llvm_gen_be_error_t classify_sysv_argument(
     return llvm_gen_be_error_t::invalid_argument;
   }
 
+  a_type_ptr orig_ty = ty;
+
   // Unwrap typerefs
   while (ty->kind == tk_typeref) {
     ty = ty->variant.typeref.type;
@@ -235,7 +277,9 @@ llvm_gen_be_error_t classify_sysv_argument(
     return llvm_gen_be_error_t::ok;
   }
 
-  if (ty->kind == tk_complex && ty->variant.float_kind == fk_long_double) {
+  bool is_complex_x87 = false;
+  LLVM_GEN_BE_CHECK(is_sysv_complex_x87_type(orig_ty, &is_complex_x87));
+  if (is_complex_x87) {
     out_info->pass_in_memory = true;
     out_info->eightbyte_classes[0] = x86_64_abi_class_t::complex_x87;
     out_info->eightbyte_classes[1] = x86_64_abi_class_t::complex_x87;
@@ -472,6 +516,9 @@ llvm_gen_be_error_t build_sysv_function_type(
         llvm_param_types.push_back(llvm::PointerType::getUnqual(*be_state->context));
         if (!arg_info.pass_by_invisible_reference) {
           ab.addByValAttr(pty);
+          if (raw_param_ty->alignment > 8) {
+            ab.addAlignmentAttr(llvm::Align(static_cast<uint64_t>(raw_param_ty->alignment)));
+          }
         }
         param_attrs.push_back(llvm::AttributeSet::get(*be_state->context, ab));
       } else {
@@ -679,6 +726,7 @@ llvm_gen_be_error_t lower_sysv_va_arg(
   } else {
     llvm::AllocaInst* tmp_buf = be_state->builder->CreateAlloca(
         llvm::ArrayType::get(i64_ty, 2), nullptr, "vaarg.reg.tmp");
+    tmp_buf->setAlignment(llvm::Align(16));
     llvm::Value* cur_gp = gp_off;
     llvm::Value* cur_fp = fp_off;
     for (uint32_t i = 0; i < arg_info.num_eightbytes; ++i) {

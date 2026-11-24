@@ -271,14 +271,24 @@ static llvm_gen_be_error_t test_e2e_complex_clang_abi(
   std::string exe = work_dir + "/complex_abi_exe";
 
   const char* ref_code = R"C(
+extern _Complex long double edg_sub_cld(_Complex long double a, _Complex long double b);
 _Complex float clang_add_cf(_Complex float a, _Complex float b) { return a + b; }
 _Complex double clang_mul_cd(_Complex double a, _Complex double b) { return a * b; }
 _Complex long double clang_add_cld(_Complex long double a, _Complex long double b) { return a + b; }
+int clang_verify_edg_cld(void) {
+  _Complex long double r = edg_sub_cld(9.0L + 11.0Li, 2.5L + 4.0Li);
+  return (__real__ r == 6.5L && __imag__ r == 7.0L) ? 0 : 1;
+}
 )C";
   const char* caller_code = R"C(
 extern _Complex float clang_add_cf(_Complex float a, _Complex float b);
 extern _Complex double clang_mul_cd(_Complex double a, _Complex double b);
 extern _Complex long double clang_add_cld(_Complex long double a, _Complex long double b);
+extern int clang_verify_edg_cld(void);
+
+_Complex long double edg_sub_cld(_Complex long double a, _Complex long double b) {
+  return a - b;
+}
 
 int main(void) {
   _Complex float cf1 = 1.5f + 2.5fi;
@@ -296,6 +306,7 @@ int main(void) {
   _Complex long double cl2 = 2.0L + 3.0Li;
   _Complex long double clr = clang_add_cld(cl1, cl2);
   if (__real__ clr != 7.0L || __imag__ clr != 10.0L) return 3;
+  if (clang_verify_edg_cld() != 0) return 4;
   return 0;
 }
 )C";
@@ -840,7 +851,7 @@ int main(void) {
             LLVM_GEN_BE_CHECK(write_text_file(neon_src, neon_code));
             LLVM_GEN_BE_CHECK(run_cmd(
                 cpfe_bin,
-                {cpfe_bin, "--c11", "--clang", "--clang_version=190000",
+                {cpfe_bin, "--c11", "--clang", "--clang_version=210000",
                  "-D__arm64__=1", "-D__aarch64__=1", "-D__ARM_NEON=1",
                  "-D__ARM_FP=0x0E", "-D__ARM_FEATURE_FMA=1",
                  "-D__LITTLE_ENDIAN__=1", "-D__ARM_64BIT_STATE=1",

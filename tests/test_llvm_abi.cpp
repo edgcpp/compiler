@@ -2261,20 +2261,121 @@ int main(void) {
       a_type unk_sz4 = {}; unk_sz4.kind = tk_routine; unk_sz4.size = 4;
       assert(classify_sysv_argument(&unk_sz4, 0, &info) == llvm_gen_be_error_t::ok);
 
-      // Complex types: _Complex float (size 8), _Complex double (size 16), _Complex long double (size 32)
+      // Complex types: _Complex float (size 8), _Complex double (size 16), _Complex long double (size 32), _Complex __float80
       a_type cpx_flt = {}; cpx_flt.kind = tk_complex; cpx_flt.variant.float_kind = fk_float; cpx_flt.size = 8; cpx_flt.alignment = 4;
       a_type cpx_dbl = {}; cpx_dbl.kind = tk_complex; cpx_dbl.variant.float_kind = fk_double; cpx_dbl.size = 16; cpx_dbl.alignment = 8;
       a_type cpx_ldbl = {}; cpx_ldbl.kind = tk_complex; cpx_ldbl.variant.float_kind = fk_long_double; cpx_ldbl.size = 32; cpx_ldbl.alignment = 16;
+      a_type cpx_ldbl16 = cpx_ldbl; cpx_ldbl16.size = 16; cpx_ldbl16.alignment = 8;
+      a_type cpx_f80 = {}; cpx_f80.kind = tk_complex; cpx_f80.variant.float_kind = fk_float80; cpx_f80.size = 32; cpx_f80.alignment = 16;
+      a_type f80_ty = float_ty; f80_ty.variant.float_kind = fk_float80; f80_ty.size = 16; f80_ty.alignment = 16;
+      assert(classify_sysv_argument(&f80_ty, 0, &info) == llvm_gen_be_error_t::ok);
+      assert(info.eightbyte_classes[0] == x86_64_abi_class_t::x87);
       assert(classify_sysv_argument(&cpx_flt, 0, &info) == llvm_gen_be_error_t::ok);
       assert(classify_sysv_argument(&cpx_dbl, 0, &info) == llvm_gen_be_error_t::ok);
+      assert(classify_sysv_argument(&cpx_ldbl16, 0, &info) == llvm_gen_be_error_t::ok);
+      assert(info.eightbyte_classes[0] == x86_64_abi_class_t::sse);
+      assert(classify_sysv_argument(&cpx_f80, 0, &info) == llvm_gen_be_error_t::ok);
+      assert(info.eightbyte_classes[0] == x86_64_abi_class_t::complex_x87);
       assert(classify_sysv_argument(&cpx_ldbl, 0, &info) == llvm_gen_be_error_t::ok);
       assert(info.eightbyte_classes[0] == x86_64_abi_class_t::complex_x87);
 
-      // Struct containing _Complex long double with size <= 16 to exercise classify_internal tk_complex fk_long_double branch
-      a_type cpx_ldbl_in_st = cpx_ldbl; cpx_ldbl_in_st.size = 16;
-      a_field cf_ld = {}; cf_ld.type = &cpx_ldbl_in_st; cf_ld.offset = 0;
-      a_type st_cpx_ld = st_sz16; st_cpx_ld.variant.class_struct_union.field_list = &cf_ld;
-      assert(classify_sysv_argument(&st_cpx_ld, 0, &info) == llvm_gen_be_error_t::ok);
+      // Exhaustive tests for is_sysv_complex_x87_type, IL-lowered _Complex_long_double / _Complex_float80,
+      // Android x86_64 fp128 long double, user-defined 32B struct sret distinction, and OOM percolation.
+      {
+        bool is_cx87 = false;
+        assert(is_sysv_complex_x87_type(nullptr, &is_cx87) == llvm_gen_be_error_t::invalid_argument);
+        assert(is_sysv_complex_x87_type(&cpx_ldbl, nullptr) == llvm_gen_be_error_t::invalid_argument);
+        g_llvm_be_oom_countdown = 0;
+        assert(classify_sysv_argument(&cpx_ldbl, 0, &info) == llvm_gen_be_error_t::out_of_memory);
+        g_llvm_be_oom_countdown = -1;
+
+        // Lowered _Complex_long_double and _Complex_float80 structs (DO_IL_LOWERING=1 representation)
+        a_type arr_ld2 = {};
+        arr_ld2.kind = tk_array;
+        arr_ld2.size = 32;
+        arr_ld2.alignment = 16;
+        arr_ld2.variant.array.element_type = &ldouble_ty;
+        arr_ld2.variant.array.variant.number_of_elements = 2;
+        a_field fld_vals = {};
+        fld_vals.type = &arr_ld2;
+        fld_vals.offset = 0;
+
+        a_type lowered_cld = {};
+        lowered_cld.kind = tk_struct;
+        lowered_cld.size = 32;
+        lowered_cld.alignment = 16;
+        lowered_cld.source_corresp.name = "_Complex_long_double";
+        lowered_cld.variant.class_struct_union.field_list = &fld_vals;
+
+        a_type tref_lowered_cld = {};
+        tref_lowered_cld.kind = tk_typeref;
+        tref_lowered_cld.size = 32;
+        tref_lowered_cld.alignment = 16;
+        tref_lowered_cld.variant.typeref.type = &lowered_cld;
+
+        bool sret_flag = true;
+        assert(compute_sysv_return_info(&tref_lowered_cld, &info, &sret_flag) == llvm_gen_be_error_t::ok);
+        assert(!sret_flag);
+        assert(info.eightbyte_classes[0] == x86_64_abi_class_t::complex_x87);
+
+        // User-written 32-byte struct { long double a[2]; } MUST still use MEMORY / sret
+        a_type user_ld2_struct = lowered_cld;
+        user_ld2_struct.source_corresp.name = "UserPairLD";
+        assert(compute_sysv_return_info(&user_ld2_struct, &info, &sret_flag) == llvm_gen_be_error_t::ok);
+        assert(sret_flag);
+
+        // Unnamed 32-byte struct also uses MEMORY / sret
+        user_ld2_struct.source_corresp.name = nullptr;
+        assert(compute_sysv_return_info(&user_ld2_struct, &info, &sret_flag) == llvm_gen_be_error_t::ok);
+        assert(sret_flag);
+
+        // Lowered _Complex_long_double with size 16 (8-byte long double target) is NOT complex_x87
+        a_type lowered_cld16 = lowered_cld;
+        lowered_cld16.size = 16;
+        assert(is_sysv_complex_x87_type(&lowered_cld16, &is_cx87) == llvm_gen_be_error_t::ok);
+        assert(!is_cx87);
+
+        // Lowered _Complex_float80 is complex_x87
+        a_type lowered_cf80 = lowered_cld;
+        lowered_cf80.source_corresp.name = "_Complex_float80";
+        assert(compute_sysv_return_info(&lowered_cf80, &info, &sret_flag) == llvm_gen_be_error_t::ok);
+        assert(!sret_flag);
+        assert(info.eightbyte_classes[0] == x86_64_abi_class_t::complex_x87);
+
+        // Android x86_64: 16-byte fk_long_double is IEEE fp128 (SSE/SSEUP), so _Complex long double is MEMORY/sret
+        std::string saved_triple = llvm::Triple(be_state->module->getTargetTriple()).str();
+        EDG_LLVM_SET_TARGET_TRIPLE(be_state->module.get(), "x86_64-unknown-linux-android");
+        assert(classify_sysv_argument(&ldouble_ty, 0, &info) == llvm_gen_be_error_t::ok);
+        assert(info.eightbyte_classes[0] == x86_64_abi_class_t::sse);
+        assert(info.eightbyte_classes[1] == x86_64_abi_class_t::sseup);
+        assert(is_sysv_complex_x87_type(&cpx_ldbl, &is_cx87) == llvm_gen_be_error_t::ok);
+        assert(!is_cx87);
+        assert(compute_sysv_return_info(&tref_lowered_cld, &info, &sret_flag) == llvm_gen_be_error_t::ok);
+        assert(sret_flag);
+        EDG_LLVM_SET_TARGET_TRIPLE(be_state->module.get(), saved_triple);
+
+        // Verify build_sysv_function_type on lowered _Complex_long_double sets {x86_fp80, x86_fp80} return (no sret) and byval align 16
+        a_param_type param_cld = {};
+        param_cld.type = &tref_lowered_cld;
+        a_routine_type_supplement supp_cld = {};
+        supp_cld.param_type_list = &param_cld;
+        supp_cld.prototyped = TRUE;
+        a_type fn_cld = {};
+        fn_cld.kind = tk_routine;
+        fn_cld.variant.routine.return_type = &tref_lowered_cld;
+        fn_cld.variant.routine.extra_info = &supp_cld;
+        llvm::FunctionType* cld_fty = nullptr;
+        llvm::AttributeList cld_attrs;
+        assert(build_sysv_function_type(&fn_cld, &cld_fty, &cld_attrs) == llvm_gen_be_error_t::ok);
+        assert(cld_fty->getNumParams() == 1);
+        assert(cld_fty->getReturnType()->isStructTy());
+        assert(cld_attrs.getParamAttrs(0).getAlignment() == llvm::Align(16));
+      }
+
+      // Struct containing _Complex float to exercise classify_internal tk_complex SSE branch
+      a_field cf_flt = {}; cf_flt.type = &cpx_flt; cf_flt.offset = 0;
+      a_type st_cpx_flt = st_sz8; st_cpx_flt.variant.class_struct_union.field_list = &cf_flt;
+      assert(classify_sysv_argument(&st_cpx_flt, 0, &info) == llvm_gen_be_error_t::ok);
 
       // Bitfields in struct and union (including 0-bit and >64-bit / multi-eightbyte bitfield)
       a_field bf0 = {}, bf1 = {}, bf2 = {};

@@ -327,13 +327,27 @@ int main(void) {
     dummy_fp.size = 10;
     assert(llvm_type_from_float(&dummy_fp, &ty) == llvm_gen_be_error_t::ok);
     assert(ty == llvm::Type::getX86_FP80Ty(*state.context));
+
+    dummy_fp.size = 12;
+    EDG_LLVM_SET_TARGET_TRIPLE(state.module.get(), "i686-unknown-linux-gnu");
+    assert(llvm_type_from_float(&dummy_fp, &ty) == llvm_gen_be_error_t::ok);
+    assert(ty == llvm::Type::getX86_FP80Ty(*state.context));
     
+    dummy_fp.size = 10;
     EDG_LLVM_SET_TARGET_TRIPLE(state.module.get(), "powerpc64le-unknown-linux-gnu");
     assert(llvm_type_from_float(&dummy_fp, &ty) == llvm_gen_be_error_t::ok);
     assert(ty == llvm::Type::getX86_FP80Ty(*state.context));
 
     dummy_fp.size = 16;
     EDG_LLVM_SET_TARGET_TRIPLE(state.module.get(), "x86_64-unknown-linux-gnu");
+    assert(llvm_type_from_float(&dummy_fp, &ty) == llvm_gen_be_error_t::ok);
+    assert(ty == llvm::Type::getX86_FP80Ty(*state.context));
+
+    EDG_LLVM_SET_TARGET_TRIPLE(state.module.get(), "x86_64-unknown-linux-android");
+    assert(llvm_type_from_float(&dummy_fp, &ty) == llvm_gen_be_error_t::ok);
+    assert(ty == llvm::Type::getFP128Ty(*state.context));
+
+    EDG_LLVM_SET_TARGET_TRIPLE(state.module.get(), "aarch64-unknown-linux-gnu");
     assert(llvm_type_from_float(&dummy_fp, &ty) == llvm_gen_be_error_t::ok);
     assert(ty == llvm::Type::getFP128Ty(*state.context));
     
@@ -918,16 +932,23 @@ int main(void) {
     assert(llvm::cast<llvm::StructType>(ty)->getElementType(0)->isDoubleTy());
     assert(llvm::cast<llvm::StructType>(ty)->getElementType(1)->isDoubleTy());
 
-    // _Complex long double (assuming x86_fp80 here based on size = 10 or 16)
+    // _Complex long double: 16-byte (2 x double) and 32-byte x86_64 SysV (2 x x86_fp80)
     be_state->type_cache.clear();
     dummy_complex.variant.float_kind = fk_long_double;
     dummy_complex.size = 16;
     assert(llvm_type_from_edg_type(&dummy_complex, &ty) == llvm_gen_be_error_t::ok);
     assert(ty->isStructTy());
     assert(llvm::cast<llvm::StructType>(ty)->getNumElements() == 2);
-    // Note: getX86_FP80Ty or getFP128Ty or getDoubleTy based on target, but isFloatingPointTy handles all.
-    assert(llvm::cast<llvm::StructType>(ty)->getElementType(0)->isFloatingPointTy());
-    assert(llvm::cast<llvm::StructType>(ty)->getElementType(1)->isFloatingPointTy());
+    assert(llvm::cast<llvm::StructType>(ty)->getElementType(0)->isDoubleTy());
+    assert(llvm::cast<llvm::StructType>(ty)->getElementType(1)->isDoubleTy());
+
+    be_state->type_cache.clear();
+    EDG_LLVM_SET_TARGET_TRIPLE(state.module.get(), "x86_64-unknown-linux-gnu");
+    dummy_complex.size = 32;
+    assert(llvm_type_from_edg_type(&dummy_complex, &ty) == llvm_gen_be_error_t::ok);
+    assert(llvm::cast<llvm::StructType>(ty)->getElementType(0)->isX86_FP80Ty());
+    assert(llvm::cast<llvm::StructType>(ty)->getElementType(1)->isX86_FP80Ty());
+    EDG_LLVM_SET_TARGET_TRIPLE(state.module.get(), "");
 
     // _Imaginary float
     be_state->type_cache.clear();

@@ -62,6 +62,21 @@ struct x86_64_abi_arg_info_t {
 };
 
 /**
+ * @brief Determines whether an EDG type represents System V AMD64 `COMPLEX_X87` (`_Complex long double` / `_Complex __float80`).
+ * @details Recognizes both unlowered `tk_complex` nodes and IL-lowered `_Complex` representations
+ *          (`_Complex_long_double` and `_Complex_float80` structs synthesized by `lower_c99.c`), while
+ *          preserving `MEMORY` (`sret`) classification for user-defined `struct { long double a[2]; }`
+ *          aggregates and Android `fp128` `_Complex long double` per System V psABI §3.2.3.
+ * @param[in] ty The EDG type to inspect.
+ * @param[out] out_is_complex_x87 Receives `true` if `ty` has `COMPLEX_X87` ABI class, `false` otherwise.
+ * @return llvm_gen_be_error_t::ok on success, `invalid_argument` if `ty` or `out_is_complex_x87` is null,
+ *         or `out_of_memory` on allocation budget exhaustion.
+ */
+llvm_gen_be_error_t is_sysv_complex_x87_type(
+    a_type_ptr ty,
+    bool* out_is_complex_x87) noexcept;
+
+/**
  * @brief Classifies a single EDG type into System V AMD64 ABI eightbyte classes.
  * @details Evaluates scalars, arrays, pointers, and aggregates against the ABI rules
  * to determine register or memory allocation. Empty structs map to no_class. Types

@@ -198,9 +198,14 @@ llvm_gen_be_error_t llvm_type_from_float(
     }
     case fk_long_double: {
       llvm::Triple triple = llvm::Triple(be_state->module->getTargetTriple());
-      if (edg_type->size * targ_char_bit == 80) {
+      uint64_t elem_bytes = (edg_type->kind == tk_complex)
+                                ? (static_cast<uint64_t>(edg_type->size) / 2ULL)
+                                : static_cast<uint64_t>(edg_type->size);
+      uint64_t bit_size = elem_bytes * static_cast<uint64_t>(targ_char_bit);
+      bool is_x86_non_android = (triple.isX86() && !triple.isAndroid());
+      if (bit_size == 80 || bit_size == 96 || (bit_size == 128 && is_x86_non_android)) {
         *out_type = llvm::Type::getX86_FP80Ty(*be_state->context);
-      } else if (edg_type->size * targ_char_bit == 128) {
+      } else if (bit_size == 128) {
         if (triple.isPPC()) {
           *out_type = llvm::Type::getPPC_FP128Ty(*be_state->context);
         } else {
