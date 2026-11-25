@@ -1,7 +1,8 @@
 //type:fp
 //options:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20
 //options_all:--no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\n\n' '/^(func|file)-scope (name-qualifier@|variable@|class-type-supplement@|type@.*\nkind: +(tk_struct|tk_ptr_to_member|is_alias|is_template_alias|is_decltype|template_arg_list|name_qualifier))/' | awk '/^[a-z_]+:$/ { getline n; if (n ~ /^   /) { gsub(/  +/, "", n); print $0 " " n; } else { print $0; print n; } next; }1' | grep -E -e '^(  name|  type|  explicitly_specified|  decl_position[.]seq|is_class|qualifier|qualifier[.]class_type|extra_info|kind|type|declared_type|class_of_which_a_member|orig_class_of_which_a_member|typeref_type|template_arg_list|orig_template_arg_list|is_global_qualified_name):' -e '^(func|file)-scope ' -e '^$' | edg-enumerate-il-addrs
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 template<typename T, typename U = T>
 struct A
@@ -151,3 +152,70 @@ struct A<INT1>::B bb1;       // should point to existing template argument list
 struct A<INT2>::B bb2;       // should point to existing template argument list
 
 #endif
+
+/* @filter
+file-scope name-reference[is_global_qualified_name==TRUE]
+  num_template_arguments, qualifier, is_template_id, is_global_qualified_name
+file-scope name-qualifier
+  qualifier.class_type, name, is_class
+func-scope name-qualifier
+  qualifier.class_type, name, is_class, is_global_qualified_name
+file-scope variable
+  source_corresp/name, source_corresp/decl_position.seq, type, declared_type
+func-scope variable
+  source_corresp/name, source_corresp/decl_position.seq, type, declared_type
+file-scope class-type-supplement
+  template_arg_list
+func-scope class-type-supplement
+  template_arg_list, orig_template_arg_list
+file-scope type[kind==tk_struct]
+  source_corresp/name, source_corresp/decl_position.seq, kind, extra_info
+file-scope type[kind==template_arg_list]
+  kind, typeref_type, template_arg_list
+func-scope type[kind==template_arg_list]
+  source_corresp/name, source_corresp/decl_position.seq, kind, type,
+  declared_type, typeref_type, class_of_which_a_member,
+  orig_class_of_which_a_member, extra_info, template_arg_list,
+  orig_template_arg_list, qualifier
+file-scope type[kind==name_qualifier]
+  kind, typeref_type, qualifier
+func-scope type[kind==name_qualifier]
+  source_corresp/name, source_corresp/decl_position.seq, kind, type,
+  declared_type, typeref_type, class_of_which_a_member,
+  orig_class_of_which_a_member, extra_info, template_arg_list,
+  orig_template_arg_list, qualifier
+func-scope type[kind==tk_struct]
+  source_corresp/name, source_corresp/decl_position.seq, kind, type,
+  declared_type, typeref_type, class_of_which_a_member,
+  orig_class_of_which_a_member, extra_info, template_arg_list,
+  orig_template_arg_list, qualifier
+file-scope type[kind==tk_ptr_to_member]
+  kind, type, class_of_which_a_member, orig_class_of_which_a_member
+func-scope type[kind==tk_ptr_to_member]
+  source_corresp/name, source_corresp/decl_position.seq, kind, type,
+  declared_type, typeref_type, class_of_which_a_member,
+  orig_class_of_which_a_member, extra_info, template_arg_list,
+  orig_template_arg_list, qualifier
+file-scope type[kind==is_alias]
+  source_corresp/name, source_corresp/decl_position.seq, kind, typeref_type
+func-scope type[kind==is_alias]
+  source_corresp/name, source_corresp/decl_position.seq, kind, type,
+  declared_type, typeref_type, class_of_which_a_member,
+  orig_class_of_which_a_member, extra_info, template_arg_list,
+  orig_template_arg_list, qualifier
+file-scope type[kind==is_template_alias]
+  source_corresp/name, source_corresp/decl_position.seq, kind, typeref_type,
+  template_arg_list, orig_template_arg_list
+func-scope type[kind==is_template_alias]
+  source_corresp/name, source_corresp/decl_position.seq, kind, type,
+  declared_type, typeref_type, class_of_which_a_member,
+  orig_class_of_which_a_member, extra_info, template_arg_list,
+  orig_template_arg_list, qualifier
+file-scope type[kind==is_decltype]
+  kind, typeref_type
+func-scope type[kind==is_decltype]
+  source_corresp/name, source_corresp/decl_position.seq, kind, type,
+  declared_type, typeref_type, class_of_which_a_member,
+  orig_class_of_which_a_member, extra_info, template_arg_list,
+  orig_template_arg_list, qualifier
+ */

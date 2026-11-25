@@ -1,18 +1,91 @@
-fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
-kind: stmk_coroutine final_suspend_label: label@ get_return_object_call: NULL position.seq: 195 
-position.seq: 196 kind: stmk_coroutine_return 
-kind: stmk_goto label: label@ lifetime: NULL 
-position.seq: 209 kind: stmk_goto label: label@  label done lifetime: NULL 
-position.seq: 210 kind: stmk_label label: label@  label done lifetime: NULL 
-position.seq: 217 kind: stmk_goto label: label@  label done lifetime: object-lifetime@ 
-position.seq: 218 kind: stmk_label label: label@  label done lifetime: object-lifetime@ 
-kind: stmk_coroutine final_suspend_label: label@ get_return_object_call: expr-node@ position.seq: 223 
-position.seq: 226 kind: stmk_coroutine_return 
-kind: stmk_goto label: label@ lifetime: NULL 
-kind: stmk_coroutine final_suspend_label: label@ get_return_object_call: NULL position.seq: 230 
-position.seq: 233 kind: stmk_coroutine_return 
-kind: stmk_goto label: label@ lifetime: NULL 
-kind: stmk_coroutine final_suspend_label: label@ get_return_object_call: expr-node@ position.seq: 236 body_generated: TRUE 
-position.seq: 239 kind: stmk_coroutine_return 
-kind: stmk_goto label: label@ lifetime: object-lifetime@ 
-kind: stmk_label label: label@ lifetime: object-lifetime@ 
+edg-first-stage-il -DTEST_NUMBER=1 --no_il_lower --il_display --sys_include=$EDG_BASE/include --c++20 Test_name.c
+func-scope statement#1
+kind:                    stmk_coroutine
+final_suspend_label:     func-scope label#1
+get_return_object_call:  NULL
+position.seq:            196
+
+func-scope statement#2
+position.seq:            197
+kind:                    stmk_coroutine_return
+
+func-scope statement#3
+kind:                    stmk_goto
+label:                   func-scope label#1
+lifetime:                NULL
+
+func-scope statement#4
+position.seq:            210
+kind:                    stmk_goto
+label:                   func-scope label#2: label done
+lifetime:                NULL
+
+func-scope statement#5
+position.seq:            211
+kind:                    stmk_label
+label:                   func-scope label#2: label done
+lifetime:                NULL
+
+func-scope statement#6
+position.seq:            218
+kind:                    stmk_goto
+label:                   func-scope label#3: label done
+lifetime:                func-scope object-lifetime#1
+
+func-scope statement#7
+position.seq:            219
+kind:                    stmk_label
+label:                   func-scope label#3: label done
+lifetime:                func-scope object-lifetime#1
+
+func-scope statement#8
+kind:                    stmk_coroutine
+final_suspend_label:     func-scope label#4
+get_return_object_call:  func-scope expr-node#1
+position.seq:            224
+
+func-scope statement#9
+position.seq:            227
+kind:                    stmk_coroutine_return
+
+func-scope statement#10
+kind:                    stmk_goto
+label:                   func-scope label#4
+lifetime:                NULL
+
+func-scope statement#11
+kind:                    stmk_coroutine
+final_suspend_label:     func-scope label#5
+get_return_object_call:  NULL
+position.seq:            231
+
+func-scope statement#12
+position.seq:            234
+kind:                    stmk_coroutine_return
+
+func-scope statement#13
+kind:                    stmk_goto
+label:                   func-scope label#5
+lifetime:                NULL
+
+func-scope statement#14
+kind:                    stmk_coroutine
+final_suspend_label:     func-scope label#6
+get_return_object_call:  func-scope expr-node#2
+position.seq:            237
+body_generated:          TRUE
+
+func-scope statement#15
+position.seq:            240
+kind:                    stmk_coroutine_return
+
+func-scope statement#16
+kind:                    stmk_goto
+label:                   func-scope label#6
+lifetime:                func-scope object-lifetime#2
+
+func-scope statement#17
+kind:                    stmk_label
+label:                   func-scope label#6
+lifetime:                func-scope object-lifetime#2
+

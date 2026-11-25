@@ -1,76 +1,84 @@
-fe_only -DTEST_NUMBER=1 --c++20 --no_il_lower --il_display Test_name.c
-
-  name:                  file-scope id-name: "f_non_type"
+edg-first-stage-il -DTEST_NUMBER=1 --c++20 --no_il_lower --il_display Test_name.c
+file-scope routine#1
+  name:                  file-scope id-name#1: "f_non_type"
 template_arg_list:       
   pack exp placeholder:  
-  constant:              file-scope constant: X
+  constant:              file-scope constant#1: X
   is_pack_element:       TRUE
   is_pack:               TRUE
 
-  name:                  file-scope id-name: "f_type"
+file-scope routine#2
+  name:                  file-scope id-name#2: "f_type"
 template_arg_list:       
   pack exp placeholder:  
-  type:                  file-scope type: XT#(2,1)
+  type:                  file-scope type#1: XT#(2,1)
   is_pack_element:       TRUE
   is_pack:               TRUE
 
-  name:                  file-scope id-name: "f_type_pack"
+file-scope routine#3
+  name:                  file-scope id-name#3: "f_type_pack"
 template_arg_list:       
   pack exp placeholder:  
-  type:                  file-scope type: XT#(2,1)
+  type:                  file-scope type#2: XT#(2,1)
   is_pack_element:       TRUE
   is_pack:               TRUE
 
-  name:                  file-scope id-name: "f_non_type"
+file-scope routine#4
+  name:                  file-scope id-name#1: "f_non_type"
 template_arg_list:       
   pack exp placeholder:  
-  constant:              file-scope constant: X
+  constant:              file-scope constant#2: X
   is_pack_element:       TRUE
   is_pack:               TRUE
-  constant:              file-scope constant: X
+  constant:              file-scope constant#3: X
   is_pack_element:       TRUE
 
-  name:                  file-scope id-name: "f_type"
+file-scope routine#5
+  name:                  file-scope id-name#2: "f_type"
 template_arg_list:       
   pack exp placeholder:  
-  type:                  file-scope type: XT#(2,1)
+  type:                  file-scope type#3: XT#(2,1)
   is_pack_element:       TRUE
   is_pack:               TRUE
-  type:                  file-scope type: XT#(2,2)
+  type:                  file-scope type#4: XT#(2,2)
   is_pack_element:       TRUE
 
-  name:                  file-scope id-name: "f_type_pack"
+file-scope routine#6
+  name:                  file-scope id-name#3: "f_type_pack"
 template_arg_list:       
   pack exp placeholder:  
-  type:                  file-scope type: XT#(2,1)
+  type:                  file-scope type#5: XT#(2,1)
   is_pack_element:       TRUE
   is_pack:               TRUE
 
-  name:                  file-scope id-name: "f_non_type"
+file-scope routine#7
+  name:                  file-scope id-name#1: "f_non_type"
 template_arg_list:       
   pack exp placeholder:  
-  constant:              file-scope constant: 1
+  constant:              file-scope constant#4: 1
   explicitly_specified:  TRUE
   is_pack_element:       TRUE
-  constant:              file-scope constant: 'a'
+  constant:              file-scope constant#5: 'a'
   explicitly_specified:  TRUE
   is_pack_element:       TRUE
 
-  name:                  file-scope id-name: "f_type"
+file-scope routine#8
+  name:                  file-scope id-name#2: "f_type"
 template_arg_list:       
   pack exp placeholder:  
-  type:                  file-scope type: int
+  type:                  file-scope type#6: int
   explicitly_specified:  TRUE
   is_pack_element:       TRUE
-  type:                  file-scope type: char
+  type:                  file-scope type#7: char
   is_pack_element:       TRUE
 
-  name:                  file-scope id-name: "f_type_pack"
+file-scope routine#9
+  name:                  file-scope id-name#3: "f_type_pack"
 template_arg_list:       
   pack exp placeholder:  
-  type:                  file-scope type: int
+  type:                  file-scope type#6: int
   explicitly_specified:  TRUE
   is_pack_element:       TRUE
-  type:                  file-scope type: char
+  type:                  file-scope type#7: char
   is_pack_element:       TRUE
 

@@ -1,7 +1,8 @@
 //type:fp
 //options:--c++20:--c++20
 //options_all:--no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\n\n' '/^file-scope (template@|expr-node@)/' | grep -E -e '^(  name|  type|  explicitly_specified|position[.]seq|concept_id[.]args|operation[.]kind|constant|kind|type):' -e '^file-scope ' -e '^$' | edg-enumerate-il-addrs
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 template<typename T = int, typename U = T>
 concept C = true;
@@ -27,3 +28,10 @@ void g(C<INT1> auto v)
 { }
 
 #endif
+
+/* @filter
+file-scope template
+  source_corresp/name, kind
+file-scope expr-node
+  kind, type, constant, operation.kind, position.seq, concept_id.args
+ */

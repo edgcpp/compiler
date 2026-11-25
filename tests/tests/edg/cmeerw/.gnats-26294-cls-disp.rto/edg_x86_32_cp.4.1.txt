@@ -1,4 +1,4 @@
-fe_only -DTEST_NUMBER=4 --no_il_lower --il_display --c++20 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=4 --no_il_lower --il_display --c++20 Test_name.c
 file-scope class-type-supplement#1
 
 file-scope type#1
@@ -77,26 +77,63 @@ extra_info:              file-scope class-type-supplement#6
 
 file-scope variable#1
   name:                  file-scope id-name#7: "d"
-  decl_position.seq:     30
+  decl_position.seq:     66
 type:                    file-scope type#13: D<A<int, int>>
+declared_type:           file-scope type#13: D<A<int, int>>
+
+file-scope type#14
+kind:                    tk_typeref
+typeref_type:            file-scope type#12: A<int, int>
+template_arg_list:       
+  type:                  file-scope type#9: INT1
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
+
+file-scope type#15
+kind:                    tk_typeref
+typeref_type:            file-scope type#13: D<A<int, int>>
+template_arg_list:       
+  type:                  file-scope type#14: A<int, int>
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
 
 file-scope variable#2
   name:                  file-scope id-name#8: "d1"
-  decl_position.seq:     31
-type:                    file-scope type#13: D<A<int, int>>
+  decl_position.seq:     67
+type:                    file-scope type#15: D<A<int, int>>
+declared_type:           file-scope type#15: D<A<int, int>>
+
+file-scope type#16
+kind:                    tk_typeref
+typeref_type:            file-scope type#12: A<int, int>
+template_arg_list:       
+  type:                  file-scope type#11: INT2
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
+
+file-scope type#17
+kind:                    tk_typeref
+typeref_type:            file-scope type#13: D<A<int, int>>
+template_arg_list:       
+  type:                  file-scope type#16: A<int, int>
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
 
 file-scope variable#3
   name:                  file-scope id-name#9: "d2"
-  decl_position.seq:     32
-type:                    file-scope type#13: D<A<int, int>>
+  decl_position.seq:     68
+type:                    file-scope type#17: D<A<int, int>>
+declared_type:           file-scope type#17: D<A<int, int>>
 
 file-scope variable#4
   name:                  file-scope id-name#10: "dd1"
-  decl_position.seq:     34
-type:                    file-scope type#13: D<A<int, int>>
+  decl_position.seq:     70
+type:                    file-scope type#15: D<A<int, int>>
+declared_type:           file-scope type#15: D<A<int, int>>
 
 file-scope variable#5
   name:                  file-scope id-name#11: "dd2"
-  decl_position.seq:     35
-type:                    file-scope type#13: D<A<int, int>>
+  decl_position.seq:     71
+type:                    file-scope type#17: D<A<int, int>>
+declared_type:           file-scope type#17: D<A<int, int>>
 

@@ -1,7 +1,8 @@
 //type:fp
 //options:--c++17:--c++17 --gn 130100:--c++17 --clang_version 160000:--ms_c++17 --microsoft_version 1927:--ms_c++17 --microsoft_version 1936
 //options_all:-tused --no_il_lower --il_display
-//filter:awk '/^file-scope variable@/{f=1; print $0; next}/^$/{if (f) print $0; f=0}f' | grep -E -e '^(file-scope|  name:|  name_linkage:|  decl_position.seq:|storage_class:|declared_storage_class:|is_template_variable:|is_prototype_instantiation:|is_nonreal:|is_specialized:)' -e '^$' | sed -e 's/@[0-9a-f]*//'
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 namespace non_tmpl
 {
@@ -120,3 +121,11 @@ namespace tmpl
            ti<void *> + tsi<void *> + tci<void *> + tcvi<void *> + tii<void *> + tici<void *> + tei<void *> + teci<void *>;
   }
 }
+
+/* @filter
+file-scope variable
+  source_corresp/name, source_corresp/decl_position.seq,
+  source_corresp/name_linkage, storage_class, declared_storage_class,
+  is_template_variable, is_specialized, is_prototype_instantiation,
+  is_nonreal
+ */

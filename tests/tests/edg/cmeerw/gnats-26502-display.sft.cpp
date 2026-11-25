@@ -1,6 +1,7 @@
 //type:fp
 //options:--c++20 --no_il_lower --il_display
-//filter:awk '/^file-scope using-decl@/{f=1; next}/^$/{if (f) print $0; f=0}f' | grep -E -e '^(entity|access|qualifier.[^:]*|is_[^:]*):' -e '^file-scope ' -e '^$' | sed -e 's/@[0-9a-f]*:/:/'
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 enum E
 {
@@ -33,3 +34,9 @@ protected:
 private:
   using B::v3;
 };
+
+/* @filter
+file-scope using-decl
+  entity, qualifier.class_type, access, is_representative, is_class_member,
+  is_enumerator, is_using_enum, is_using_directive
+ */

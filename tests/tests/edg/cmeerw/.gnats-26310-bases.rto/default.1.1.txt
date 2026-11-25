@@ -1,109 +1,109 @@
-fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++11 Test_name.c
-file-scope class-type-supplement
+edg-first-stage-il -DTEST_NUMBER=1 --no_il_lower --il_display --c++11 Test_name.c
+file-scope class-type-supplement#1
 base_classes:            NULL
 direct_base_classes:     NULL
 preorder_base_classes:   NULL
 
-file-scope base-class
+file-scope base-class#1
 next:                    NULL
 next_direct:             NULL
 next_preorder:           NULL
-type:                    file-scope type: VB
-derived_class:           file-scope type: V
+type:                    file-scope type#1: VB
+derived_class:           file-scope type#2: V
 direct:                  TRUE
 direct_base_number:      1
 is_virtual:              FALSE
 
-file-scope class-type-supplement
-base_classes:            file-scope base-class: VB (in V)
-direct_base_classes:     file-scope base-class: VB (in V)
-preorder_base_classes:   file-scope base-class: VB (in V)
+file-scope class-type-supplement#2
+base_classes:            file-scope base-class#1: VB (in V)
+direct_base_classes:     file-scope base-class#1: VB (in V)
+preorder_base_classes:   file-scope base-class#1: VB (in V)
 
-file-scope base-class
-next:                    file-scope base-class: V (in B)
+file-scope base-class#2
+next:                    file-scope base-class#3: V (in B)
 next_direct:             NULL
 next_preorder:           NULL
-type:                    file-scope type: VB
-derived_class:           file-scope type: B
+type:                    file-scope type#1: VB
+derived_class:           file-scope type#3: B
 direct:                  FALSE
 is_virtual:              FALSE
 
-file-scope base-class
+file-scope base-class#3
 next:                    NULL
 next_direct:             NULL
-next_preorder:           file-scope base-class: VB (in B)
-type:                    file-scope type: V
-derived_class:           file-scope type: B
+next_preorder:           file-scope base-class#2: VB (in B)
+type:                    file-scope type#2: V
+derived_class:           file-scope type#3: B
 direct:                  TRUE
 direct_base_number:      1
 is_virtual:              TRUE
 
-file-scope class-type-supplement
-base_classes:            file-scope base-class: VB (in B)
-direct_base_classes:     file-scope base-class: V (in B)
-preorder_base_classes:   file-scope base-class: V (in B)
+file-scope class-type-supplement#3
+base_classes:            file-scope base-class#2: VB (in B)
+direct_base_classes:     file-scope base-class#3: V (in B)
+preorder_base_classes:   file-scope base-class#3: V (in B)
 
-file-scope class-type-supplement
+file-scope class-type-supplement#4
 base_classes:            NULL
 direct_base_classes:     NULL
 preorder_base_classes:   NULL
 
-file-scope class-type-supplement
+file-scope class-type-supplement#5
 base_classes:            NULL
 direct_base_classes:     NULL
 preorder_base_classes:   NULL
 
-file-scope base-class
-next:                    file-scope base-class: V (in D)
+file-scope base-class#4
+next:                    file-scope base-class#5: V (in D)
 next_direct:             NULL
-next_preorder:           file-scope base-class: C1 (in D)
-type:                    file-scope type: VB
-derived_class:           file-scope type: D
+next_preorder:           file-scope base-class#6: C1 (in D)
+type:                    file-scope type#1: VB
+derived_class:           file-scope type#4: D
 direct:                  FALSE
 is_virtual:              FALSE
 
-file-scope base-class
-next:                    file-scope base-class: B (in D)
-next_direct:             file-scope base-class: C2 (in D)
-next_preorder:           file-scope base-class: VB (in D)
-type:                    file-scope type: V
-derived_class:           file-scope type: D
+file-scope base-class#5
+next:                    file-scope base-class#7: B (in D)
+next_direct:             file-scope base-class#8: C2 (in D)
+next_preorder:           file-scope base-class#4: VB (in D)
+type:                    file-scope type#2: V
+derived_class:           file-scope type#4: D
 direct:                  TRUE
 direct_base_number:      3
 is_virtual:              TRUE
 
-file-scope base-class
-next:                    file-scope base-class: C1 (in D)
-next_direct:             file-scope base-class: C1 (in D)
-next_preorder:           file-scope base-class: V (in D)
-type:                    file-scope type: B
-derived_class:           file-scope type: D
+file-scope base-class#7
+next:                    file-scope base-class#6: C1 (in D)
+next_direct:             file-scope base-class#6: C1 (in D)
+next_preorder:           file-scope base-class#5: V (in D)
+type:                    file-scope type#3: B
+derived_class:           file-scope type#4: D
 direct:                  TRUE
 direct_base_number:      1
 is_virtual:              TRUE
 
-file-scope base-class
-next:                    file-scope base-class: C2 (in D)
-next_direct:             file-scope base-class: V (in D)
-next_preorder:           file-scope base-class: C2 (in D)
-type:                    file-scope type: C1
-derived_class:           file-scope type: D
+file-scope base-class#6
+next:                    file-scope base-class#8: C2 (in D)
+next_direct:             file-scope base-class#5: V (in D)
+next_preorder:           file-scope base-class#8: C2 (in D)
+type:                    file-scope type#5: C1
+derived_class:           file-scope type#4: D
 direct:                  TRUE
 direct_base_number:      2
 is_virtual:              FALSE
 
-file-scope base-class
+file-scope base-class#8
 next:                    NULL
 next_direct:             NULL
 next_preorder:           NULL
-type:                    file-scope type: C2
-derived_class:           file-scope type: D
+type:                    file-scope type#6: C2
+derived_class:           file-scope type#4: D
 direct:                  TRUE
 direct_base_number:      4
 is_virtual:              FALSE
 
-file-scope class-type-supplement
-base_classes:            file-scope base-class: VB (in D)
-direct_base_classes:     file-scope base-class: B (in D)
-preorder_base_classes:   file-scope base-class: B (in D)
+file-scope class-type-supplement#6
+base_classes:            file-scope base-class#4: VB (in D)
+direct_base_classes:     file-scope base-class#7: B (in D)
+preorder_base_classes:   file-scope base-class#7: B (in D)
 

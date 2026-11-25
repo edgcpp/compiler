@@ -1,6 +1,7 @@
 //type:fp
 //options:--c++20 --no_il_lower --il_display
-//filter:awk '/^file-scope routine@/{f=1; next}/^$/{if (f) print $0; f=0}f' | grep -E -e '^(template_arg_list|  name|  pack exp placeholder|  constant|  type|  explicitly_specified|  is_pack_element|  is_pack|  type):' -e '^file-scope ' -e '^$' | grep -E -v '"operator' | uniq | sed -e 's/@[0-9a-f]*:/:/'
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 // check that is_pack and is_pack_element flags on the template argument lists
 // are set correctly
@@ -34,3 +35,8 @@ namespace pack_expansions
   auto v2 = B<int, char>::f_type<int>(1, 'a');
   auto v3 = B<int, char>::f_type_pack<int>(1, 'a');
 }
+
+/* @filter
+file-scope routine[template_arg_list]
+  source_corresp/name, template_arg_list
+ */

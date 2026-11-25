@@ -1,7 +1,8 @@
 //type:fp
 //options:--c++11
 //options_all:-w --no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\n\n' '/^(file-scope (name-reference|name-qualifier)@|func-scope expr-node@.*\nkind: *(enk_routine|enk_constant))/' | grep -E -e '^(  type|  explicitly_specified|name|next|type|orig_lvalue_type|routine|qualifier|qualifier[.](class_type|namespace_ptr)|previous_qualifier|position[.]seq|num_template_arguments|is_template_id|orig_template_argument_list):' -e '^(file|func)-scope ' -e '^$' | edg-enumerate-il-addrs
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 namespace ns1
 {
@@ -34,3 +35,19 @@ void g()
   { auto *p = &ns2::tmpl<INT>; }
   { auto ns1::C::*p = &ns2::C::tmpl<INT>; }
 }
+
+/* @filter
+file-scope name-reference
+  next, qualifier, num_template_arguments, orig_template_arg_list,
+  is_template_id
+file-scope name-qualifier
+  qualifier.class_type, qualifier.namespace_ptr, name, previous_qualifier
+func-scope expr-node[kind==enk_routine]
+  type, orig_lvalue_type, next, routine, qualifier,
+  num_template_arguments, orig_template_arg_list, is_template_id,
+  position.seq
+func-scope expr-node[kind==enk_constant]
+  type, orig_lvalue_type, next, routine, qualifier,
+  num_template_arguments, orig_template_arg_list, is_template_id,
+  position.seq
+ */

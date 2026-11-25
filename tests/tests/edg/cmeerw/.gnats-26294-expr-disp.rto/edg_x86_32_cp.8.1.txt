@@ -1,4 +1,4 @@
-fe_only -DTEST_NUMBER=8 --no_il_lower --il_display --c++20 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=8 --no_il_lower --il_display --c++20 Test_name.c
 file-scope type#1
   name:                  file-scope id-name#1: "U"
 kind:                    tk_template_param
@@ -48,37 +48,33 @@ file-scope type#8
 kind:                    tk_template_param
 kind:                    tptk_member
 
-file-scope class-type-supplement#4
-
 file-scope type#9
-  name:                  file-scope id-name#6: "D"
-kind:                    tk_struct
-extra_info:              file-scope class-type-supplement#4
-
-file-scope expr-node#1
-type:                    file-scope type#10: int
-kind:                    enk_constant
-constant:                file-scope constant#1: 1
-position.seq:            46
-
-file-scope expr-node#2
-type:                    file-scope type#10: int
-kind:                    enk_constant
-constant:                file-scope constant#2: 2
-position.seq:            46
-
-file-scope variable#1
-  name:                  file-scope id-name#7: "v"
-type:                    file-scope type#9: ns::C<ns::ns2::B>::D
-
-file-scope type#11
   name:                  file-scope id-name#2: "T"
 kind:                    tk_template_param
 kind:                    tptk_param
 
+file-scope class-type-supplement#4
+
+file-scope type#10
+  name:                  file-scope id-name#3: "B"
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#4
+
+file-scope name-qualifier#1
+is_class:                FALSE
+name:                    file-scope id-name#7: "ns2"
+previous_qualifier:      NULL
+
+file-scope type#11
+kind:                    tk_typeref
+typeref_type:            file-scope type#10: ns::ns2::B
+qualifier:               file-scope name-qualifier#1
+kind:                    name_qualifier
+
 file-scope class-type-supplement#5
 template_arg_list:       
-  type:                  file-scope type#11: T#(1,1)
+  type:                  file-scope type#11: ns::ns2::B
+  explicitly_specified:  TRUE
 
 file-scope type#12
   name:                  file-scope id-name#8: "C"
@@ -88,17 +84,54 @@ extra_info:              file-scope class-type-supplement#5
 file-scope class-type-supplement#6
 
 file-scope type#13
-  name:                  file-scope id-name#3: "B"
+  name:                  file-scope id-name#6: "D"
 kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#6
 
 file-scope class-type-supplement#7
 template_arg_list:       
-  type:                  file-scope type#13: ns::ns2::B
-  explicitly_specified:  TRUE
+  type:                  file-scope type#9: T#(1,1)
 
 file-scope type#14
   name:                  file-scope id-name#8: "C"
 kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#7
+
+file-scope name-qualifier#2
+is_class:                FALSE
+name:                    file-scope id-name#9: "ns"
+previous_qualifier:      NULL
+
+file-scope name-qualifier#3
+is_class:                TRUE
+qualifier.class_type:    file-scope type#15: ns::A
+name:                    file-scope id-name#10: "A"
+previous_qualifier:      file-scope name-qualifier#2
+
+file-scope type#16
+kind:                    tk_typeref
+typeref_type:            file-scope type#13: ns::C<ns::ns2::B>::D
+qualifier:               file-scope name-qualifier#3
+kind:                    name_qualifier
+
+file-scope expr-node#1
+type:                    file-scope type#17: int
+kind:                    enk_constant
+constant:                file-scope constant#1: 1
+position.seq:            123
+
+file-scope expr-node#2
+type:                    file-scope type#17: int
+kind:                    enk_constant
+constant:                file-scope constant#2: 2
+position.seq:            123
+
+file-scope type#18
+kind:                    tk_template_param
+kind:                    tptk_param
+
+file-scope variable#1
+  name:                  file-scope id-name#11: "v"
+type:                    file-scope type#16: ns::C<ns::ns2::B>::D
+declared_type:           file-scope type#18: auto
 

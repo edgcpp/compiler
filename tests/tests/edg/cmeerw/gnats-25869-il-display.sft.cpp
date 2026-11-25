@@ -1,6 +1,7 @@
 //type:fp
 //options:--c++17 --no_il_lowering --il_display
-//filter:grep -E " file-scope type@[0-9a-f]*: E<\(\(bool\)\(V<" | sed -e 's/@[0-9a-f]*:/:/'
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 template<bool, typename T = void>
 struct E
@@ -26,3 +27,10 @@ void f()
   V v(1, 2);
   V vv = v;
 }
+
+/* @filter
+file-scope type[kind==tk_struct]
+  source_corresp/name, next
+file-scope scope[kind==sck_class_struct_union]
+  assoc_type
+ */

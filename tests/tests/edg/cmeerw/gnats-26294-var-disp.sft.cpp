@@ -1,7 +1,8 @@
 //type:fp
 //options:--c++20:--c++20:--c++20:--c++20:--c++20
 //options_all:--no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\n\n' '/^file-scope (expr-node@.*\nkind: +enk_variable|type@.*\nkind: +(tk_struct|template_arg_list)|variable@|variable-template-info@|name-qualifier@)/' | awk '/^[a-z_]+:$/ { getline n; if (n ~ /^   /) { gsub(/  +/, "", n); print $0 " " n; } else { print $0; print n; } next; }1' | grep -E -e '^(is_class|is_global_qualified_name|qualifier|qualifier.class_type|name|kind|variable|template_info|num_template_arguments|template_arg_list|orig_template_arg_list|typeref_type|is_template_id|position[.]seq|  name|  type|  explicitly_specified|  decl_position[.]seq):' -e '^ +(FALSE|TRUE)' -e '^file-scope ' -e '^$' | edg-enumerate-il-addrs
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 template<typename T, typename U = T>
 int var = 1;
@@ -80,3 +81,21 @@ int i =
   C<INT2>::N<INT2>::var<INT2>;  // should point to existing template args
 
 #endif
+
+/* @filter
+file-scope name-reference[is_global_qualified_name==TRUE]
+  num_template_arguments, qualifier, is_template_id, is_global_qualified_name
+file-scope expr-node[kind==enk_variable]
+  kind, orig_template_arg_list, num_template_arguments, qualifier, variable,
+  position.seq, is_template_id, is_global_qualified_name
+file-scope type[kind==tk_struct]
+  source_corresp/name, source_corresp/decl_position.seq, kind
+file-scope type[kind==template_arg_list]
+  kind, typeref_type, template_arg_list
+file-scope variable
+  source_corresp/name, source_corresp/decl_position.seq, template_info
+file-scope variable-template-info
+  template_arg_list
+file-scope name-qualifier
+  qualifier.class_type, name, is_class
+ */

@@ -1,4 +1,4 @@
-fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
 file-scope type#1
   name:                  file-scope id-name#1: "INT1"
   decl_position.seq:     13
@@ -16,27 +16,64 @@ kind:                    is_alias
 file-scope expr-node#1
 kind:                    enk_routine
 routine:                 file-scope routine#1: fn
-position.seq:            18
+qualifier:               NULL
+num_template_arguments:  1
+is_global_qualified_name:
+                         FALSE
+is_template_id:          TRUE
+position.seq:            19
 
 file-scope expr-node#2
 kind:                    enk_routine
 routine:                 file-scope routine#1: fn
-position.seq:            18
+qualifier:               NULL
+num_template_arguments:  1
+orig_template_arg_list:  
+  type:                  file-scope type#1: INT1
+  explicitly_specified:  TRUE
+is_global_qualified_name:
+                         FALSE
+is_template_id:          TRUE
+position.seq:            20
 
 file-scope expr-node#3
 kind:                    enk_routine
 routine:                 file-scope routine#1: fn
-position.seq:            18
+qualifier:               NULL
+num_template_arguments:  1
+orig_template_arg_list:  
+  type:                  file-scope type#3: INT2
+  explicitly_specified:  TRUE
+is_global_qualified_name:
+                         FALSE
+is_template_id:          TRUE
+position.seq:            21
 
 file-scope expr-node#4
 kind:                    enk_routine
 routine:                 file-scope routine#1: fn
-position.seq:            18
+qualifier:               NULL
+num_template_arguments:  1
+orig_template_arg_list:  
+  type:                  file-scope type#1: INT1
+  explicitly_specified:  TRUE
+is_global_qualified_name:
+                         FALSE
+is_template_id:          TRUE
+position.seq:            22
 
 file-scope expr-node#5
 kind:                    enk_routine
 routine:                 file-scope routine#1: fn
-position.seq:            18
+qualifier:               NULL
+num_template_arguments:  1
+orig_template_arg_list:  
+  type:                  file-scope type#3: INT2
+  explicitly_specified:  TRUE
+is_global_qualified_name:
+                         FALSE
+is_template_id:          TRUE
+position.seq:            23
 
 file-scope routine#2
   name:                  file-scope id-name#3: "fn"

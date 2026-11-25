@@ -1,70 +1,78 @@
-fe_only -DTEST_NUMBER=1 --c++20 --no_il_lower --il_display Test_name.c
-entity:                  file-scope constant: E1
+edg-first-stage-il -DTEST_NUMBER=1 --c++20 --no_il_lower --il_display Test_name.c
+file-scope using-decl#1
+entity:                  file-scope constant#1: E1
 is_using_directive:      FALSE
 is_class_member:         TRUE
 is_using_enum:           FALSE
 is_enumerator:           TRUE
 access:                  as_public
-qualifier.class_type:    file-scope type: E
+qualifier.class_type:    file-scope type#1: E
 
-entity:                  file-scope constant: E2
+file-scope using-decl#2
+entity:                  file-scope constant#2: E2
 is_using_directive:      FALSE
 is_class_member:         TRUE
 is_using_enum:           FALSE
 is_enumerator:           TRUE
 access:                  as_protected
-qualifier.class_type:    file-scope type: E
+qualifier.class_type:    file-scope type#1: E
 
-entity:                  file-scope constant: E3
+file-scope using-decl#3
+entity:                  file-scope constant#3: E3
 is_using_directive:      FALSE
 is_class_member:         TRUE
 is_using_enum:           FALSE
 is_enumerator:           TRUE
 access:                  as_private
-qualifier.class_type:    file-scope type: E
+qualifier.class_type:    file-scope type#1: E
 
-entity:                  file-scope constant: E1
+file-scope using-decl#4
+entity:                  file-scope constant#1: E1
 is_using_directive:      FALSE
 is_class_member:         TRUE
 is_using_enum:           FALSE
 is_enumerator:           FALSE
 access:                  as_public
-qualifier.class_type:    file-scope type: B
+qualifier.class_type:    file-scope type#2: B
 is_representative:       TRUE
 
-entity:                  file-scope variable: v1
+file-scope using-decl#5
+entity:                  file-scope variable#1: v1
 is_using_directive:      FALSE
 is_class_member:         TRUE
 is_using_enum:           FALSE
 is_enumerator:           FALSE
 access:                  as_public
-qualifier.class_type:    file-scope type: B
+qualifier.class_type:    file-scope type#2: B
 is_representative:       TRUE
 
-entity:                  file-scope constant: E2
+file-scope using-decl#6
+entity:                  file-scope constant#2: E2
 is_using_directive:      FALSE
 is_class_member:         TRUE
 is_using_enum:           FALSE
 is_enumerator:           FALSE
 access:                  as_protected
-qualifier.class_type:    file-scope type: B
+qualifier.class_type:    file-scope type#2: B
 is_representative:       TRUE
 
-entity:                  file-scope variable: v2
+file-scope using-decl#7
+entity:                  file-scope variable#2: v2
 is_using_directive:      FALSE
 is_class_member:         TRUE
 is_using_enum:           FALSE
 is_enumerator:           FALSE
 access:                  as_protected
-qualifier.class_type:    file-scope type: B
+qualifier.class_type:    file-scope type#2: B
 is_representative:       TRUE
 
-entity:                  file-scope variable: v3
+file-scope using-decl#8
+entity:                  file-scope variable#3: v3
 is_using_directive:      FALSE
 is_class_member:         TRUE
 is_using_enum:           FALSE
 is_enumerator:           FALSE
 access:                  as_private
-qualifier.class_type:    file-scope type: B
+qualifier.class_type:    file-scope type#2: B
 is_representative:       TRUE
 

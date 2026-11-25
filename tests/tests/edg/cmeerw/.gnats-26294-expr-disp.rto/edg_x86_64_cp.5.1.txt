@@ -1,4 +1,4 @@
-fe_only -DTEST_NUMBER=5 --no_il_lower --il_display --c++20 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=5 --no_il_lower --il_display --c++20 Test_name.c
 file-scope type#1
   name:                  file-scope id-name#1: "U"
 kind:                    tk_template_param
@@ -58,54 +58,95 @@ file-scope expr-node#1
 type:                    file-scope type#10: unsigned long
 kind:                    enk_sizeof
 type:                    file-scope type#9: A<int, int>
-position.seq:            26
+position.seq:            64
+
+file-scope type#11
+kind:                    tk_template_param
+kind:                    tptk_param
 
 file-scope variable#1
   name:                  file-scope id-name#6: "a"
 type:                    file-scope type#10: unsigned long
 constant:                file-scope constant#1: 1UL
+declared_type:           file-scope type#11: auto
+
+file-scope type#12
+kind:                    tk_typeref
+typeref_type:            file-scope type#9: A<int, int>
+template_arg_list:       
+  type:                  file-scope type#13: INT1
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
 
 file-scope expr-node#2
 type:                    file-scope type#10: unsigned long
 kind:                    enk_sizeof
-type:                    file-scope type#9: A<int, int>
-position.seq:            27
+type:                    file-scope type#12: A<int, int>
+position.seq:            65
+
+file-scope type#14
+kind:                    tk_template_param
+kind:                    tptk_param
 
 file-scope variable#2
   name:                  file-scope id-name#7: "a1"
 type:                    file-scope type#10: unsigned long
 constant:                file-scope constant#2: 1UL
+declared_type:           file-scope type#14: auto
+
+file-scope type#15
+kind:                    tk_typeref
+typeref_type:            file-scope type#9: A<int, int>
+template_arg_list:       
+  type:                  file-scope type#16: INT2
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
 
 file-scope expr-node#3
 type:                    file-scope type#10: unsigned long
 kind:                    enk_sizeof
-type:                    file-scope type#9: A<int, int>
-position.seq:            28
+type:                    file-scope type#15: A<int, int>
+position.seq:            66
+
+file-scope type#17
+kind:                    tk_template_param
+kind:                    tptk_param
 
 file-scope variable#3
   name:                  file-scope id-name#8: "a2"
 type:                    file-scope type#10: unsigned long
 constant:                file-scope constant#3: 1UL
+declared_type:           file-scope type#17: auto
 
 file-scope expr-node#4
 type:                    file-scope type#10: unsigned long
 kind:                    enk_sizeof
-type:                    file-scope type#9: A<int, int>
-position.seq:            30
+type:                    file-scope type#12: A<int, int>
+position.seq:            68
+
+file-scope type#18
+kind:                    tk_template_param
+kind:                    tptk_param
 
 file-scope variable#4
   name:                  file-scope id-name#9: "aa1"
 type:                    file-scope type#10: unsigned long
 constant:                file-scope constant#4: 1UL
+declared_type:           file-scope type#18: auto
 
 file-scope expr-node#5
 type:                    file-scope type#10: unsigned long
 kind:                    enk_sizeof
-type:                    file-scope type#9: A<int, int>
-position.seq:            31
+type:                    file-scope type#15: A<int, int>
+position.seq:            69
+
+file-scope type#19
+kind:                    tk_template_param
+kind:                    tptk_param
 
 file-scope variable#5
   name:                  file-scope id-name#10: "aa2"
 type:                    file-scope type#10: unsigned long
 constant:                file-scope constant#5: 1UL
+declared_type:           file-scope type#19: auto
 

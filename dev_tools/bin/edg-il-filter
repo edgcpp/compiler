@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+
+'''Filter an EDG IL dump using a specification embedded in a test source.
+
+The specification is read from a ``/* @filter ... */`` comment in the test
+source.  The source defaults to ``Local_file.c`` in the current directory,
+which is how the test harness checks out the original test file.  An explicit
+source path may be given, and ``EDG_TRANSLATION_UNIT_TAG`` is used as a
+fallback.  The IL dump is read from stdin.
+'''
+
+import argparse
+import os
+import sys
+
+from pathlib import Path
+from typing import Optional
+
+from edgtest.il_filter import extract_filter_spec, filter_il_dump
+
+
+def resolve_source_path(arg: Optional[str]) -> Path:
+  '''Return the test source path to read the filter specification from.'''
+  if arg is not None:
+    return Path(arg)
+
+  local_file = Path('Local_file.c')
+  if local_file.is_file():
+    return local_file
+
+  original_test = os.environ.get('EDG_TRANSLATION_UNIT_TAG')
+  if original_test is not None:
+    return Path(original_test)
+
+  return local_file
+
+
+def read_filter_spec(source_path: Path) -> str:
+  '''Return the filter specification embedded in the given test source.'''
+  source_text = source_path.read_text(encoding='utf-8', errors='replace')
+  spec = extract_filter_spec(source_text)
+  if spec is None:
+    raise SystemExit(
+      f'missing /* @filter ... */ comment in {source_path}'
+    )
+  return spec
+
+
+def main() -> int:
+  '''Read the IL dump from stdin and write the filtered IL to stdout.'''
+  parser = argparse.ArgumentParser(
+    description = 'Filter an EDG IL dump using an embedded test filter.'
+  )
+  parser.add_argument(
+    'source',
+    nargs = '?',
+    help = 'test source containing /* @filter ... */ (default: Local_file.c)'
+  )
+  args = parser.parse_args()
+
+  source_path = resolve_source_path(args.source)
+  spec = read_filter_spec(source_path)
+  sys.stdout.write(filter_il_dump(sys.stdin.read(), spec))
+  return 0
+
+
+if __name__ == '__main__':
+  raise SystemExit(main())

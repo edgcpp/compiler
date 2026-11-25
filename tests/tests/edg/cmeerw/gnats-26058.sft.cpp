@@ -1,6 +1,7 @@
 //type:fp
 //options_all:--no_il_lower --il_display --c++11
-//filter:grep -A30 '^  name:.*"p' | grep -e name: -e is_local_to_function | edg-normalize-test-output --il
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 namespace minimal {
   template<bool>
@@ -37,3 +38,8 @@ void g(C c, D<0> d)
   f(d);
   f(d, 1);
 }
+
+/* @filter
+func-scope variable
+  source_corresp/name, source_corresp/is_local_to_function
+ */

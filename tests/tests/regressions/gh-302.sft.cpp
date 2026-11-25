@@ -1,7 +1,8 @@
 //type:fp
 //options:--c++11:--c++11 --gn 160200:--c++11 --clang_version 230100:--ms_c++20 --microsoft_version 1951
 //options_all:--il_display --no_il_lower
-//filter:awk -v RS='' -v ORS='\n\n' '/^func-scope (constructor-init@|scope@)/' | grep -E -e '^(next|compiler_generated|kind|base_class|orig_type|  start[.]seq|routine[.]ptr|constructor_inits):' -e '^func-scope ' -e '^$' | edg-enumerate-il-addrs
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 namespace non_type_param
 {
@@ -83,3 +84,11 @@ namespace using_decltype
 
   template struct C<X<int[1], int[2]>>;
 }
+
+/* @filter
+func-scope constructor-init
+  next, compiler_generated, kind, base_class, orig_type,
+  ctor_init_range/start.seq
+func-scope scope
+  next, kind, routine.ptr, constructor_inits
+ */

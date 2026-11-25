@@ -1,4 +1,4 @@
-fe_only -DTEST_NUMBER=5 --no_il_lower --il_display --c++20 --gn 150100 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=5 --no_il_lower --il_display --c++20 --gn 150100 Test_name.c
 file-scope class-type-supplement#1
 
 file-scope type#1
@@ -15,7 +15,11 @@ extra_info:              file-scope class-type-supplement#2
 
 file-scope class-type-supplement#3
 template_arg_list:       
+  constant:              file-scope constant#1: N
+  pack exp placeholder:  
   type:                  file-scope type#3: T#(1,2)
+  is_pack_element:       TRUE
+  is_pack:               TRUE
 
 file-scope type#4
   name:                  file-scope id-name#3: "__type_pack_element"
@@ -27,8 +31,11 @@ file-scope type#5
 kind:                    tk_typeref
 typeref_type:            file-scope type#6: int
 template_arg_list:       
+  constant:              file-scope constant#2: N
+  pack exp placeholder:  
   type:                  file-scope type#7: T#(1,2)
-  type:                  file-scope type#7: T#(1,2)
+  is_pack_element:       TRUE
+  is_pack:               TRUE
 kind:                    is_template_alias
 
 file-scope class-type-supplement#4
@@ -64,7 +71,7 @@ file-scope class-type-supplement#7
 
 file-scope type#14
   name:                  file-scope id-name#8: "B"
-  decl_position.seq:     21
+  decl_position.seq:     82
 kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#7
 
@@ -73,50 +80,58 @@ proxy_of_type:           file-scope type#15: ns::A<T#(1,1)>
 
 file-scope type#16
   name:                  file-scope id-name#7: "A"
-  decl_position.seq:     26
+  decl_position.seq:     87
 kind:                    tk_class
 extra_info:              file-scope class-type-supplement#8
 
 file-scope type#15
   name:                  file-scope id-name#7: "A"
-  decl_position.seq:     26
+  decl_position.seq:     87
 kind:                    tk_typeref
 typeref_type:            file-scope type#14: B
 template_arg_list:       
   type:                  file-scope type#17: T#(1,1)
   explicitly_specified:  TRUE
-  type:                  file-scope type#17: T#(1,1)
-  explicitly_specified:  TRUE
 kind:                    is_template_alias
+
+file-scope type#18
+  name:                  file-scope id-name#7: "A"
+  decl_position.seq:     87
+kind:                    tk_typeref
+typeref_type:            file-scope type#14: B
+template_arg_list:       
+  type:                  file-scope type#19: <unnamed#1>#(1,1)
+kind:                    is_template_alias
+
+file-scope name-qualifier#1
+is_class:                FALSE
+name:                    file-scope id-name#9: "ns"
+previous_qualifier:      NULL
+
+file-scope type#20
+kind:                    tk_typeref
+typeref_type:            file-scope type#15: ns::A<T#(1,1)>
+qualifier:               file-scope name-qualifier#1
+kind:                    name_qualifier
 
 file-scope base-class#1
 type:                    file-scope type#16: A
-orig_type:               file-scope type#15: ns::A<T#(1,1)>
+orig_type:               file-scope type#20: ns::A<T#(1,1)>
 
 file-scope class-type-supplement#9
 template_arg_list:       
   type:                  file-scope type#17: T#(1,1)
 
-file-scope type#18
-  name:                  file-scope id-name#9: "C"
-  decl_position.seq:     30
+file-scope type#21
+  name:                  file-scope id-name#10: "C"
+  decl_position.seq:     91
 kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#9
 
 file-scope class-type-supplement#10
 
-file-scope type#19
-  name:                  file-scope id-name#10: "type_info"
+file-scope type#22
+  name:                  file-scope id-name#11: "type_info"
 kind:                    tk_class
 extra_info:              file-scope class-type-supplement#10
-
-file-scope type#20
-  name:                  file-scope id-name#7: "A"
-  decl_position.seq:     26
-kind:                    tk_typeref
-typeref_type:            file-scope type#14: B
-template_arg_list:       
-  type:                  file-scope type#21: <unnamed#1>#(1,1)
-  type:                  file-scope type#21: <unnamed#1>#(1,1)
-kind:                    is_template_alias
 

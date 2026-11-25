@@ -1,4 +1,4 @@
-fe_only -DTEST_NUMBER=3 --no_il_lower --il_display --c++20 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=3 --no_il_lower --il_display --c++20 Test_name.c
 file-scope type#1
   name:                  file-scope id-name#1: "U"
 kind:                    tk_template_param
@@ -58,74 +58,120 @@ file-scope expr-node#1
 type:                    file-scope type#8: int
 kind:                    enk_constant
 constant:                file-scope constant#1: 0
-position.seq:            26
+position.seq:            46
 
 file-scope expr-node#2
 type:                    file-scope type#9: A<int, int>
 kind:                    enk_temp_init
+position.seq:            46
+
+file-scope type#10
+kind:                    tk_template_param
+kind:                    tptk_param
 
 file-scope variable#1
   name:                  file-scope id-name#6: "a"
 type:                    file-scope type#9: A<int, int>
-constant:                file-scope constant#2: A<int, int>{}
+constant:                file-scope constant#2: {}
+declared_type:           file-scope type#10: auto
+
+file-scope type#11
+kind:                    tk_typeref
+typeref_type:            file-scope type#9: A<int, int>
+template_arg_list:       
+  type:                  file-scope type#12: INT1
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
 
 file-scope expr-node#3
 type:                    file-scope type#8: int
 kind:                    enk_constant
 constant:                file-scope constant#3: 0
-position.seq:            27
+position.seq:            47
 
 file-scope expr-node#4
-type:                    file-scope type#9: A<int, int>
+type:                    file-scope type#11: A<int, int>
 kind:                    enk_temp_init
+position.seq:            47
+
+file-scope type#13
+kind:                    tk_template_param
+kind:                    tptk_param
 
 file-scope variable#2
   name:                  file-scope id-name#7: "a1"
-type:                    file-scope type#9: A<int, int>
-constant:                file-scope constant#4: A<int, int>{}
+type:                    file-scope type#11: A<int, int>
+constant:                file-scope constant#4: {}
+declared_type:           file-scope type#13: auto
+
+file-scope type#14
+kind:                    tk_typeref
+typeref_type:            file-scope type#9: A<int, int>
+template_arg_list:       
+  type:                  file-scope type#15: INT2
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
 
 file-scope expr-node#5
 type:                    file-scope type#8: int
 kind:                    enk_constant
 constant:                file-scope constant#5: 0
-position.seq:            28
+position.seq:            48
 
 file-scope expr-node#6
-type:                    file-scope type#9: A<int, int>
+type:                    file-scope type#14: A<int, int>
 kind:                    enk_temp_init
+position.seq:            48
+
+file-scope type#16
+kind:                    tk_template_param
+kind:                    tptk_param
 
 file-scope variable#3
   name:                  file-scope id-name#8: "a2"
-type:                    file-scope type#9: A<int, int>
-constant:                file-scope constant#6: A<int, int>{}
+type:                    file-scope type#14: A<int, int>
+constant:                file-scope constant#6: {}
+declared_type:           file-scope type#16: auto
 
 file-scope expr-node#7
 type:                    file-scope type#8: int
 kind:                    enk_constant
 constant:                file-scope constant#7: 0
-position.seq:            30
+position.seq:            50
 
 file-scope expr-node#8
-type:                    file-scope type#9: A<int, int>
+type:                    file-scope type#11: A<int, int>
 kind:                    enk_temp_init
+position.seq:            50
+
+file-scope type#17
+kind:                    tk_template_param
+kind:                    tptk_param
 
 file-scope variable#4
   name:                  file-scope id-name#9: "aa1"
-type:                    file-scope type#9: A<int, int>
-constant:                file-scope constant#8: A<int, int>{}
+type:                    file-scope type#11: A<int, int>
+constant:                file-scope constant#8: {}
+declared_type:           file-scope type#17: auto
 
 file-scope expr-node#9
 type:                    file-scope type#8: int
 kind:                    enk_constant
 constant:                file-scope constant#9: 0
-position.seq:            31
+position.seq:            51
 
 file-scope expr-node#10
-type:                    file-scope type#9: A<int, int>
+type:                    file-scope type#14: A<int, int>
 kind:                    enk_temp_init
+position.seq:            51
+
+file-scope type#18
+kind:                    tk_template_param
+kind:                    tptk_param
 
 file-scope variable#5
   name:                  file-scope id-name#10: "aa2"
-type:                    file-scope type#9: A<int, int>
-constant:                file-scope constant#10: A<int, int>{}
+type:                    file-scope type#14: A<int, int>
+constant:                file-scope constant#10: {}
+declared_type:           file-scope type#18: auto
 

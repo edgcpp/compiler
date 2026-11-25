@@ -1,7 +1,8 @@
 //type:fp
 //options:--c++17 --g++:--c++17 --g++ -DARRAY:--c++17 --clang -DATOMIC:--c++17 --clang -DATOMIC -DARRAY
 //options_all:--il_display
-//filter:sed -e 's/@[0-9a-f]*//' | grep -E '^constant:                file-scope constant: ([(][^)]+[)])?[0-9]+UL?$' | sed -e 's/\([0-9]\+\)UL\?/\1/'
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 // testing note: check that lowering generates the expected implicit arguments
 // (sizes and alignment) for "operator new" and "operator delete"
@@ -74,3 +75,10 @@ void foo()
   }
 #endif
 }
+
+/* @filter
+file-scope expr-node[kind==enk_constant]
+  type, constant
+func-scope expr-node[kind==enk_constant]
+  type, constant
+ */

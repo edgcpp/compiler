@@ -1,6 +1,33 @@
-fe_only -DTEST_NUMBER=1 --il_display --c++17 --g++ Test_name.c
-constant:                file-scope constant: 4
-constant:                file-scope constant: 5
-constant:                file-scope constant: (align_val_t)32
-constant:                file-scope constant: 5
-constant:                file-scope constant: 32
+edg-first-stage-il -DTEST_NUMBER=1 --il_display --c++17 --g++ Test_name.c
+file-scope expr-node#1
+type:                    file-scope type#1: int
+constant:                file-scope constant#1: 5
+
+file-scope expr-node#2
+type:                    file-scope type#1: int
+constant:                file-scope constant#2: 0
+
+file-scope expr-node#3
+type:                    file-scope type#2: unsigned long
+constant:                file-scope constant#3: 4UL
+
+func-scope expr-node#1
+type:                    file-scope type#2: unsigned long
+constant:                file-scope constant#4: 5UL
+
+func-scope expr-node#2
+type:                    file-scope type#3: align_val_t
+constant:                file-scope constant#5: (align_val_t)32UL
+
+func-scope expr-node#3
+type:                    file-scope type#4: const nothrow_t &
+constant:                func-scope constant#1: nothrow
+
+func-scope expr-node#4
+type:                    file-scope type#2: unsigned long
+constant:                file-scope constant#4: 5UL
+
+func-scope expr-node#5
+type:                    file-scope type#2: unsigned long
+constant:                file-scope constant#6: 32UL
+

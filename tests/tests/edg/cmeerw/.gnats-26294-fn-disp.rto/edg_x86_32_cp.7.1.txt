@@ -1,4 +1,4 @@
-fe_only -DTEST_NUMBER=7 --no_il_lower --il_display --c++20 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=7 --no_il_lower --il_display --c++20 Test_name.c
 file-scope type#1
   name:                  file-scope id-name#1: "INT1"
   decl_position.seq:     13
@@ -41,7 +41,7 @@ template_arg_list:
 
 file-scope routine#3
   name:                  file-scope id-name#7: "g"
-  decl_position.seq:     17
+  decl_position.seq:     95
 template_arg_list:       
   type:                  file-scope type#6: T#(1,1)
 
@@ -53,8 +53,7 @@ kind:                    tpck_param
 
 file-scope type#7
   name:                  file-scope id-name#8: "type"
-  decl_position.seq:     19
-                         TRUE
+  decl_position.seq:     97
 kind:                    tk_typeref
 typeref_type:            file-scope type#6: T#(1,1)
 kind:                    is_alias
@@ -64,7 +63,7 @@ file-scope constant#4
 kind:                    ck_template_param
 kind:                    tpck_unknown_function
 
-func-scope constant#5
+func-scope constant#1
 kind:                    ck_template_param
 kind:                    tpck_template_ref
 con:                     file-scope constant#4: fn
@@ -74,6 +73,14 @@ arg_list:
 
 func-scope expr-node#1
 kind:                    enk_constant
-constant:                func-scope constant#5: fn<type>
-position.seq:            20
+constant:                func-scope constant#1: fn<type>
+qualifier:               NULL
+num_template_arguments:  1
+orig_template_arg_list:  
+  type:                  file-scope type#7: type
+  explicitly_specified:  TRUE
+is_global_qualified_name:
+                         FALSE
+is_template_id:          TRUE
+position.seq:            98
 

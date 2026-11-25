@@ -1,35 +1,167 @@
-fe_only -DTEST_NUMBER=1 -w --no_il_lower --il_display --c++11 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=1 -w --no_il_lower --il_display --c++11 Test_name.c
+file-scope name-reference#1
+next:                    NULL
+qualifier:               NULL
+num_template_arguments:  -1
+is_template_id:          FALSE
+
+file-scope name-reference#2
+next:                    NULL
+qualifier:               NULL
+num_template_arguments:  -1
+is_template_id:          FALSE
+
+file-scope name-reference#3
+next:                    NULL
+qualifier:               NULL
+num_template_arguments:  -1
+is_template_id:          FALSE
+
+file-scope name-reference#4
+next:                    NULL
+qualifier:               NULL
+num_template_arguments:  -1
+is_template_id:          FALSE
+
+file-scope name-reference#5
+next:                    NULL
+qualifier:               NULL
+num_template_arguments:  -1
+is_template_id:          FALSE
+
+file-scope name-reference#6
+next:                    NULL
+qualifier:               NULL
+num_template_arguments:  -1
+is_template_id:          FALSE
+
+file-scope name-reference#7
+next:                    NULL
+qualifier:               NULL
+num_template_arguments:  -1
+is_template_id:          FALSE
+
+file-scope name-qualifier#1
+qualifier.namespace_ptr: file-scope namespace#1: ns2
+name:                    file-scope id-name#1: "ns2"
+previous_qualifier:      NULL
+
+file-scope name-reference#8
+next:                    NULL
+qualifier:               file-scope name-qualifier#1
+num_template_arguments:  1
+orig_template_arg_list:  
+  type:                  file-scope type#1: INT
+  explicitly_specified:  TRUE
+is_template_id:          TRUE
+
+file-scope name-reference#9
+next:                    file-scope name-reference#10
+qualifier:               file-scope name-qualifier#1
+num_template_arguments:  -1
+is_template_id:          FALSE
+
+file-scope name-reference#10
+next:                    NULL
+qualifier:               NULL
+num_template_arguments:  -1
+is_template_id:          FALSE
+
+file-scope name-qualifier#2
+qualifier.class_type:    file-scope type#2: ns1::C
+name:                    file-scope id-name#2: "C"
+previous_qualifier:      file-scope name-qualifier#1
+
+file-scope name-reference#11
+next:                    NULL
+qualifier:               file-scope name-qualifier#2
+num_template_arguments:  1
+orig_template_arg_list:  
+  type:                  file-scope type#1: INT
+  explicitly_specified:  TRUE
+is_template_id:          TRUE
+
 func-scope expr-node#1
-type:                    file-scope type#1: int (*)()
-orig_lvalue_type:        file-scope type#2: int ()
+type:                    file-scope type#3: int (*)()
+orig_lvalue_type:        file-scope type#4: int ()
 next:                    NULL
 routine:                 file-scope routine#1: nontmpl
+next:                    file-scope name-reference#10
+qualifier:               file-scope name-qualifier#1
+num_template_arguments:  -1
+is_template_id:          FALSE
 position.seq:            29
 
 func-scope expr-node#2
-type:                    file-scope type#1: int (*)()
-orig_lvalue_type:        file-scope type#2: int ()
+type:                    file-scope type#3: int (*)()
+orig_lvalue_type:        file-scope type#4: int ()
 next:                    NULL
 routine:                 file-scope routine#1: nontmpl
+next:                    file-scope name-reference#10
+qualifier:               file-scope name-qualifier#1
+num_template_arguments:  -1
+is_template_id:          FALSE
 position.seq:            30
 
 func-scope expr-node#3
-type:                    file-scope type#2: int ()
+type:                    file-scope type#4: int ()
 next:                    NULL
 routine:                 file-scope routine#1: nontmpl
+next:                    file-scope name-reference#10
+qualifier:               file-scope name-qualifier#1
+num_template_arguments:  -1
+is_template_id:          FALSE
 position.seq:            31
 
 func-scope expr-node#4
-type:                    file-scope type#3: int (*)()
-orig_lvalue_type:        file-scope type#4: int ()
+type:                    file-scope type#5: int (*)()
+orig_lvalue_type:        file-scope type#6: int ()
 next:                    NULL
 routine:                 file-scope routine#2: tmpl
+next:                    NULL
+qualifier:               file-scope name-qualifier#1
+num_template_arguments:  1
+orig_template_arg_list:  
+  type:                  file-scope type#1: INT
+  explicitly_specified:  TRUE
+is_template_id:          TRUE
 position.seq:            33
 
 func-scope expr-node#5
-type:                    file-scope type#3: int (*)()
-orig_lvalue_type:        file-scope type#4: int ()
+type:                    file-scope type#5: int (*)()
+orig_lvalue_type:        file-scope type#6: int ()
 next:                    NULL
 routine:                 file-scope routine#2: tmpl
+next:                    NULL
+qualifier:               file-scope name-qualifier#1
+num_template_arguments:  1
+orig_template_arg_list:  
+  type:                  file-scope type#1: INT
+  explicitly_specified:  TRUE
+is_template_id:          TRUE
 position.seq:            34
+
+func-scope expr-node#6
+type:                    file-scope type#6: int ()
+next:                    NULL
+routine:                 file-scope routine#2: tmpl
+next:                    NULL
+qualifier:               file-scope name-qualifier#1
+num_template_arguments:  1
+orig_template_arg_list:  
+  type:                  file-scope type#1: INT
+  explicitly_specified:  TRUE
+is_template_id:          TRUE
+position.seq:            35
+
+func-scope expr-node#7
+type:                    file-scope type#7: int (ns1::C::*)()
+next:                    NULL
+next:                    NULL
+qualifier:               file-scope name-qualifier#2
+num_template_arguments:  1
+orig_template_arg_list:  
+  type:                  file-scope type#1: INT
+  explicitly_specified:  TRUE
+is_template_id:          TRUE
 

@@ -1,6 +1,7 @@
 //type:fp
-//options:--c++20 --no_il_lower --il_display
-//filter:awk '/^func-scope variable@/{f=1}/^$/{if (f) print $0; f=0}f' | awk '/"marker"/{m=1}/^$/{if (m) f=1}f' | grep -E -e '^(  decl_position.seq|  name|  parent_scope|  enclosing_routine|  referenced|  needed|  is_local_to_function|type|storage_class|init_kind|is_parameter):' -e '^func-scope ' -e '^$' | sed -e 's/@[0-9a-f]*//'
+//options:--c++20 --no_il_lower --il_display --sys_include=$EDG_BASE/include
+//filter:awk -v RS='' -v ORS='\n\n' '!seen && /^func-scope variable@/ && /"marker"/{seen=1; next} seen' | edg-il-filter
+//script:edg-first-stage-il
 #include <coroutine>
 
 struct R
@@ -35,3 +36,12 @@ R tmpl(T q)
 }
 
 template R tmpl<int>(int);
+
+/* @filter
+func-scope variable
+  source_corresp/name, source_corresp/decl_position.seq,
+  source_corresp/parent_scope, source_corresp/enclosing_routine,
+  source_corresp/referenced, source_corresp/needed,
+  source_corresp/is_local_to_function, type, storage_class, init_kind,
+  is_parameter
+ */

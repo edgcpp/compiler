@@ -63,6 +63,7 @@ pushd bin/ > /dev/null
   check_types_strict edg-docker-test
   check_types edg-examine-test
   check_types edg-exec
+  check_types_strict edg-il-filter
   check_types edg-modify-test
   check_types_strict edg-pack-cpfe-ce
   check_types_strict edg-rematerialize-test-run
@@ -127,6 +128,7 @@ pushd pylibs/ > /dev/null
   popd > /dev/null
   pushd edgtest/ > /dev/null
     check_types_strict __init__.py
+    check_types_strict il_filter.py
     pushd inputs/ > /dev/null
       check_types_strict __init__.py
     popd > /dev/null

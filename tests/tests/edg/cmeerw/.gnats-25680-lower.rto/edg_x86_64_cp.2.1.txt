@@ -1,4 +1,17 @@
-fe_only -DTEST_NUMBER=2 --il_display --c++17 --g++ -DARRAY Test_name.c
-constant:                file-scope constant: 4
-constant:                file-scope constant: 10
-constant:                file-scope constant: 32
+edg-first-stage-il -DTEST_NUMBER=2 --il_display --c++17 --g++ -DARRAY Test_name.c
+file-scope expr-node#1
+type:                    file-scope type#1: int
+constant:                file-scope constant#1: 5
+
+file-scope expr-node#2
+type:                    file-scope type#1: int
+constant:                file-scope constant#2: 0
+
+file-scope expr-node#3
+type:                    file-scope type#2: unsigned long
+constant:                file-scope constant#3: 4UL
+
+func-scope expr-node#1
+type:                    file-scope type#3: std::align_val_t
+constant:                file-scope constant#4: (std::align_val_t)32UL
+

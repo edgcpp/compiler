@@ -1,7 +1,7 @@
 //type:fp
 //options:--clang_version 200100:--gn 150100
 //options_all:-w --c++17 --target linux_aarch64 --il_display
-//filter:awk '/^func-scope variable@/{print $0; f=1; next}/^$/{if (f) print $0; f=0}f' | grep -E -e '^(  name|  enclosing_routine|type):' -e '^func-scope ' -e '^$' | sed -e 's/@[0-9a-f]*//'
+//filter:edg-il-filter
 
 #if defined(__clang__)
 typedef __attribute__((neon_vector_type(8)))  __mfp8 mfloat8x8_t;
@@ -24,3 +24,8 @@ namespace mfp8_types
   void f(__Mfloat8x16_t v) { }
 #endif
 }
+
+/* @filter
+func-scope variable
+  source_corresp/name, source_corresp/enclosing_routine, type
+ */

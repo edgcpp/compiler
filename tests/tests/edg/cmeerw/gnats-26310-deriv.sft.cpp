@@ -1,7 +1,8 @@
 //type:fp
 //options:--c++11
 //options_all:--no_il_lower --il_display
-//filter:awk '/^file-scope (base-class)@/{f=1}/^$/{if (f) print $0; f=0}f' | grep -E '^($|file-scope |type:|derived_class:|direct:|is_virtual:|ambiguous:|has_public_derivation:)' | sed -e 's/@[0-9a-f]*//'
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 struct VB
 {
@@ -86,3 +87,8 @@ namespace protected_diamond
   struct D : public B1, protected B2
   { };
 }
+
+/* @filter
+file-scope base-class
+  type, derived_class, direct, is_virtual, ambiguous, has_public_derivation
+ */

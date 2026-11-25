@@ -1,4 +1,4 @@
-fe_only -DTEST_NUMBER=1 --c++11 --gn 150200 --no_il_lower --il_display Test_name.c
+edg-first-stage-il -DTEST_NUMBER=1 --c++11 --gn 150200 --no_il_lower --il_display Test_name.c
 file-scope class-type-supplement#1
 
 file-scope type#1
@@ -9,6 +9,7 @@ extra_info:              file-scope class-type-supplement#1
 file-scope class-type-supplement#2
 template_arg_list:       
   constant:              file-scope constant#1: N
+  pack exp placeholder:  
   type:                  file-scope type#2: T#(1,2)
   is_pack_element:       TRUE
   is_pack:               TRUE
@@ -27,6 +28,7 @@ extra_info:              file-scope class-type-supplement#3
 
 file-scope class-type-supplement#4
 template_arg_list:       
+  pack exp placeholder:  
   constant:              file-scope constant#2: Is
   is_pack_element:       TRUE
   is_pack:               TRUE
@@ -38,9 +40,11 @@ extra_info:              file-scope class-type-supplement#4
 
 file-scope class-type-supplement#5
 template_arg_list:       
+  pack exp placeholder:  
   constant:              file-scope constant#3: __integer_pack(I)...
   explicitly_specified:  TRUE
   is_pack_element:       TRUE
+  is_integer_pack:       TRUE
 
 file-scope type#6
   name:                  file-scope id-name#4: "C"
@@ -56,6 +60,7 @@ extra_info:              file-scope class-type-supplement#6
 
 file-scope class-type-supplement#7
 template_arg_list:       
+  pack exp placeholder:  
   constant:              file-scope constant#4: 0
   explicitly_specified:  TRUE
   is_pack_element:       TRUE

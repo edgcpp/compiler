@@ -1,7 +1,8 @@
 //type:fp
 //options:--c++23
 //options_all:--no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\n\n' '/^file-scope (base-class@|using-decl@|routine@.*special_kind: +sfk_deduction_guide)/' | grep -E -e '^(  name|  decl_position[.]seq|kind|type|orig_type|derived_class|direct|entity|special_kind|compiler_generated|is_explicit_constructor|is_template_function|is_inheriting_ctor|is_prototype_instantiation|is_explicit_constructor|is_deduction_guide_from_inheriting_ctor|qualifier[.]class_type|position[.]seq):' -e '^file-scope ' -e '^$' | edg-enumerate-il-addrs
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 template<typename T>
 struct B
@@ -34,3 +35,14 @@ struct D2 : A<T>
 D2 d2a(1);
 D2 d2b(2);
 D2 d2c("");
+
+/* @filter
+file-scope base-class
+  type, orig_type, derived_class, direct
+file-scope using-decl
+  entity, qualifier.class_type, position.seq, is_inheriting_ctor
+file-scope routine[special_kind==sfk_deduction_guide]
+  source_corresp/name, source_corresp/decl_position.seq, special_kind, type,
+  is_prototype_instantiation, is_template_function, is_explicit_constructor,
+  is_deduction_guide_from_inheriting_ctor, compiler_generated
+ */
