@@ -62,6 +62,21 @@ struct x86_64_abi_arg_info_t {
 };
 
 /**
+ * @brief Resolves the effective non-zero byte alignment of a System V AMD64 aggregate field type.
+ * @details Queries `alignment_of_type(field_ty)` and normalizes zero alignment (which occurs on
+ *          zero-sized/empty types or synthetic zero-initialized AST nodes whose `alignment` field is `0`)
+ *          to `1` byte so natural-alignment modulo checks (`field_offset % field_align`) never
+ *          divide by zero on x86_64.
+ * @param[in] field_ty The EDG type of the struct, class, or union field.
+ * @param[out] out_align Receives the effective non-zero alignment in bytes (`>= 1`).
+ * @return llvm_gen_be_error_t::ok on success, `invalid_argument` if `field_ty` or `out_align` is null,
+ *         or `out_of_memory` on allocation budget exhaustion.
+ */
+llvm_gen_be_error_t resolve_sysv_field_alignment(
+    a_type_ptr field_ty,
+    uint64_t* out_align) noexcept;
+
+/**
  * @brief Determines whether an EDG type represents System V AMD64 `COMPLEX_X87` (`_Complex long double` / `_Complex __float80`).
  * @details Recognizes both unlowered `tk_complex` nodes and IL-lowered `_Complex` representations
  *          (`_Complex_long_double` and `_Complex_float80` structs synthesized by `lower_c99.c`), while

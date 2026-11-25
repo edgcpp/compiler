@@ -2213,6 +2213,46 @@ int main(void) {
       // Now with double_ty.alignment = 8 at offset 4, field_offset % alignment != 0 (unaligned field)!
       assert(classify_sysv_argument(&st_straddle, 0, &info) == llvm_gen_be_error_t::ok);
 
+      // Exhaustive tests for resolve_sysv_field_alignment: null arguments, zero-alignment field
+      // normalization (preventing x86_64 divide-by-zero traps on field_offset % 0), and OOM percolation
+      {
+        uint64_t resolved_align = 0;
+        assert(resolve_sysv_field_alignment(nullptr, &resolved_align) == llvm_gen_be_error_t::invalid_argument);
+        assert(resolve_sysv_field_alignment(&double_ty, nullptr) == llvm_gen_be_error_t::invalid_argument);
+
+        a_type zero_align_int = {};
+        zero_align_int.kind = tk_integer;
+        zero_align_int.size = 4;
+        zero_align_int.alignment = 0;
+        zero_align_int.variant.integer.int_kind = ik_int;
+        assert(resolve_sysv_field_alignment(&zero_align_int, &resolved_align) == llvm_gen_be_error_t::ok);
+        assert(resolved_align == 1ULL);
+
+        a_field zf1 = {}, zf2 = {};
+        zf1.type = &zero_align_int; zf1.offset = 0; zf1.next = &zf2;
+        zf2.type = &zero_align_int; zf2.offset = 4;
+        a_type st_zero_align = {};
+        st_zero_align.kind = tk_struct;
+        st_zero_align.size = 8;
+        st_zero_align.variant.class_struct_union.field_list = &zf1;
+        assert(classify_sysv_argument(&st_zero_align, 0, &info) == llvm_gen_be_error_t::ok);
+        assert(!info.pass_in_memory);
+        assert(info.eightbyte_classes[0] == x86_64_abi_class_t::integer);
+
+        bool saw_ok_after_oom = false;
+        for (int budget = 0; budget < 16; ++budget) {
+          g_llvm_be_oom_countdown = budget;
+          llvm_gen_be_error_t oom_err = classify_sysv_argument(&st_zero_align, 0, &info);
+          g_llvm_be_oom_countdown = -1;
+          if (oom_err == llvm_gen_be_error_t::ok) {
+            saw_ok_after_oom = true;
+            break;
+          }
+          assert(oom_err == llvm_gen_be_error_t::out_of_memory);
+        }
+        assert(saw_ok_after_oom);
+      }
+
       // Field with offset + size > 16 inside a 16-byte struct
       sf2.type = &double_ty; sf2.offset = 16;
       st_straddle.size = 16;

@@ -62,6 +62,29 @@ static llvm_gen_be_error_t merge_classes(x86_64_abi_class_t accum, x86_64_abi_cl
 }
 
 /**
+ * @brief Resolves the effective non-zero byte alignment of a System V AMD64 aggregate field type.
+ * @details Queries `alignment_of_type(field_ty)` and normalizes zero alignment (which occurs on
+ *          zero-sized/empty types or synthetic zero-initialized AST nodes whose `alignment` field is `0`)
+ *          to `1` byte so natural-alignment modulo checks (`field_offset % field_align`) never
+ *          divide by zero on x86_64.
+ * @param[in] field_ty The EDG type of the struct, class, or union field.
+ * @param[out] out_align Receives the effective non-zero alignment in bytes (`>= 1`).
+ * @return llvm_gen_be_error_t::ok on success, `invalid_argument` if `field_ty` or `out_align` is null,
+ *         or `out_of_memory` on allocation budget exhaustion.
+ */
+llvm_gen_be_error_t resolve_sysv_field_alignment(
+    a_type_ptr field_ty,
+    uint64_t* out_align) noexcept {
+  if (field_ty == nullptr || out_align == nullptr) {
+    return llvm_gen_be_error_t::invalid_argument;
+  }
+  LLVM_GEN_BE_CHECK(llvm_gen_be_step_oom_budget());
+  uint64_t raw_align = static_cast<uint64_t>(alignment_of_type(field_ty));
+  *out_align = (raw_align > 0) ? raw_align : 1ULL;
+  return llvm_gen_be_error_t::ok;
+}
+
+/**
  * @brief Recursively classifies an EDG type into System V AMD64 ABI eightbyte classes.
  * @details Walks through the fields, arrays, and scalars of a type to accumulate the overall
  * eightbyte classification for up to two eightbytes (16 bytes maximum).
@@ -168,7 +191,9 @@ static llvm_gen_be_error_t classify_internal(
       }
 
       // Handle unaligned fields
-      if (field_offset % alignment_of_type(field->type) != 0) {
+      uint64_t field_align = 1ULL;
+      LLVM_GEN_BE_CHECK(resolve_sysv_field_alignment(field->type, &field_align));
+      if (field_offset % field_align != 0) {
         classes[0] = x86_64_abi_class_t::memory;
         classes[1] = x86_64_abi_class_t::memory;
         return llvm_gen_be_error_t::ok;
