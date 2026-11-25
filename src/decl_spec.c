@@ -5736,7 +5736,7 @@ there was an error; otherwise, return FALSE.
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
 
   a_boolean       is_scoped_enum = enum_type->variant.integer.is_scoped_enum;
-  a_type_ptr      explicit_base = integer_type_supp(enum_type)->base_type;
+  a_type_ptr      explicit_base = explicit_enum_underlying_type(enum_type);
   an_integer_kind explicit_base_kind =
                       explicit_base_kind_of_enumeration(enum_type, &bool_type);
   a_type_ptr      fixed_type = explicit_base;
@@ -5857,7 +5857,7 @@ is updated to reflect relevant positions of this definition.
   a_token_sequence_number
                      first_tsn = NO_TOKEN_SEQUENCE_NUMBER;
 
-  explicit_base = integer_type_supp(enum_type)->base_type;
+  explicit_base = explicit_enum_underlying_type(enum_type);
   /* Determine whether this is the definition of a member enum that can be
      instantiated.  A scoped enum declared in a class template is such an
      enum (whether defined in the class or later outside of the class).
@@ -6032,7 +6032,7 @@ is updated to reflect relevant positions of this definition.
         /* No explicit value. */
         if (cli_or_cx_enabled && !cppcli_enum_init_error_issued &&
             explicit_base_kind != (an_integer_kind)ik_none &&
-            is_bool_type(integer_type_supp(enum_type)->base_type)) {
+            is_bool_type(explicit_base)) {
           /* ECMA-372 (the C++/CLI standard) requires that C++/CLI enum
              types with an explicit boolean underlying type have explicit
              values for each of their enumerator constants. */
