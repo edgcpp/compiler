@@ -8654,6 +8654,9 @@ are done.
 #if VLA_DEALLOCATIONS_IN_IL
       case enk_vla_dealloc:
 #endif /* VLA_DEALLOCATIONS_IN_IL */
+#if DO_IL_LOWERING && !DO_FULL_PORTABLE_EH_LOWERING
+      case enk_lowered_eh_construct:
+#endif /* DO_IL_LOWERING && !DO_FULL_PORTABLE_EH_LOWERING */
 #if DO_IL_LOWERING && ABI_CHANGES_FOR_COVARIANT_VIRTUAL_FUNC_RETURN
       case enk_result_of_overriding_function:
 #endif /* DO_IL_LOWERING && ABI_CHANGES_FOR_COVARIANT_VIRTUAL_FUNC_RETURN */
@@ -16715,6 +16718,8 @@ otherwise.  Otherwise, set *tqs to TQ_NONE and *is_move to FALSE.
 
   result = special_kind_is(rp, sfk_operator) &&
            rp->variant.opname_kind == (an_opname_kind)onk_assign &&
+           rp->source_corresp.is_class_member &&
+           parent_class_of(rp) != NULL &&
            is_copy_assignment_operator_type(rp->type, parent_class_of(rp),
                                             /*move_assign_okay=*/TRUE,
                                             /*is_ref_arg=*/(a_boolean *)NULL,

@@ -47,6 +47,38 @@
       }
     },
     {
+      "name": "macos-arm-gcc-be-debug",
+      "inherits": "macos-arm-common",
+      "displayName": "MacOS ARM (GCC Backend) Build Config - DEBUG",
+      "description": "MacOS ARM build with libgccjit backend enabled",
+      "binaryDir": "${sourceDir}/build/gcc-be-debug",
+      "cacheVariables": {
+        "EDG_MACRO_CONF": "macos-arm-clang",
+        "CMAKE_BUILD_TYPE": "Debug",
+        "EDG_ENABLE_GCC_BACKEND": "ON"
+      },
+      "environment": {
+        "CC": "clang",
+        "CXX": "clang++"
+      }
+    },
+    {
+      "name": "macos-arm-gcc-be-release",
+      "inherits": "macos-arm-common",
+      "displayName": "MacOS ARM (GCC Backend) Build Config - RELEASE",
+      "description": "MacOS ARM release build with libgccjit backend enabled",
+      "binaryDir": "${sourceDir}/build/gcc-be-release",
+      "cacheVariables": {
+        "EDG_MACRO_CONF": "macos-arm-clang-release",
+        "CMAKE_BUILD_TYPE": "Release",
+        "EDG_ENABLE_GCC_BACKEND": "ON"
+      },
+      "environment": {
+        "CC": "clang",
+        "CXX": "clang++"
+      }
+    },
+    {
       "name": "macos-x86-common",
       "hidden": true,
       "description": "MacOS x86 base config",
@@ -282,6 +314,38 @@
       }
     },
     {
+      "name": "linux-gcc-be-debug",
+      "inherits": "linux-common",
+      "displayName": "Linux (GCC Backend) Build Config - DEBUG",
+      "description": "Linux debug build with libgccjit backend enabled",
+      "binaryDir": "${sourceDir}/build/gcc-be-debug",
+      "cacheVariables": {
+        "EDG_MACRO_CONF": "linux-gcc",
+        "CMAKE_BUILD_TYPE": "Debug",
+        "EDG_ENABLE_GCC_BACKEND": "ON"
+      },
+      "environment": {
+        "CC": "gcc",
+        "CXX": "g++"
+      }
+    },
+    {
+      "name": "linux-gcc-be-release",
+      "inherits": "linux-common",
+      "displayName": "Linux (GCC Backend) Build Config - RELEASE",
+      "description": "Linux release build with libgccjit backend enabled",
+      "binaryDir": "${sourceDir}/build/gcc-be-release",
+      "cacheVariables": {
+        "EDG_MACRO_CONF": "linux-gcc-release",
+        "CMAKE_BUILD_TYPE": "Release",
+        "EDG_ENABLE_GCC_BACKEND": "ON"
+      },
+      "environment": {
+        "CC": "gcc",
+        "CXX": "g++"
+      }
+    },
+    {
       "name": "windows-common",
       "hidden": true,
       "description": "Windows base config",
@@ -323,6 +387,75 @@
       "cacheVariables": {
         "EDG_DEBUG_MACRO_CONF": "windows-msvc",
         "EDG_RELEASE_MACRO_CONF": "windows-msvc-release"
+      }
+    },
+    {
+      "name": "llvm-backend-debug",
+      "displayName": "LLVM Backend Debug",
+      "description": "Debug build of the EDG front end with the LLVM IR backend enabled.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/llvm-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_LLVM_BACKEND": "ON",
+        "BUILD_TESTING": "ON",
+        "EDG_BUILD_LIB": "OFF"
+      }
+    },
+    {
+      "name": "llvm-backend-release",
+      "displayName": "LLVM Backend Release",
+      "description": "Release build of the EDG front end with the LLVM IR backend enabled.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/llvm-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "ENABLE_LLVM_BACKEND": "ON",
+        "BUILD_TESTING": "ON",
+        "EDG_BUILD_LIB": "OFF"
+      }
+    },
+    {
+      "name": "llvm-backend-coverage",
+      "displayName": "LLVM Backend Coverage",
+      "description": "Coverage-instrumented build of the EDG LLVM IR backend and test suite.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/llvm-coverage",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "EDG_ENABLE_LLVM_BACKEND": "ON",
+        "ENABLE_LLVM_BACKEND": "ON",
+        "BUILD_TESTING": "ON",
+        "EDG_LLVM_BE_COVERAGE": "ON",
+        "EDG_BUILD_LIB": "OFF"
+      }
+    },
+    {
+      "name": "multibackend-debug",
+      "displayName": "Multi-Backend (LLVM + GCC) Debug",
+      "description": "Debug build of the EDG front end with both LLVM IR and GCC (libgccjit) backends enabled.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/multibackend-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "EDG_ENABLE_LLVM_BACKEND": "ON",
+        "EDG_ENABLE_GCC_BACKEND": "ON",
+        "BUILD_TESTING": "ON",
+        "EDG_BUILD_LIB": "OFF"
+      }
+    },
+    {
+      "name": "multibackend-release",
+      "displayName": "Multi-Backend (LLVM + GCC) Release",
+      "description": "Release build of the EDG front end with both LLVM IR and GCC (libgccjit) backends enabled.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/multibackend-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "EDG_ENABLE_LLVM_BACKEND": "ON",
+        "EDG_ENABLE_GCC_BACKEND": "ON",
+        "BUILD_TESTING": "ON",
+        "EDG_BUILD_LIB": "OFF"
       }
     }
   ]

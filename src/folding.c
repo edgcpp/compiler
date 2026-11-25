@@ -3347,7 +3347,7 @@ description of the parameters.
   check_assertion(type_is(result_type, tk_vector) &&
                   constant_is(constant, ck_aggregate));
   result_elem_type = skip_typerefs(result_type->variant.vector.element_type);
-  num_result_elements = num_vector_elements(result_type);
+  num_result_elements = (sizeof_t)num_vector_elements(result_type);
   if (op == eok_vector_not) {
     op = eok_not;
   } else if (op == eok_complement && is_bool_type(result_elem_type)) {
@@ -6016,8 +6016,8 @@ description of the parameters.
 
   check_assertion(result_type->kind == (a_type_kind)tk_vector);
   result_elem_type = result_type->variant.vector.element_type;
-  num_result_elements =
-                     result_type->size / skip_typerefs(result_elem_type)->size;
+  num_result_elements = (sizeof_t)(result_type->size /
+                                   skip_typerefs(result_elem_type)->size);
   /* Change vector operators into their corresponding scalar operators. */
   switch (op) {
     case eok_vector_eq:    op = eok_eq;      break;

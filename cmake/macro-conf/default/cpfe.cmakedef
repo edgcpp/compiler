@@ -1,5 +1,9 @@
-# Use the C-generating back end.
-BACK_END_IS_C_GEN_BE=1
+# Select the C-generating, LLVM IR-generating, and/or GCC-generating back end.
+BACK_END_IS_C_GEN_BE=@EDG_C_GEN_BE_DEFAULT@
+BACK_END_IS_LLVM_GEN_BE=@EDG_LLVM_GEN_BE_DEFAULT@
+BACK_END_IS_GCC_GEN_BE=@EDG_GCC_GEN_BE_DEFAULT@
 
-# The C-generating back end requires lowering.
+# All code-generating back ends require lowering.
 DO_IL_LOWERING=1
+DO_FULL_PORTABLE_EH_LOWERING=@EDG_DO_FULL_PORTABLE_EH_LOWERING_DEFAULT@
+GENERATE_EH_TABLES=@EDG_GENERATE_EH_TABLES_DEFAULT@

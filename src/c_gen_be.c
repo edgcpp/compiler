@@ -76,6 +76,12 @@ BEGIN_EDG_NAMESPACE
 #endif /* !SCOPE_ORPHANED_LIST_PROCESSING_NEEDED */
 
 #ifndef DUMP_LOWERED_EH_CONSTRUCTS_IN_C_GEN_BE
+#if !DO_FULL_PORTABLE_EH_LOWERING && (BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE)
+#define DUMP_LOWERED_EH_CONSTRUCTS_IN_C_GEN_BE 1
+#endif /* !DO_FULL_PORTABLE_EH_LOWERING && ... */
+#endif /* ifndef DUMP_LOWERED_EH_CONSTRUCTS_IN_C_GEN_BE */
+
+#ifndef DUMP_LOWERED_EH_CONSTRUCTS_IN_C_GEN_BE
 #if !DO_FULL_PORTABLE_EH_LOWERING
  #error -- DO_FULL_PORTABLE_EH_LOWERING required for the C-generating back end.
 #endif /* !DO_FULL_PORTABLE_EH_LOWERING */
@@ -12248,10 +12254,10 @@ BEGIN_EDG_NAMESPACE
 
 #else /* !STANDALONE_C_GEN_BE */
 
-void back_end(void)
+void c_gen_be_entry(void)
 /*
-Simple "back end" that generates C.  This version is for use as a
-subroutine called in the same program as the front end.
+Entry point for invoking the C-generating back end directly from the
+multi-backend router in cfe.c.
 */
 {
 #if IL_SHOULD_BE_WRITTEN_TO_FILE
@@ -12267,9 +12273,18 @@ subroutine called in the same program as the front end.
 #endif /* IL_SHOULD_BE_WRITTEN_TO_FILE */
   /* Generate C code. */
   c_gen_be();
-  /* Note that the file scope memory region is not freed here.  It will
-     be freed by the front end wrapup process. */
+}  /* c_gen_be_entry */
+
+#if !BACK_END_IS_LLVM_GEN_BE && !BACK_END_IS_GCC_GEN_BE
+void back_end(void)
+/*
+Simple "back end" that generates C.  This version is for use as a
+subroutine called in the same program as the front end.
+*/
+{
+  c_gen_be_entry();
 }  /* back_end */
+#endif /* !BACK_END_IS_LLVM_GEN_BE && !BACK_END_IS_GCC_GEN_BE */
 #endif /* STANDALONE_C_GEN_BE */
 
 #if MAKE_FRONT_END_CALLABLE

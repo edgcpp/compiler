@@ -14672,17 +14672,22 @@ points to the template parameter list.
         if (is_bit_precise_integer_type(type) &&
             bit_precise_integer_is_unsigned(type) ==
               templ_type->variant.template_param.is_unsigned_bit_precise_int) {
-          a_constant_ptr width_con = local_constant();
-          set_unsigned_integer_constant(
-              width_con,
-              (a_host_large_unsigned)bit_precise_integer_width(type),
-              (an_integer_kind)ik_int);
-          match = matches_template_constant(
-                    width_con,
+          match = matches_template_array_bound(
+                    (a_targ_size_t)bit_precise_integer_width(type),
                     templ_type->variant.template_param.extra_info
                               ->constraint.bit_width_constant,
                     templ_arg_list, templ_param_list, flags);
-          release_local_constant(&width_con);
+        } else if (is_template_param_type(type) &&
+                   tptk_is(type, tptk_bit_precise_int) &&
+                   type->variant.template_param.is_unsigned_bit_precise_int ==
+                     templ_type->variant.template_param
+                               .is_unsigned_bit_precise_int) {
+          match = matches_template_constant(
+                    type->variant.template_param.extra_info
+                        ->constraint.bit_width_constant,
+                    templ_type->variant.template_param.extra_info
+                              ->constraint.bit_width_constant,
+                    templ_arg_list, templ_param_list, flags);
         }  /* if */
       } else if (tptk_is(templ_type, tptk_unknown)) {
         /* The template type is an unknown dependent type.  This is a

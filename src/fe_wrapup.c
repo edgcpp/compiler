@@ -49,9 +49,21 @@ fe_wrapup.c - End of front end processing.
 #if MAINTAIN_NEEDED_FLAGS || DO_IL_LOWERING
 #include "il_walk.h"
 #endif /* MAINTAIN_NEEDED_FLAGS || DO_IL_LOWERING */
+#if BACK_END_IS_C_GEN_BE
+#include "c_gen_be.h"
+#endif /* BACK_END_IS_C_GEN_BE */
 #if BACK_END_IS_CP_GEN_BE
 #include "cp_gen_be.h"
 #endif /* BACK_END_IS_CP_GEN_BE */
+#if BACK_END_IS_LLVM_GEN_BE
+#include "llvm_gen_be.h"
+#endif /* BACK_END_IS_LLVM_GEN_BE */
+#if BACK_END_IS_GCC_GEN_BE
+#include "gcc_gen_be_context.h"
+#endif /* BACK_END_IS_GCC_GEN_BE */
+#if BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE
+#include "edg_be_common.h"
+#endif /* BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE */
 #if MICROSOFT_EXTENSIONS_ALLOWED
 #include "ms_metadata.h"
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -517,6 +529,232 @@ flag processing and unneeded IL removal for secondary translation units.
 }  /* file_scope_il_wrapup_part_2 */
 
 
+#if DO_IL_LOWERING && (BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE)
+/**
+ * @struct edg_ptr_visit_set_t
+ * @brief Open-addressed pointer hash set used during pre-lowering routine type preservation.
+ * @details Tracks visited `a_type_ptr` and `a_scope_ptr` nodes in O(1) amortized time.
+ */
+struct edg_ptr_visit_set_t {
+  const void **slots; ///< Hash table slot array (`NULL` marks an empty slot).
+  size_t cap;         ///< Power-of-two capacity of `slots`.
+  size_t count;       ///< Number of occupied entries in `slots`.
+};
+
+/**
+ * @brief Inserts `ptr` into `set` and reports whether `ptr` was newly inserted.
+ * @details Grows `set` by 2x when load reaches 50% and returns `out_of_memory` if `calloc` fails.
+ * @param[in,out] set Open-addressed pointer visit set.
+ * @param[in] ptr Pointer key to record (`NULL` is treated as already visited).
+ * @param[out] out_inserted Receives `TRUE` if `ptr` was newly inserted, `FALSE` otherwise.
+ * @return `edg_be_driver_error_t::ok` on success, `invalid_argument` if `set` or `out_inserted` is null,
+ *         or `out_of_memory` on allocation failure.
+ */
+EDG_BE_NODISCARD static edg_be_driver_error_t ptr_visit_set_insert(
+    edg_ptr_visit_set_t *set,
+    const void *ptr,
+    a_boolean *out_inserted) noexcept
+{
+  if (set == NULL || out_inserted == NULL) {
+    return edg_be_driver_error_t::invalid_argument;
+  }
+  *out_inserted = FALSE;
+  if (ptr == NULL) return edg_be_driver_error_t::ok;
+  if (set->cap == 0 || (set->count + 1U) * 2U >= set->cap) {
+    size_t new_cap = (set->cap == 0) ? 1024U : (set->cap * 2U);
+    const void **new_slots =
+        (const void **)calloc(new_cap, sizeof(const void *));
+    if (new_slots == NULL) return edg_be_driver_error_t::out_of_memory;
+    for (size_t i = 0; i < set->cap; ++i) {
+      const void *old_p = set->slots[i];
+      if (old_p != NULL) {
+        size_t idx =
+            (size_t)((((size_t)old_p >> 4U) * 11400714819323198485ULL) &
+                     (new_cap - 1U));
+        while (new_slots[idx] != NULL) idx = (idx + 1U) & (new_cap - 1U);
+        new_slots[idx] = old_p;
+      }
+    }
+    free((void *)set->slots);
+    set->slots = new_slots;
+    set->cap = new_cap;
+  }
+  size_t idx = (size_t)((((size_t)ptr >> 4U) * 11400714819323198485ULL) &
+                        (set->cap - 1U));
+  while (set->slots[idx] != NULL) {
+    if (set->slots[idx] == ptr) return edg_be_driver_error_t::ok;
+    idx = (idx + 1U) & (set->cap - 1U);
+  }
+  set->slots[idx] = ptr;
+  set->count++;
+  *out_inserted = TRUE;
+  return edg_be_driver_error_t::ok;
+}
+
+EDG_BE_NODISCARD static edg_be_driver_error_t
+preserve_unlowered_routine_types_in_scope(
+    a_scope_ptr scope,
+    edg_ptr_visit_set_t *visited_types,
+    edg_ptr_visit_set_t *visited_scopes) noexcept;
+
+/**
+ * @brief Preserves `unlowered_type` copies on all `tk_routine` nodes reachable from `tp`.
+ * @details Walks pointer, reference, member-pointer, array, routine, and class/template argument
+ * graphs prior to IL lowering so Itanium ABI mangling retains pre-lowered routine signatures.
+ * @param[in,out] tp Root EDG type node to traverse (may be `NULL`).
+ * @param[in,out] visited_types Cycle-breaking set of visited `a_type_ptr` nodes.
+ * @param[in,out] visited_scopes Cycle-breaking set of visited `a_scope_ptr` nodes.
+ * @return `edg_be_driver_error_t::ok` on success, or an error code from `ptr_visit_set_insert`.
+ */
+EDG_BE_NODISCARD static edg_be_driver_error_t
+preserve_unlowered_routine_types_in_type(
+    a_type_ptr tp,
+    edg_ptr_visit_set_t *visited_types,
+    edg_ptr_visit_set_t *visited_scopes) noexcept
+{
+  while (tp != NULL) {
+    a_boolean inserted = FALSE;
+    EDG_BE_DRIVER_CHECK(ptr_visit_set_insert(visited_types, tp, &inserted));
+    if (!inserted) {
+      return edg_be_driver_error_t::ok;
+    }
+    switch (tp->kind) {
+      case tk_typeref:
+        tp = tp->variant.typeref.type;
+        continue;
+      case tk_pointer:
+        tp = tp->variant.pointer.type;
+        continue;
+      case tk_ptr_to_member:
+        EDG_BE_DRIVER_CHECK(preserve_unlowered_routine_types_in_type(
+            tp->variant.ptr_to_member.class_of_which_a_member,
+            visited_types, visited_scopes));
+        tp = tp->variant.ptr_to_member.type;
+        continue;
+      case tk_array:
+        tp = tp->variant.array.element_type;
+        continue;
+      case tk_routine:
+        if (tp->variant.routine.unlowered_type == NULL &&
+            !il_lowering_flag_of(tp)) {
+          a_type_ptr copy_tp = alloc_type(tk_routine);
+          copy_type_full(tp, copy_tp, /*copy_default_args=*/FALSE);
+          tp->variant.routine.unlowered_type = copy_tp;
+        }
+        if (tp->variant.routine.extra_info != NULL) {
+          for (a_param_type_ptr ptp =
+                   tp->variant.routine.extra_info->param_type_list;
+               ptp != NULL; ptp = ptp->next) {
+            EDG_BE_DRIVER_CHECK(preserve_unlowered_routine_types_in_type(
+                ptp->type, visited_types, visited_scopes));
+          }
+        }
+        tp = tp->variant.routine.return_type;
+        continue;
+      case tk_class:
+      case tk_struct:
+      case tk_union: {
+        a_class_type_supplement_ptr ctsp =
+            tp->variant.class_struct_union.extra_info;
+        if (ctsp != NULL) {
+          for (a_template_arg_ptr tap = ctsp->template_arg_list;
+               tap != NULL; tap = tap->next) {
+            if (tap->kind == tak_type) {
+              EDG_BE_DRIVER_CHECK(preserve_unlowered_routine_types_in_type(
+                  tap->variant.type, visited_types, visited_scopes));
+            }
+          }
+          for (a_template_arg_ptr tap = ctsp->partial_spec_template_arg_list;
+               tap != NULL; tap = tap->next) {
+            if (tap->kind == tak_type) {
+              EDG_BE_DRIVER_CHECK(preserve_unlowered_routine_types_in_type(
+                  tap->variant.type, visited_types, visited_scopes));
+            }
+          }
+          for (a_base_class_ptr bcp = ctsp->base_classes; bcp != NULL;
+               bcp = bcp->next) {
+            EDG_BE_DRIVER_CHECK(preserve_unlowered_routine_types_in_type(
+                bcp->type, visited_types, visited_scopes));
+          }
+          if (ctsp->assoc_scope != NULL) {
+            EDG_BE_DRIVER_CHECK(preserve_unlowered_routine_types_in_scope(
+                ctsp->assoc_scope, visited_types, visited_scopes));
+          }
+        }
+        for (a_field_ptr fp = tp->variant.class_struct_union.field_list;
+             fp != NULL; fp = fp->next) {
+          EDG_BE_DRIVER_CHECK(preserve_unlowered_routine_types_in_type(
+              fp->type, visited_types, visited_scopes));
+        }
+        return edg_be_driver_error_t::ok;
+      }
+      default:
+        return edg_be_driver_error_t::ok;
+    }
+  }
+  return edg_be_driver_error_t::ok;
+}  /* preserve_unlowered_routine_types_in_type */
+
+/**
+ * @brief Traverses `scope` to preserve unlowered `tk_routine` copies before `lower_file_scope()`.
+ * @details Visits types, routines, function-definition scopes, variables, namespaces, and sub-scopes.
+ * @param[in,out] scope EDG scope node to traverse (may be `NULL`).
+ * @param[in,out] visited_types Cycle-breaking set of visited `a_type_ptr` nodes.
+ * @param[in,out] visited_scopes Cycle-breaking set of visited `a_scope_ptr` nodes.
+ * @return `edg_be_driver_error_t::ok` on success, or an error code on allocation failure.
+ */
+EDG_BE_NODISCARD static edg_be_driver_error_t
+preserve_unlowered_routine_types_in_scope(
+    a_scope_ptr scope,
+    edg_ptr_visit_set_t *visited_types,
+    edg_ptr_visit_set_t *visited_scopes) noexcept
+{
+  if (scope == NULL) {
+    return edg_be_driver_error_t::ok;
+  }
+  a_boolean inserted = FALSE;
+  EDG_BE_DRIVER_CHECK(ptr_visit_set_insert(visited_scopes, scope, &inserted));
+  if (!inserted) {
+    return edg_be_driver_error_t::ok;
+  }
+  for (a_type_ptr tp = scope->types; tp != NULL; tp = tp->next) {
+    EDG_BE_DRIVER_CHECK(preserve_unlowered_routine_types_in_type(
+        tp, visited_types, visited_scopes));
+  }
+  for (a_routine_ptr rp = scope->routines; rp != NULL; rp = rp->next) {
+    EDG_BE_DRIVER_CHECK(preserve_unlowered_routine_types_in_type(
+        rp->type, visited_types, visited_scopes));
+    if (rp->function_def_number != NULL_function_def_number &&
+        il_header.function_def_table != NULL && mem_region_table != NULL) {
+      EDG_BE_DRIVER_CHECK(preserve_unlowered_routine_types_in_scope(
+          scope_for_function_def(rp->function_def_number),
+          visited_types, visited_scopes));
+    }
+  }
+  for (a_variable_ptr vp = scope->variables; vp != NULL; vp = vp->next) {
+    EDG_BE_DRIVER_CHECK(preserve_unlowered_routine_types_in_type(
+        vp->type, visited_types, visited_scopes));
+  }
+  for (a_variable_ptr vp = scope->nonstatic_variables; vp != NULL;
+       vp = vp->next) {
+    EDG_BE_DRIVER_CHECK(preserve_unlowered_routine_types_in_type(
+        vp->type, visited_types, visited_scopes));
+  }
+  for (a_namespace_ptr nsp = scope->namespaces; nsp != NULL; nsp = nsp->next) {
+    if (!nsp->is_namespace_alias && nsp->variant.assoc_scope != NULL) {
+      EDG_BE_DRIVER_CHECK(preserve_unlowered_routine_types_in_scope(
+          nsp->variant.assoc_scope, visited_types, visited_scopes));
+    }
+  }
+  for (a_scope_ptr sub = scope->scopes; sub != NULL; sub = sub->next) {
+    EDG_BE_DRIVER_CHECK(preserve_unlowered_routine_types_in_scope(
+        sub, visited_types, visited_scopes));
+  }
+  return edg_be_driver_error_t::ok;
+}  /* preserve_unlowered_routine_types_in_scope */
+#endif /* DO_IL_LOWERING && (BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE) */
+
+
 static void file_scope_il_wrapup_part_3(void)
 /*
 Do the final wrapup processing on a translation unit.  This is
@@ -534,6 +772,30 @@ already been copied over.
 #endif /* EXPENSIVE_CHECKING */
   if (is_primary_translation_unit) {
 #if DO_IL_LOWERING
+#if BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE
+    if (!C_mode() && curr_translation_unit != NULL &&
+        (
+#if BACK_END_IS_LLVM_GEN_BE
+         llvm_be_enabled ||
+#endif
+#if BACK_END_IS_GCC_GEN_BE
+         gcc_be_enabled ||
+#endif
+         FALSE)) {
+      edg_ptr_visit_set_t visited_types = {NULL, 0U, 0U};
+      edg_ptr_visit_set_t visited_scopes = {NULL, 0U, 0U};
+      edg_be_driver_error_t preserve_err =
+          preserve_unlowered_routine_types_in_scope(
+              curr_translation_unit->primary_scope,
+              &visited_types,
+              &visited_scopes);
+      free((void *)visited_types.slots);
+      free((void *)visited_scopes.slots);
+      if (preserve_err != edg_be_driver_error_t::ok) {
+        catastrophe(ec_out_of_memory);
+      }
+    }
+#endif /* BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE */
     /* Lower the file scope. */
     lower_file_scope();
 #endif /* DO_IL_LOWERING */
@@ -849,9 +1111,25 @@ and before the back end (if any) is executed.
        end. */
     free_all_memory_regions();
   }  /* if */
-#else /* IL_SHOULD_BE_WRITTEN_TO_FILE */
-  /* Free front-end-only storage. */
+#else /* !IL_SHOULD_BE_WRITTEN_TO_FILE */
+  /* Free front-end-only storage unless a native LLVM/GCC backend is active
+     (in which case fe_wrapup_part_2 frees it right after back_end()). */
+#if BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE
+  {
+    a_boolean keep_fe_region_for_native_be = FALSE;
+#if BACK_END_IS_LLVM_GEN_BE
+    if (llvm_be_enabled) keep_fe_region_for_native_be = TRUE;
+#endif
+#if BACK_END_IS_GCC_GEN_BE
+    if (gcc_be_enabled) keep_fe_region_for_native_be = TRUE;
+#endif
+    if (!keep_fe_region_for_native_be) {
+      free_memory_region(FRONT_END_REGION_NUMBER);
+    }
+  }
+#else
   free_memory_region(FRONT_END_REGION_NUMBER);
+#endif
 #endif /* IL_SHOULD_BE_WRITTEN_TO_FILE */
 
   /* Clear the file index list maintained by the error routines (it was
@@ -899,9 +1177,22 @@ memory used by the compilation.
   cmd_line_cleanup();
   macro_cleanup();
   templates_cleanup();
+#if BACK_END_IS_C_GEN_BE && MAKE_FRONT_END_CALLABLE
+  c_gen_be_cleanup();
+#endif /* BACK_END_IS_C_GEN_BE && MAKE_FRONT_END_CALLABLE */
 #if BACK_END_IS_CP_GEN_BE
   cp_gen_be_cleanup();
 #endif /* BACK_END_IS_CP_GEN_BE */
+#if BACK_END_IS_LLVM_GEN_BE
+  if (llvm_gen_be_cleanup() != llvm_gen_be_error_t::ok) {
+    /* Error recorded on backend context if active. */
+  }
+#endif /* BACK_END_IS_LLVM_GEN_BE */
+#if BACK_END_IS_GCC_GEN_BE
+  if (gcc_gen_be_cleanup() != GCC_GEN_BE_SUCCESS) {
+    /* Error recorded on GCC backend state if active. */
+  }
+#endif /* BACK_END_IS_GCC_GEN_BE */
 #if IL_SHOULD_BE_WRITTEN_TO_FILE
   close_il_output_file();
 #endif /* IL_SHOULD_BE_WRITTEN_TO_FILE */

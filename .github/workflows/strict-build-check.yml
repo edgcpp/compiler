@@ -261,3 +261,59 @@ jobs:
           EDG_BASE: ${{ github.workspace }}/bases/docker/dev-env/gcc
         run: cmake --build build/clang
 
+  backend-modes-check:
+    name: CMake Backend Option Matrix (${{ matrix.mode_name }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - mode_name: neither
+            enable_llvm: 'OFF'
+            enable_gcc: 'OFF'
+            expect_llvm: '0'
+            expect_gcc: '0'
+          - mode_name: llvm
+            enable_llvm: 'ON'
+            enable_gcc: 'OFF'
+            expect_llvm: '1'
+            expect_gcc: '0'
+          - mode_name: gcc
+            enable_llvm: 'OFF'
+            enable_gcc: 'ON'
+            expect_llvm: '0'
+            expect_gcc: '1'
+          - mode_name: llvm+gcc
+            enable_llvm: 'ON'
+            enable_gcc: 'ON'
+            expect_llvm: '1'
+            expect_gcc: '1'
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Install toolchain dependencies
+        run: |
+          sudo apt-get update
+          gcc_ver=$(gcc -dumpversion | cut -d. -f1)
+          sudo apt-get install -y ninja-build cmake llvm-dev "libgccjit-${gcc_ver}-dev" libgccjit0
+
+      - name: Configure mode (${{ matrix.mode_name }})
+        run: |
+          cmake -B "build/mode-${{ matrix.mode_name }}" -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DEDG_ENABLE_LLVM_BACKEND=${{ matrix.enable_llvm }} \
+            -DEDG_ENABLE_GCC_BACKEND=${{ matrix.enable_gcc }} \
+            -DEDG_BUILD_LIB=OFF
+
+      - name: Build cpfe (${{ matrix.mode_name }})
+        run: cmake --build "build/mode-${{ matrix.mode_name }}" --target cpfe
+
+      - name: Smoke-test cpfe (${{ matrix.mode_name }})
+        run: |
+          python3 dev_tools/verify_backend_modes.py \
+            --cpfe "build/mode-${{ matrix.mode_name }}/bin/cpfe" \
+            --llvm "${{ matrix.expect_llvm }}" \
+            --gcc "${{ matrix.expect_gcc }}"
+

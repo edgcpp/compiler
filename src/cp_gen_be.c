@@ -7524,7 +7524,15 @@ Generate the list of arguments for the attribute, surrounded by parentheses.
       case aak_last:
         break;
       case aak_raw_token:
-        write_tok_str(aap->variant.token);
+        if (ap->kind == ak_availability && aap->variant.token != NULL &&
+            aap->variant.token[0] == '(') {
+          double ver = strtod(aap->variant.token + 1, NULL);
+          char vbuf[32];
+          (void)snprintf(vbuf, sizeof(vbuf), "%.6g", ver);
+          write_tok_str(vbuf);
+        } else {
+          write_tok_str(aap->variant.token);
+        }  /* if */
         break;
       case aak_token:
         write_tok_str(aap->variant.token);
@@ -27048,6 +27056,7 @@ initialization is performed even if the back end isn't used.
 
 #endif /* MAKE_FRONT_END_CALLABLE */
 
+#if !BACK_END_IS_LLVM_GEN_BE
 void back_end(void)
 /*
 Simple "back end" that turns the intermediate language back into C++ or C
@@ -27074,6 +27083,7 @@ as the front end.
   /* Note that the file scope memory region is not freed here.  It will
      be freed by the front end wrapup process. */
 }  /* back_end */
+#endif /* !BACK_END_IS_LLVM_GEN_BE */
 #endif /* (else of) STANDALONE_CP_GEN_BE */
 
 #if MAKE_FRONT_END_CALLABLE

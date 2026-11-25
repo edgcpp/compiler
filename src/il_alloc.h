@@ -506,12 +506,12 @@ memory region.
    *cp = NULL)
 
 /* A standalone C++-generating back end uses clear_expr_node. */
-#if BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_CP_GEN_BE || BACK_END_IS_GCC_GEN_BE
 
 extern void clear_expr_node(an_expr_node_ptr  node,
                             an_expr_node_kind kind);
 
-#endif /* BACK_END_IS_CP_GEN_BE */
+#endif /* BACK_END_IS_CP_GEN_BE || BACK_END_IS_GCC_GEN_BE */
 #endif /* !STANDALONE_UTILITY_PROGRAM */
 
 #define clear_tagged_ptr(tagged_ptr)                                        \

@@ -1,0 +1,355 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#
+# Multi-OS (Linux, macOS, Windows), Multi-Architecture (x86_64, arm64/aarch64),
+# and Multi-Backend (edgcpp+llvm, edgcpp+gcc, edgcpp+llvm+gcc) Release Workflow.
+
+name: Release Multi-Backend Binaries
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v6.6.0). Defaults to current ref name.'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build-matrix:
+    name: Build ${{ matrix.backend.flavor }} (${{ matrix.platform.os_name }}-${{ matrix.platform.arch }})
+    runs-on: ${{ matrix.platform.runner }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - os_name: linux
+            arch: x86_64
+            runner: ubuntu-24.04
+            archive_ext: tar.gz
+          - os_name: linux
+            arch: aarch64
+            runner: ubuntu-24.04-arm
+            archive_ext: tar.gz
+          - os_name: macos
+            arch: aarch64
+            runner: macos-latest
+            archive_ext: tar.gz
+          - os_name: windows
+            arch: x86_64
+            runner: windows-latest
+            archive_ext: zip
+          - os_name: windows
+            arch: arm64
+            runner: windows-11-arm
+            archive_ext: zip
+        backend:
+          - flavor: edgcpp+llvm
+            enable_llvm: 'ON'
+            enable_gcc: 'OFF'
+            expect_llvm: '1'
+            expect_gcc: '0'
+          - flavor: edgcpp+gcc
+            enable_llvm: 'OFF'
+            enable_gcc: 'ON'
+            expect_llvm: '0'
+            expect_gcc: '1'
+          - flavor: edgcpp+llvm+gcc
+            enable_llvm: 'ON'
+            enable_gcc: 'ON'
+            expect_llvm: '1'
+            expect_gcc: '1'
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Determine release version
+        id: version
+        shell: bash
+        run: |
+          if [ -n "${{ inputs.tag }}" ]; then
+            ver="${{ inputs.tag }}"
+          else
+            ver="${GITHUB_REF_NAME}"
+          fi
+          echo "version=${ver}" >> "${GITHUB_OUTPUT}"
+
+      - name: Read SoftFloat commit pin
+        id: softfloat-pin
+        shell: bash
+        run: |
+          echo "commit=$(tr -d '[:space:]' < dev_tools/docker/softfloat/SOFTFLOAT_COMMIT)" >> "${GITHUB_OUTPUT}"
+
+      - name: Cache SoftFloat
+        id: cache-softfloat
+        uses: actions/cache@v6
+        with:
+          path: softfloat
+          key: softfloat-${{ matrix.platform.os_name }}-${{ matrix.platform.arch }}-${{ steps.softfloat-pin.outputs.commit }}
+
+      - name: Install dependencies on Linux
+        if: matrix.platform.os_name == 'linux'
+        shell: bash
+        run: |
+          sudo apt-get update
+          pkgs=(ninja-build cmake build-essential python3)
+          if [ "${{ matrix.backend.enable_llvm }}" = "ON" ]; then
+            pkgs+=(llvm-dev)
+          fi
+          if [ "${{ matrix.backend.enable_gcc }}" = "ON" ]; then
+            gcc_ver=$(gcc -dumpversion | cut -d. -f1)
+            pkgs+=("libgccjit-${gcc_ver}-dev" libgccjit0)
+          fi
+          sudo apt-get install -y "${pkgs[@]}"
+
+      - name: Install dependencies on macOS (aarch64)
+        if: matrix.platform.os_name == 'macos'
+        shell: bash
+        run: |
+          pkgs=(ninja cmake)
+          if [ "${{ matrix.backend.enable_llvm }}" = "ON" ]; then
+            pkgs+=(llvm)
+          fi
+          if [ "${{ matrix.backend.enable_gcc }}" = "ON" ]; then
+            pkgs+=(libgccjit gcc)
+          fi
+          brew install "${pkgs[@]}"
+
+      - name: Set up MSVC developer environment on Windows
+        if: matrix.platform.os_name == 'windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.platform.arch == 'arm64' && 'arm64' || 'x64' }}
+
+      - name: Install LLVM SDK on Windows (MSVC ABI)
+        if: matrix.platform.os_name == 'windows' && matrix.backend.enable_llvm == 'ON'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ matrix.platform.arch }}" = "arm64" ]; then
+            llvm_arch="aarch64"
+          else
+            llvm_arch="x86_64"
+          fi
+          llvm_pkg="clang+llvm-23.1.3-${llvm_arch}-pc-windows-msvc"
+          curl -fSL --retry 3 "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.3/${llvm_pkg}.tar.zst" -o llvm.tar.zst
+          zstd -d --long=31 llvm.tar.zst -o llvm.tar
+          tar -xf llvm.tar
+          mv "${llvm_pkg}" "${GITHUB_WORKSPACE}/llvm-msvc"
+          rm -f llvm.tar.zst llvm.tar
+
+      - name: Install libgccjit on Windows (MSYS2)
+        if: matrix.platform.os_name == 'windows' && matrix.backend.enable_gcc == 'ON'
+        shell: bash
+        run: |
+          if [ -x "/c/msys64/usr/bin/pacman.exe" ]; then
+            if [ "${{ matrix.platform.arch }}" = "arm64" ]; then
+              /c/msys64/usr/bin/pacman.exe -S --noconfirm --needed mingw-w64-clang-aarch64-libgccjit || true
+            else
+              /c/msys64/usr/bin/pacman.exe -S --noconfirm --needed mingw-w64-ucrt-x86_64-libgccjit mingw-w64-x86_64-libgccjit || true
+            fi
+          fi
+
+      - name: Build SoftFloat (Linux / macOS)
+        if: matrix.platform.os_name != 'windows' && steps.cache-softfloat.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          commit="${{ steps.softfloat-pin.outputs.commit }}"
+          mkdir -p softfloat-src
+          git -C softfloat-src init
+          git -C softfloat-src remote add origin https://github.com/ucb-bar/berkeley-softfloat-3.git
+          git -C softfloat-src fetch --depth 1 origin "${commit}"
+          git -C softfloat-src checkout FETCH_HEAD
+          if [ "${{ matrix.platform.arch }}" = "x86_64" ]; then
+            make -C softfloat-src/build/Linux-x86_64-GCC
+            mkdir -p softfloat/include softfloat/lib
+            cp softfloat-src/source/include/*.h softfloat/include/
+            cp softfloat-src/build/Linux-x86_64-GCC/softfloat.a softfloat/lib/libsoftfloat.a
+          else
+            make -C softfloat-src/build/Linux-ARM-VFPv2-GCC SPECIALIZE_TYPE=8086-SSE
+            mkdir -p softfloat/include softfloat/lib
+            cp softfloat-src/source/include/*.h softfloat/include/
+            cp softfloat-src/build/Linux-ARM-VFPv2-GCC/softfloat.a softfloat/lib/libsoftfloat.a
+          fi
+
+      - name: Build SoftFloat (Windows MSVC)
+        if: matrix.platform.os_name == 'windows' && steps.cache-softfloat.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          commit="${{ steps.softfloat-pin.outputs.commit }}"
+          mkdir -p softfloat-src
+          git -C softfloat-src init
+          git -C softfloat-src remote add origin https://github.com/ucb-bar/berkeley-softfloat-3.git
+          git -C softfloat-src fetch --depth 1 origin "${commit}"
+          git -C softfloat-src checkout FETCH_HEAD
+          build_dir=softfloat-src/build/Win-MSVC
+          mkdir -p "${build_dir}"
+          cat > "${build_dir}/platform.h" <<'EOF'
+          #define LITTLEENDIAN 1
+          #ifdef _MSC_VER
+          #define INLINE static __inline
+          #else
+          #define INLINE static inline
+          #endif
+          EOF
+          sed -i 's/^          //' "${build_dir}/platform.h"
+          cat > "${build_dir}/build.bat" <<'EOF'
+          set LIB=softfloat.lib
+          set SOFTFLOAT_OPTS=-DSOFTFLOAT_ROUND_ODD -DINLINE_LEVEL=5 -DSOFTFLOAT_FAST_DIV32TO16 -DSOFTFLOAT_FAST_DIV64TO32
+          set SPECIALIZE_TYPE=8086-SSE
+          set SOURCE=..\..\source
+          set S=%SOURCE%
+          set P=%SOURCE%\%SPECIALIZE_TYPE%
+          del *.obj %LIB% 2>nul
+          cl -nologo -c -O2 -I. -I%S% -I%P% -I%S%\include %SOFTFLOAT_OPTS% @sources.rsp
+          if errorlevel 1 exit /b 1
+          lib -nologo /out:%LIB% *.obj
+          if errorlevel 1 exit /b 1
+          EOF
+          sed -i 's/^          //' "${build_dir}/build.bat"
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          makefile = Path('softfloat-src/build/Win32-SSE2-MinGW/Makefile').read_text()
+          def section(name):
+            lines = []
+            in_sec = False
+            for line in makefile.splitlines():
+              if line.startswith(name + ' ') or line.startswith(name + '='):
+                in_sec = True
+              if in_sec:
+                lines.append(line)
+                if not line.rstrip().endswith('\\'):
+                  break
+            return re.findall(r'(\w+)\$\(OBJ\)', ' '.join(lines))
+          paths = (
+            ['..\\..\\source\\' + n + '.c' for n in section('OBJS_PRIMITIVES')]
+            + ['..\\..\\source\\8086-SSE\\' + n + '.c' for n in section('OBJS_SPECIALIZE')]
+            + ['..\\..\\source\\' + n + '.c' for n in section('OBJS_OTHERS')]
+          )
+          Path('softfloat-src/build/Win-MSVC/sources.rsp').write_text('\n'.join(paths) + '\n')
+          PY
+          cmd.exe //C "cd softfloat-src\build\Win-MSVC && build.bat"
+          mkdir -p softfloat/include softfloat/lib
+          cp softfloat-src/source/include/softfloat.h softfloat-src/source/include/softfloat_types.h softfloat/include/
+          cp softfloat-src/build/Win-MSVC/softfloat.lib softfloat/lib/
+
+      - name: Configure and Build (${{ matrix.backend.flavor }})
+        shell: bash
+        run: |
+          set -euo pipefail
+          extra_args=()
+          export EDG_SOFTFLOAT_INCLUDE_PATH="${GITHUB_WORKSPACE}/softfloat/include"
+          if [ "${{ matrix.platform.os_name }}" = "windows" ]; then
+            export EDG_SOFTFLOAT_LIB_PATH="${GITHUB_WORKSPACE}/softfloat/lib/softfloat.lib"
+            if [ -d "${GITHUB_WORKSPACE}/llvm-msvc/lib/cmake/llvm" ]; then
+              extra_args+=("-DLLVM_DIR=${GITHUB_WORKSPACE}/llvm-msvc/lib/cmake/llvm")
+            fi
+          else
+            export EDG_SOFTFLOAT_LIB_PATH="${GITHUB_WORKSPACE}/softfloat/lib/libsoftfloat.a"
+          fi
+          cmake -B build/release -G Ninja -DCMAKE_BUILD_TYPE=Release -DEDG_ENABLE_LLVM_BACKEND=${{ matrix.backend.enable_llvm }} -DEDG_ENABLE_GCC_BACKEND=${{ matrix.backend.enable_gcc }} -DEDG_BUILD_LIB=OFF -DBUILD_TESTING=OFF ${extra_args[@]+"${extra_args[@]}"}
+          cmake --build build/release --target cpfe cpfe-cp cdisp mk_errinfo edg_decode
+
+      - name: Smoke-test built cpfe binary
+        shell: bash
+        run: |
+          exe="build/release/bin/cpfe"
+          if [ "${{ matrix.platform.os_name }}" = "windows" ]; then
+            exe="build/release/bin/cpfe.exe"
+            if [ "${{ matrix.backend.enable_gcc }}" = "ON" ]; then
+              for msys_bin in "/c/msys64/ucrt64/bin" "/c/msys64/clangarm64/bin" "/c/msys64/mingw64/bin"; do
+                if [ -f "${msys_bin}/libgccjit-0.dll" ]; then
+                  cp -f "${msys_bin}"/libgccjit*.dll build/release/bin/ || true
+                  cp -f "${msys_bin}"/libgcc_s*.dll "${msys_bin}"/libwinpthread*.dll "${msys_bin}"/libstdc++*.dll "${msys_bin}"/libgmp*.dll "${msys_bin}"/libmpc*.dll "${msys_bin}"/libmpfr*.dll "${msys_bin}"/libisl*.dll "${msys_bin}"/libzstd*.dll "${msys_bin}"/zlib1.dll build/release/bin/ 2>/dev/null || true
+                  export PATH="${msys_bin}:${PATH}"
+                  break
+                fi
+              done
+            fi
+          fi
+          python3 dev_tools/verify_backend_modes.py --cpfe "${exe}" --llvm "${{ matrix.backend.expect_llvm }}" --gcc "${{ matrix.backend.expect_gcc }}"
+
+      - name: Package release archive and SHA-256 checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          ver="${{ steps.version.outputs.version }}"
+          pkg_name="${{ matrix.backend.flavor }}-${ver}-${{ matrix.platform.os_name }}-${{ matrix.platform.arch }}"
+          mkdir -p "dist/${pkg_name}/bin"
+          cp -r build/release/bin/* "dist/${pkg_name}/bin/"
+          if [ -f build/release/lib/libedg_gcc_eh_rt.a ]; then
+            mkdir -p "dist/${pkg_name}/lib"
+            cp build/release/lib/libedg_gcc_eh_rt.a "dist/${pkg_name}/lib/"
+          fi
+          cp -r include_c++ include_c99 LICENSE.txt README.md "dist/${pkg_name}/"
+          mkdir -p artifacts
+          if [ "${{ matrix.platform.archive_ext }}" = "zip" ]; then
+            archive_file="${pkg_name}.zip"
+            python3 - "${pkg_name}" "artifacts/${archive_file}" <<'PY'
+          import os, sys, zipfile
+          pkg, out_zip = sys.argv[1], sys.argv[2]
+          base = os.path.join("dist", pkg)
+          with zipfile.ZipFile(out_zip, "w", zipfile.ZIP_DEFLATED) as zf:
+            for root, _, files in os.walk(base):
+              for f in sorted(files):
+                full = os.path.join(root, f)
+                rel = os.path.relpath(full, "dist")
+                zf.write(full, rel)
+          PY
+          else
+            archive_file="${pkg_name}.tar.gz"
+            tar -C dist -czf "artifacts/${archive_file}" "${pkg_name}"
+          fi
+          python3 - "artifacts/${archive_file}" "${archive_file}" <<'PY'
+          import hashlib, sys
+          path, name = sys.argv[1], sys.argv[2]
+          digest = hashlib.sha256(open(path, "rb").read()).hexdigest()
+          with open(path + ".sha256", "w", encoding="utf-8") as f:
+            f.write(f"{digest}  {name}\n")
+          PY
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-${{ matrix.backend.flavor }}-${{ matrix.platform.os_name }}-${{ matrix.platform.arch }}
+          path: artifacts/*
+          if-no-files-found: error
+
+  publish-release:
+    name: Publish GitHub Release
+    needs: build-matrix
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Download all release artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: Generate unified SHA256SUMS.txt
+        shell: bash
+        run: |
+          cd release-assets
+          cat *.sha256 > SHA256SUMS.txt
+          rm -f *.sha256
+          cat SHA256SUMS.txt
+
+      - name: Create or update GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ inputs.tag || github.ref_name }}
+          generate_release_notes: true
+          files: release-assets/*

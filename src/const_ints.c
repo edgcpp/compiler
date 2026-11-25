@@ -934,7 +934,7 @@ shift count is a legal value.
 
   if (op_2 != 0) {
     result = *op_1 << op_2;
-    bits_lost = *op_1 >> (BITS_IN_AN_INTEGER_VALUE - op_2);
+    bits_lost = *op_1 >> (BITS_IN_AN_INTEGER_VALUE - (size_t)op_2);
     *err = (bits_lost != 0);
     *op_1 = result;
   } else {
@@ -990,7 +990,7 @@ shift count is a legal value.
 #if INTEGER_VALUE_REPR_IS_A_HOST_INTEGER
   if (is_signed && sign_extend && sign_of(*op_1)) {
     /* Do a signed shift right. */
-    *op_1 = signed_shift_right(*op_1, op_2);
+    *op_1 = (an_integer_value)signed_shift_right(*op_1, op_2);
   } else {
     /* Do an unsigned shift right. */
     *op_1 = *op_1 >> op_2;
@@ -1044,7 +1044,7 @@ underflow occurred.
   a_boolean		sign_1 = sign_of(*op_1);
   an_integer_value	result;
 
-  result = (a_signed_integer_value)(*op_1 - *op_2);
+  result = *op_1 - *op_2;
   /* Check overflow possibilities. */
   if (!is_signed) {
     /* A result that would yield a negative result is an error. */
@@ -1192,20 +1192,19 @@ otherwise.
     an_integer_value	op_1 = *orig_op_1;
     an_integer_value	op_2 = *orig_op_2;
     an_integer_value	result;
-    result = (a_signed_integer_value)((an_integer_value)op_1 *
-                                      (an_integer_value)op_2);
+    result = op_1 * op_2;
     *orig_op_1 = result;
     /* Check overflow possibilities. */
     /* divide_integers is not needed here, since the operation is unsigned. */
     if (op_2 != 0 && MAX_UNSIGNED_INTEGER_VALUE / op_2 < op_1) overflow = TRUE;
     *orig_op_1 = result;
   } else {
-    a_signed_integer_value	op_1 = *orig_op_1;
-    a_signed_integer_value	op_2 = *orig_op_2;
+    a_signed_integer_value	op_1 = (a_signed_integer_value)*orig_op_1;
+    a_signed_integer_value	op_2 = (a_signed_integer_value)*orig_op_2;
     a_signed_integer_value	result;
     result = (a_signed_integer_value)((an_integer_value)op_1 *
                                       (an_integer_value)op_2);
-    *orig_op_1 = result;
+    *orig_op_1 = (an_integer_value)result;
     if (op_1 > 0 && op_2 > 0) {
       /* divide_integers is not needed here, since both numbers are
          positive. */
@@ -1642,8 +1641,8 @@ operand (op_1 = op_1 / op_2).  err is TRUE if an overflow occurred.
 {
 #if INTEGER_VALUE_REPR_IS_A_HOST_INTEGER
   a_signed_integer_value	result;
-  a_signed_integer_value	value_1 = *op_1;
-  a_signed_integer_value	value_2 = *op_2;
+  a_signed_integer_value	value_1 = (a_signed_integer_value)*op_1;
+  a_signed_integer_value	value_2 = (a_signed_integer_value)*op_2;
   a_boolean			overflow = FALSE;
 
   if (value_2 == 0) {
@@ -1675,7 +1674,7 @@ operand (op_1 = op_1 / op_2).  err is TRUE if an overflow occurred.
 				        (an_integer_value)value_2);
     }  /* if */
   }  /* if */
-  *op_1 = result;
+  *op_1 = (an_integer_value)result;
   *err = overflow;
 #else /* INTEGER_VALUE_REPR_IS_A_HOST_INTEGER */
   an_integer_value	remainder;
@@ -1696,8 +1695,8 @@ The result is returned in the first operand (op_1 = op_1 % op_2).
 {
 #if INTEGER_VALUE_REPR_IS_A_HOST_INTEGER
   a_signed_integer_value	result;
-  a_signed_integer_value	value_1 = *op_1;
-  a_signed_integer_value	value_2 = *op_2;
+  a_signed_integer_value	value_1 = (a_signed_integer_value)*op_1;
+  a_signed_integer_value	value_2 = (a_signed_integer_value)*op_2;
   a_boolean			overflow = FALSE;
 
   if (value_2 == 0) {
@@ -1722,7 +1721,7 @@ The result is returned in the first operand (op_1 = op_1 % op_2).
 				        (an_integer_value)value_2);
     }  /* if */
   }  /* if */
-  *op_1 = result;
+  *op_1 = (an_integer_value)result;
   *err = overflow;
 #else /* INTEGER_VALUE_REPR_IS_A_HOST_INTEGER */
   an_integer_value	quotient;
@@ -1932,7 +1931,8 @@ Given an IL signed integer value, return the approximate character usage.
 */
 {
 #if INTEGER_VALUE_REPR_IS_A_HOST_INTEGER
-  return String_formatter<a_host_large_integer>::size_hint_of(*value.value);
+  return String_formatter<a_host_large_integer>::size_hint_of(
+                                          (a_host_large_integer)*value.value);
 #else /* !INTEGER_VALUE_REPR_IS_A_HOST_INTEGER */
   /* Approximate using the maximum digits per part times the number of parts
      composing the larger number. */

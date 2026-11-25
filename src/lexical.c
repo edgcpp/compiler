@@ -3462,7 +3462,7 @@ function for most use cases and see it for a description of the arguments.
 
   result->extra_info_kind = teik_identifier;
   clear_locator(&result->extra_info.locator, pos);
-  (void)find_symbol(str, len, &result->extra_info.locator);
+  (void)find_symbol(str, (sizeof_t)len, &result->extra_info.locator);
   return result;
 }  /* a_token_factory::build_tok_identifier */
 
@@ -3518,12 +3518,13 @@ function for most use cases and see it for a description of the arguments.
   result->extra_info.ud_lit.type = type;
 
   a_targ_size_t suffix_len = (a_targ_size_t)(strlen(suffix) + 1);
-  char          *alloc_suffix = alloc_text_of_string_literal(suffix_len);
+  char          *alloc_suffix =
+                            alloc_text_of_string_literal((sizeof_t)suffix_len);
   strcpy(alloc_suffix, suffix);
   result->extra_info.ud_lit.suffix = alloc_suffix;
   result->extra_info.ud_lit.op_sym = find_literal_operator(
                                            alloc_suffix,
-                                           suffix_len - 1,
+                                           (sizeof_t)(suffix_len - 1),
                                            const_cast<a_source_position*>(pos),
                                            type,
                                            /*from_cache=*/FALSE,
@@ -10857,7 +10858,7 @@ in embed_parse_data.
     file_size = 0;
   }  /* if */
   if (embed_parse_data.limit < file_size) {
-    file_size = embed_parse_data.limit;
+    file_size = (size_t)embed_parse_data.limit;
   }  /* if */
   if (file_size != 0) {
     size_t        buffer_size = file_size;
@@ -29572,6 +29573,33 @@ the source form (e.g., digraphs are returned as ordinary tokens).
   if (curr_token == tok_identifier) {
     /* For identifiers reuse the string already stored in IL memory. */
     result = locator_for_curr_id.symbol_header->identifier;
+  } else if (curr_token == tok_float_constant &&
+             start_of_curr_token != NULL &&
+             end_of_curr_token >= start_of_curr_token &&
+             (sizeof_t)(end_of_curr_token - start_of_curr_token + 1) < 64) {
+    sizeof_t tok_len = (sizeof_t)(end_of_curr_token - start_of_curr_token + 1);
+    a_boolean valid_lex = (tok_len > 0);
+    for (sizeof_t i = 0; valid_lex && i < tok_len; ++i) {
+      char ch = start_of_curr_token[i];
+      if (!((ch >= '0' && ch <= '9') || ch == '.' || ch == '_' ||
+            (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') ||
+            ch == '+' || ch == '-')) {
+        valid_lex = FALSE;
+      }  /* if */
+    }  /* for */
+    if (valid_lex) {
+      char *il_str = (char *)alloc_il(tok_len + 1);
+      (void)memcpy(il_str, start_of_curr_token, size_t_arg(tok_len));
+      il_str[tok_len] = '\0';
+      result = il_str;
+    } else {
+      a_tiny_scanning_token_cache cache;
+      cache_curr_token(cache.ptr());
+      init_token_string(&pos_curr_token, /*keep_spacing=*/FALSE,
+                        /*suppress_identifier_wrapping=*/FALSE);
+      add_token_cache_to_string(cache.ptr());
+      result = make_copy_of_token_string();
+    }  /* if */
   } else if (curr_token == tok_error ||
              curr_token == tok_removed_expr ||
              curr_token == tok_removed_template_body) {

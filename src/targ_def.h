@@ -2372,7 +2372,11 @@ precision.
 #if USE_SOFTFLOAT
 END_EDG_NAMESPACE  /* Conditionally close the "edg" namespace. */
 extern "C" {
+#define float32_t edg_softfloat32_t
+#define float64_t edg_softfloat64_t
 #include "softfloat.h"
+#undef float32_t
+#undef float64_t
 }  /* extern "C" */
 BEGIN_EDG_NAMESPACE  /* Conditionally open the "edg" namespace. */
 
@@ -3563,7 +3567,7 @@ and no target compiler has been specified, provide a default target.
 #endif /* BACK_END_IS_C_GEN_BE */
 #endif /* !defined(GCC_IS_GENERATED_CODE_TARGET) && ... */
 
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
 /*
 Make sure undefined targets are defined to FALSE.
 */
@@ -3808,7 +3812,7 @@ that are trying to detect uninitialized values, but not in general.
 #define DEFAULT_EMULATE_GNU_VALUE_INITIALIZATION_BUGS FALSE
 #endif /* DEFAULT_EMULATE_GNU_VALUE_INITIALIZATION_BUGS */
 
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
 /*
 When generating code to be compiled with the Microsoft compiler, this macro
 specifies the version of the compiler being used.  This affects, for example,
@@ -3853,7 +3857,7 @@ MSVC_IS_GENERATED_CODE_TARGET is ignored in non-Microsoft modes.)
 #endif /* MSVC_IS_GENERATED_CODE_TARGET && !MICROSOFT_DIALECT_... */
 #endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE */
 
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
 /*
 The C-generating and C++-generating back ends should never have to generate
 code for more than one specific target dialect (Microsoft, GNU, Sun, or Clang).
@@ -4861,7 +4865,7 @@ C-generating back end.
 #if DO_IL_LOWERING && !LOWER_VARIABLE_LENGTH_ARRAYS
 #ifndef NO_VLA_DIMENSION_TEMPORARIES_IN_FUNCTION_PROTOTYPES
 #define NO_VLA_DIMENSION_TEMPORARIES_IN_FUNCTION_PROTOTYPES \
-                                                         BACK_END_IS_C_GEN_BE
+                           (BACK_END_IS_C_GEN_BE || BACK_END_IS_GCC_GEN_BE)
 #endif /* NO_VLA_DIMENSION_TEMPORARIES_IN_FUNCTION_PROTOTYPES */
 
 #if BACK_END_IS_C_GEN_BE && \
@@ -4902,7 +4906,8 @@ variable.  When the switch here is TRUE, the local types and
 variables will be (selectively) promoted to the actual file scope.
 */
 #ifndef PROMOTE_LOCAL_ENTITIES_TO_FILE_SCOPE
-#define PROMOTE_LOCAL_ENTITIES_TO_FILE_SCOPE BACK_END_IS_C_GEN_BE
+#define PROMOTE_LOCAL_ENTITIES_TO_FILE_SCOPE \
+                           (BACK_END_IS_C_GEN_BE || BACK_END_IS_GCC_GEN_BE)
 #endif /* ifndef PROMOTE_LOCAL_ENTITIES_TO_FILE_SCOPE */
 #if ENSURE_LOWERED_TYPE_LIST_ORDERING && !PROMOTE_LOCAL_ENTITIES_TO_FILE_SCOPE
  #error -- ENSURE_LOWERED_TYPE_LIST_ORDERING requires \
@@ -5039,7 +5044,11 @@ exception handling stack, and cleanup tables and typeinfo entries are
 generated.  Note that the C-generating back end requires this mode.
 */
 #ifndef DO_FULL_PORTABLE_EH_LOWERING
+#if BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE
+#define DO_FULL_PORTABLE_EH_LOWERING FALSE
+#else /* !(BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE) */
 #define DO_FULL_PORTABLE_EH_LOWERING TRUE
+#endif /* BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE */
 #endif /* ifndef DO_FULL_PORTABLE_EH_LOWERING */
 
 /*

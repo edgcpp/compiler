@@ -194,7 +194,7 @@ jobs:
           persist-credentials: false
 
       - name: Download ${{ env.CI_PRESET }} build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: build-${{ env.CI_PRESET }}
           # upload-artifact strips the shared build directory prefix, leaving

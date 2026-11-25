@@ -8881,8 +8881,13 @@ otherwise, NULL is returned.
             if (int_type_is_signed(stripped_type)) {
               sign_extend_integer_value(&value,
                                         stripped_type->size * targ_char_bit);
+#if INTEGER_VALUE_REPR_IS_A_HOST_INTEGER
+              set_integer_constant(result, (a_host_large_integer)value,
+                                   stripped_type->variant.integer.int_kind);
+#else /* !INTEGER_VALUE_REPR_IS_A_HOST_INTEGER */
               set_integer_constant(result, value,
                                    stripped_type->variant.integer.int_kind);
+#endif /* INTEGER_VALUE_REPR_IS_A_HOST_INTEGER */
             } else {
               set_unsigned_integer_constant(result, value,
                                       stripped_type->variant.integer.int_kind);

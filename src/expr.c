@@ -6373,6 +6373,34 @@ be called to check and adjust the argument and routine types as needed.
       bcap->n_args = 1;
       bcap->callback = adjust_type_generic_builtin;
       break;
+#if BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE
+    case bfk_stdc_leading_zeros:
+    case bfk_stdc_leading_ones:
+    case bfk_stdc_trailing_zeros:
+    case bfk_stdc_trailing_ones:
+    case bfk_stdc_first_leading_zero:
+    case bfk_stdc_first_leading_one:
+    case bfk_stdc_first_trailing_zero:
+    case bfk_stdc_first_trailing_one:
+    case bfk_stdc_count_zeros:
+    case bfk_stdc_count_ones:
+    case bfk_stdc_bit_width:
+      bcap->n_args = 1;
+      bcap->callback = adjust_type_generic_builtin;
+      break;
+    case bfk_stdc_bit_floor:
+    case bfk_stdc_bit_ceil:
+      bcap->n_args = 1;
+      bcap->replace_routine_type = TRUE;
+      bcap->callback = adjust_return_type_to_type_of_first_argument;
+      break;
+    case bfk_stdc_rotate_left:
+    case bfk_stdc_rotate_right:
+      bcap->n_args = 2;
+      bcap->replace_routine_type = TRUE;
+      bcap->callback = adjust_return_type_to_type_of_first_argument;
+      break;
+#endif /* BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE */
     case bfk_preserve_access_index:
       bcap->n_args = 1;
       bcap->replace_routine_type = TRUE;
@@ -7377,6 +7405,19 @@ builtins.  Some checking of arguments is performed.
         case bfk_clzg:
         case bfk_ctzg:
         case bfk_popcountg:
+#if BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE
+        case bfk_stdc_leading_zeros:
+        case bfk_stdc_leading_ones:
+        case bfk_stdc_trailing_zeros:
+        case bfk_stdc_trailing_ones:
+        case bfk_stdc_first_leading_zero:
+        case bfk_stdc_first_leading_one:
+        case bfk_stdc_first_trailing_zero:
+        case bfk_stdc_first_trailing_one:
+        case bfk_stdc_count_zeros:
+        case bfk_stdc_count_ones:
+        case bfk_stdc_bit_width:
+#endif /* BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE */
           err = !is_integral_type(arg1_type) ||
                 is_signed_integral_type(arg1_type);
           if (err && clang_mode) {
@@ -7415,7 +7456,14 @@ builtins.  Some checking of arguments is performed.
     }  /* if */
   }  /* if */
   if (!err) {
-    a_type_ptr rout_type = make_routine_type(integer_type(ik_int), arg1_type,
+    an_integer_kind ret_ik = ik_int;
+#if BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE
+    if (rout->variant.builtin_function_kind >= bfk_stdc_bit_ceil &&
+        rout->variant.builtin_function_kind <= bfk_stdc_trailing_zeros) {
+      ret_ik = ik_unsigned_int;
+    }  /* if */
+#endif /* BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE */
+    a_type_ptr rout_type = make_routine_type(integer_type(ret_ik), arg1_type,
                                              arg2_type);
     /* Create a routine with the desired type. */
     a_symbol_ptr sym = builtin_with_particular_type(rout, rout_type);

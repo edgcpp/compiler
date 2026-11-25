@@ -11,16 +11,17 @@ function(add_softfloat_to_target target_name)
   endif()
   if(DEFINED ENV{EDG_SOFTFLOAT_LIB_PATH})
     message(STATUS "Adding softfloat library to ${target_name} link line.")
-    target_link_libraries("${target_name}" "$ENV{EDG_SOFTFLOAT_LIB_PATH}")
+    target_link_libraries("${target_name}" PRIVATE
+                          "$ENV{EDG_SOFTFLOAT_LIB_PATH}")
   elseif(DEFINED ENV{EDG_SOFTFLOAT_LIB_BASE_PATH})
     message(STATUS "Adding softfloat library to ${target_name} link line.")
     if($CACHE{32BIT_BUILD})
       target_link_libraries(
-                           "${target_name}"
+                           "${target_name}" PRIVATE
                            "$ENV{EDG_SOFTFLOAT_LIB_BASE_PATH}/x86/softfloat.a")
     else()
       target_link_libraries(
-                        "${target_name}"
+                        "${target_name}" PRIVATE
                         "$ENV{EDG_SOFTFLOAT_LIB_BASE_PATH}/x86_64/softfloat.a")
     endif()
   endif()

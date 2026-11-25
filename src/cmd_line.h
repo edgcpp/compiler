@@ -42,7 +42,7 @@ enum an_option_kind {
   optk_preprocess_only_no_line_dirs,
   optk_preprocess_only_emit_line_dirs,
   optk_keep_comments_in_pp_output,
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
   optk_old_line_dirs,
 #endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE */
   optk_C_dialect_pcc,
@@ -108,12 +108,41 @@ enum an_option_kind {
   optk_constexpr_diag_warning,
   optk_constexpr_diag_error,
   optk_display_error_number,
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
   optk_gen_c_file_name,
+#endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE */
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
   optk_msvc_target_version,
   optk_gnu_target_version,
   optk_clang_target_version,
 #endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE */
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE
+  optk_backend_select,
+  optk_c_gen_be,
+#endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || ... */
+#if BACK_END_IS_LLVM_GEN_BE
+  optk_llvm_gen_be,
+  optk_gen_llvm_file_name,
+  optk_gen_llvm_bc_file_name,
+  optk_gen_llvm_thinlto_index,
+  optk_flto,
+  optk_fprofile_generate,
+  optk_fprofile_use,
+  optk_gen_obj_file_name,
+  optk_gen_asm_file_name,
+  optk_fsanitize,
+  optk_fstack_protector,
+  optk_llvm_opt_level,
+  optk_llvm_debug_info,
+  optk_llvm_split_dwarf,
+  optk_llvm_target,
+  optk_llvm_mcpu,
+  optk_llvm_mattr,
+  optk_llvm_reloc_model,
+  optk_llvm_code_model,
+  optk_llvm_fopenmp,
+  optk_llvm_linker_arg,
+#endif /* BACK_END_IS_LLVM_GEN_BE */
   optk_create_pch,
   optk_use_pch,
   optk_pch,
@@ -386,8 +415,40 @@ enum an_option_kind {
   optk_dump_command_options,
   optk_output_mode,
   optk_incognito,
-  optk_last		/* Must be last. */
-};
+  #if BACK_END_IS_GCC_GEN_BE
+  optk_gcc_gen_be,
+  optk_gcc_be_c,
+  optk_gcc_be_S,
+  optk_gcc_be_O0,
+  optk_gcc_be_O1,
+  optk_gcc_be_O2,
+  optk_gcc_be_O3,
+  optk_gcc_be_Os,
+  optk_gcc_be_Ofast,
+  optk_gcc_be_g,
+  optk_gcc_be_fPIC,
+  optk_gcc_be_fPIE,
+  optk_gcc_be_fno_pie,
+  optk_gcc_be_dump_initial_tree,
+  optk_gcc_be_dump_gimple,
+  optk_gcc_be_dump_rtl_all,
+  optk_gcc_be_ffast_math,
+  optk_gcc_be_fno_trapping_math,
+  optk_gcc_be_fassociative_math,
+  optk_gcc_be_shared,
+  optk_gcc_be_static,
+  optk_gcc_be_march,
+  optk_gcc_be_mcpu,
+  optk_gcc_be_mtune,
+  optk_gcc_be_mfpu,
+  optk_gcc_be_mcmodel,
+  optk_gcc_be_m64,
+  optk_gcc_be_m32,
+  optk_gcc_be_L,
+  optk_gcc_be_l,
+  #endif /* BACK_END_IS_GCC_GEN_BE */
+  optk_last             /* Must be last. */
+  };
 
 /* C_dialect is in basics.h. */
 
@@ -461,7 +522,7 @@ EXTERN_THREAD a_boolean
 			/* If TRUE, comments should be retained in
 			   preprocessing output.  Meaningful only when
 			   generate_pp_output is TRUE. */
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
 EXTERN_THREAD a_boolean
 		gen_old_style_line_dirs;
 			/* If TRUE, generate old-style line directives in
@@ -480,7 +541,39 @@ EXTERN_THREAD FILE
 			   TRUE. */
 EXTERN_THREAD a_const_char
 		*pp_file_name;
-			/* Name of the preprocessing output file to be
+
+EXTERN_THREAD a_const_char
+                *gcc_be_output_file_name;
+
+#if BACK_END_IS_GCC_GEN_BE
+EXTERN_THREAD a_boolean gcc_be_enabled;
+EXTERN_THREAD int gcc_be_opt_level;
+EXTERN_THREAD a_boolean gcc_be_compile_only;
+EXTERN_THREAD a_boolean gcc_be_assemble_only;
+EXTERN_THREAD a_boolean gcc_be_debug_info;
+EXTERN_THREAD a_boolean gcc_be_fPIC;
+EXTERN_THREAD a_boolean gcc_be_fPIE;
+EXTERN_THREAD a_boolean gcc_be_fno_pie;
+EXTERN_THREAD a_boolean gcc_be_dump_initial_tree;
+EXTERN_THREAD a_boolean gcc_be_dump_gimple;
+EXTERN_THREAD a_boolean gcc_be_dump_rtl_all;
+EXTERN_THREAD a_boolean gcc_be_ffast_math;
+EXTERN_THREAD a_boolean gcc_be_fno_trapping_math;
+EXTERN_THREAD a_boolean gcc_be_fassociative_math;
+EXTERN_THREAD a_boolean gcc_be_shared;
+EXTERN_THREAD a_boolean gcc_be_static;
+EXTERN_THREAD a_const_char *gcc_be_march;
+EXTERN_THREAD a_const_char *gcc_be_mcpu;
+EXTERN_THREAD a_const_char *gcc_be_mtune;
+EXTERN_THREAD a_const_char *gcc_be_mfpu;
+EXTERN_THREAD a_const_char *gcc_be_mcmodel;
+EXTERN_THREAD a_boolean gcc_be_m64;
+EXTERN_THREAD a_boolean gcc_be_m32;
+EXTERN_THREAD void* gcc_be_driver_options;
+EXTERN_THREAD void* gcc_be_compiler_options;
+#endif /* BACK_END_IS_GCC_GEN_BE */
+
+                        /* Name of the preprocessing output file to be
 			   opened, or NULL if no such file is needed or if
 			   a default file should be used. */
 EXTERN_THREAD a_boolean
@@ -1365,13 +1458,83 @@ EXTERN_THREAD a_boolean
 			/* Should the diagnostic message output include the
 		           error number. */
 
-#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE
+#if BACK_END_IS_C_GEN_BE
+EXTERN_THREAD a_boolean
+		c_be_enabled;
+			/* TRUE if the C-generating back end was explicitly
+			   selected via --c-be or --backend=c. */
+#endif /* BACK_END_IS_C_GEN_BE */
+
+#if BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE || BACK_END_IS_LLVM_GEN_BE
 EXTERN_THREAD a_const_char
 		*gen_c_file_name;
 			/* Points to a string specifying the name of the
 			   generated C file to be created.  The front end
 			   will generate a name if this string is NULL. */
 #endif /* BACK_END_IS_C_GEN_BE || BACK_END_IS_CP_GEN_BE */
+
+#if BACK_END_IS_LLVM_GEN_BE
+EXTERN_THREAD a_boolean
+           llvm_be_enabled;
+                   /* TRUE if the LLVM IR backend was explicitly selected. */
+EXTERN_THREAD a_const_char
+           *gen_llvm_file_name;
+                   /* Points to a string specifying the name of the
+                      generated LLVM IR file to be created.  The front end
+                      will generate a name if this string is NULL. */
+EXTERN_THREAD a_const_char
+           *gen_llvm_bc_file_name;
+                   /* Points to a string specifying the name of the
+                      generated LLVM bitcode file to be created. */
+EXTERN_THREAD a_boolean
+           gen_llvm_thinlto_index;
+                   /* TRUE if ThinLTO module summary index should be emitted. */
+EXTERN_THREAD a_const_char
+           *flto_kind;
+                   /* Points to a string specifying the LTO kind ('thin', 'full'). */
+EXTERN_THREAD a_const_char
+           *fprofile_generate_path;
+                   /* Points to a string specifying the profile generate directory/file. */
+EXTERN_THREAD a_const_char
+           *fprofile_use_path;
+                   /* Points to a string specifying the profile use data file. */
+EXTERN_THREAD a_const_char
+           *gen_obj_file_name;
+                   /* Points to a string specifying the name of the
+                      generated object file to be created. */
+EXTERN_THREAD a_const_char
+           *gen_asm_file_name;
+                   /* Points to a string specifying the name of the
+                      generated assembly file to be created. */
+EXTERN_THREAD a_boolean
+           sanitize_address;
+                   /* TRUE if AddressSanitizer is enabled. */
+EXTERN_THREAD a_boolean
+           sanitize_thread;
+                   /* TRUE if ThreadSanitizer is enabled. */
+EXTERN_THREAD a_boolean
+           sanitize_memory;
+                   /* TRUE if MemorySanitizer is enabled. */
+EXTERN_THREAD a_boolean
+           sanitize_undefined;
+                   /* TRUE if UndefinedBehaviorSanitizer is enabled. */
+EXTERN_THREAD a_boolean
+           sanitize_hwaddress;
+                   /* TRUE if HWAddressSanitizer is enabled. */
+EXTERN_THREAD a_boolean
+           use_safestack;
+                   /* TRUE if SafeStack is enabled. */
+EXTERN_THREAD a_boolean
+           use_shadowcallstack;
+                   /* TRUE if ShadowCallStack is enabled. */
+EXTERN_THREAD int
+           stack_protector_mode;
+                   /* Stack protector mode (0=none, 1=basic, 2=strong, 3=all). */
+EXTERN_THREAD a_const_char
+           *ofile_name;
+                   /* Points to a string specifying the output executable
+                      or object file name provided via -o. */
+#endif /* BACK_END_IS_LLVM_GEN_BE */
 
 EXTERN_THREAD a_boolean
 		precompiled_header_processing_required;

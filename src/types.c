@@ -2251,8 +2251,10 @@ Return TRUE if the given type is trivially copyable.
         member is more constrained (N4878 [special]/6).
       */
       a_class_symbol_supplement_ptr  cssp;
-      if (symbol_for(tp) == NULL) {
-        result = FALSE;
+      if (C_mode() || symbol_for(tp) == NULL) {
+        result = !tp->variant.class_struct_union
+                      .any_virtual_functions_including_in_base_classes &&
+                 !tp->variant.class_struct_union.any_virtual_base_classes;
         goto done;
       } else {
         cssp = class_symbol_supp(symbol_for(tp));
@@ -16489,6 +16491,14 @@ from which a template parameter value can be deduced.
     if (type_ptr->variant.template_param.kind ==
                                      (a_template_param_type_kind)tptk_param) {
       *force_end_of_traversal = found = TRUE;
+    } else if (tptk_is(type_ptr, tptk_bit_precise_int)) {
+      a_constant_ptr cp =
+        type_ptr->variant.template_param.extra_info->constraint
+                                                        .bit_width_constant;
+      if (cp != NULL && is_deducible_template_param_constant(cp)) {
+        found = TRUE;
+        *force_end_of_traversal = TRUE;
+      }  /* if */
     }  /* if */
   } else if (type_is(type_ptr, tk_typeref) &&
              typeref_is_type_operator(type_ptr)) {
@@ -16521,15 +16531,6 @@ from which a template parameter value can be deduced.
             *force_end_of_traversal = TRUE;
           }  /* if */
         }  /* for */
-      }  /* if */
-    } else if (type_is(type_ptr, tk_template_param) &&
-               tptk_is(type_ptr, tptk_bit_precise_int)) {
-      a_constant_ptr cp =
-        type_ptr->variant.template_param.extra_info->constraint
-                                                        .bit_width_constant;
-      if (cp != NULL && is_deducible_template_param_constant(cp)) {
-        found = TRUE;
-        *force_end_of_traversal = TRUE;
       }  /* if */
     } else if (type_is(type_ptr, tk_routine) && exc_spec_in_func_type) {
       /* Check for something like "void f() noexcept(B)" where B is a nontype

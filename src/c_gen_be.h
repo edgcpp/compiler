@@ -35,7 +35,10 @@ EXTERN_THREAD a_const_char
 #endif /* !C_GEN_BE_GENERATES_ANSI_C */
 
 #if !STANDALONE_UTILITY_PROGRAM
+extern void c_gen_be_entry(void);
+#if !BACK_END_IS_LLVM_GEN_BE && !BACK_END_IS_GCC_GEN_BE
 extern void back_end(void);
+#endif
 #endif /* !STANDALONE_UTILITY_PROGRAM */
 
 #if MAKE_FRONT_END_CALLABLE

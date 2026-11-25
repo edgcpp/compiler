@@ -25,6 +25,7 @@ This version for UNIX, MS-DOS, VAX/VMS, and Windows NT.
 #endif /* ifdef PCH_PRAGMA_GUARD */
 
 #if EDG_WIN32
+#ifdef _MSC_VER
 /* Disable unneeded features of <windows.h> for efficiency. */
 #define NOGDICAPMASKS
 #define NOVIRTUALKEYCODES
@@ -65,6 +66,31 @@ This version for UNIX, MS-DOS, VAX/VMS, and Windows NT.
 #define NOCRYPT
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#else /* !defined(_MSC_VER) */
+#if !defined(_AMD64_) && (defined(_M_X64) || defined(_M_AMD64) || defined(__x86_64__))
+#define _AMD64_
+#elif !defined(_ARM64_) && (defined(_M_ARM64) || defined(__aarch64__))
+#define _ARM64_
+#elif !defined(_X86_) && (defined(_M_IX86) || defined(__i386__))
+#define _X86_
+#elif !defined(_ARM_) && (defined(_M_ARM) || defined(__arm__))
+#define _ARM_
+#endif
+#include <windef.h>
+#include <winbase.h>
+#include <winnls.h>
+#include <fileapi.h>
+#include <handleapi.h>
+#include <errhandlingapi.h>
+#include <processthreadsapi.h>
+#include <libloaderapi.h>
+#include <memoryapi.h>
+#include <sysinfoapi.h>
+#include <consoleapi.h>
+#include <processenv.h>
+#include <oleauto.h>
+#include <oaidl.h>
+#endif /* ifdef _MSC_VER */
 #if !defined(ENABLE_VIRTUAL_TERMINAL_PROCESSING)
 /*
 If ENABLE_VIRTUAL_TERMINAL_PROCESSING was not defined (as is the case with
@@ -6900,7 +6926,11 @@ This is done before command line processing.
 #endif /* DO_IL_LOWERING */
   in_front_end = FALSE;
   pragma_define_type_info_is_required = PRAGMA_DEFINE_TYPE_INFO_IS_REQUIRED;
+#if BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE
+  use_predefined_macro_file = FALSE;
+#else /* !(BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE) */
   use_predefined_macro_file = DEFAULT_USE_PREDEFINED_MACRO_FILE;
+#endif /* BACK_END_IS_LLVM_GEN_BE || BACK_END_IS_GCC_GEN_BE */
   memzero((a_void_ptr)predef_macro_mode_values,
 	  sizeof(predef_macro_mode_values));
 #if UNICODE_SOURCE_SUPPORTED

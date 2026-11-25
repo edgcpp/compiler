@@ -1,0 +1,26 @@
+name: LLVM Backend Coverage
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake ninja-build clang lld llvm llvm-dev libomp-dev python3
+
+    - name: Verify 100% Documentation Coverage
+      run: |
+        python3 dev_tools/check_doc_coverage.py
+
+    - name: Run Tests with 100% Coverage
+      run: |
+        python3 dev_tools/check_llvm_be_coverage.py

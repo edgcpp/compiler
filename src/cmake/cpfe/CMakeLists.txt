@@ -46,3 +46,39 @@ add_dependencies(cpfe-all cpfe)
 
 # Expose softfloat.
 add_softfloat_to_target("${primary_front_end_target}")
+
+if(EDG_ENABLE_LLVM_BACKEND OR ENABLE_LLVM_BACKEND)
+  llvm_map_components_to_libnames(CPFE_LLVM_LIBS Core Support Target BitWriter Analysis Passes MC MCParser TargetParser AsmPrinter AsmParser ${LLVM_TARGETS_TO_BUILD})
+  target_link_libraries(${primary_front_end_target} PRIVATE ${CPFE_LLVM_LIBS})
+endif()
+
+if(EDG_ENABLE_GCC_BACKEND)
+  target_link_libraries(${primary_front_end_target} PRIVATE LibGCCJIT::LibGCCJIT)
+endif()
+
+if(MSVC)
+  target_link_options(${primary_front_end_target} PRIVATE "/STACK:67108864")
+elseif(WIN32)
+  target_link_options(${primary_front_end_target} PRIVATE "-Wl,--stack,67108864")
+endif()
+
+if(WIN32)
+  add_custom_command(TARGET ${primary_front_end_target} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "$<TARGET_FILE:${primary_front_end_target}>"
+      "$<TARGET_FILE_DIR:${primary_front_end_target}>/edg++.exe"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "$<TARGET_FILE:${primary_front_end_target}>"
+      "$<TARGET_FILE_DIR:${primary_front_end_target}>/cpfe++.exe"
+    COMMENT "Creating edg++.exe and cpfe++.exe driver aliases")
+else()
+  add_custom_command(TARGET ${primary_front_end_target} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E create_symlink
+      "$<TARGET_FILE_NAME:${primary_front_end_target}>"
+      "$<TARGET_FILE_DIR:${primary_front_end_target}>/edg++"
+    COMMAND ${CMAKE_COMMAND} -E create_symlink
+      "$<TARGET_FILE_NAME:${primary_front_end_target}>"
+      "$<TARGET_FILE_DIR:${primary_front_end_target}>/cpfe++"
+    COMMENT "Creating edg++ and cpfe++ driver symlinks")
+endif()
+

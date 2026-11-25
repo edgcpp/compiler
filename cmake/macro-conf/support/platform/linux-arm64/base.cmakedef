@@ -1,0 +1,57 @@
+# Import Base Linux Platform Configuration
+import <support/platform/linux/base>
+# Import ARM64 Configuration
+import <support/arch/arm64/base>
+
+# Allow 128-bit extensions on 64-bit linux configurations
+INT128_EXTENSIONS_ALLOWED=1
+
+# On Linux aarch64, INTEGER_VALUE_REPR_IS_A_HOST_INTEGER=0 (inherited from
+# support/platform/linux/base), so an_integer_value is an array of 16-bit
+# parts rather than __uint128_t, and the maximum alignment of IL structures
+# is 8 bytes (unlike macos-arm64 where INTEGER_VALUE_REPR_IS_A_HOST_INTEGER=1
+# makes an_integer_value __uint128_t with 16-byte alignment).
+HOST_ALIGNMENT_REQUIRED=8
+
+# On Linux aarch64, long double is IEEE binary128 and GCC does not use libquadmath.
+TARG_SIZEOF_LONG_DOUBLE=16
+TARG_ALIGNOF_LONG_DOUBLE=16
+FP_LONG_DOUBLE_IS_80BIT_EXTENDED=0
+FP_LONG_DOUBLE_IS_BINARY128=1
+USE_FLOAT128_FOR_HOST_FP_VALUE=0
+USE_LONG_DOUBLE_FOR_HOST_FP_VALUE=1
+HOST_FP_VALUE_IS_128BIT=1
+
+# Allow floating point to fixed point conversions on 64-bit linux configurations
+FLOATING_POINT_FIXED_POINT_CONVERSIONS_SUPPORTED=1
+
+# Use linux_aarch64 as the legacy configuration name
+LEGACY_TARGET_CONFIGURATION_NAME="linux_aarch64"
+
+# Import the named win64 target as target configuration #1
+import <support/target/win64/base>
+TARGET_CONFIGURATION_1=win64
+
+# Import the named win32 target as target configuration #2
+import <support/target/win32/base>
+TARGET_CONFIGURATION_2=win32
+
+# Import the named linux_i686 target as target configuration #3
+import <support/target/linux_i686/base>
+TARGET_CONFIGURATION_3=linux_i686
+
+# Import the named linux_aarch64 target as target configuration #4
+import <support/target/linux_aarch64/base>
+TARGET_CONFIGURATION_4=linux_aarch64
+
+# Import the named linux_armv7 target as target configuration #5
+import <support/target/linux_armv7/base>
+TARGET_CONFIGURATION_5=linux_armv7
+
+# Import the named linux_riscv64 target as target configuration #6
+import <support/target/linux_riscv64/base>
+TARGET_CONFIGURATION_6=linux_riscv64
+
+# Import the named linux_riscv32 target as target configuration #7
+import <support/target/linux_riscv32/base>
+TARGET_CONFIGURATION_7=linux_riscv32
