@@ -91,7 +91,12 @@ if(NOT DEFINED EDG_PREFERRED_LINKER)
       endif()
     endif()
 
-    if(NOT DEFINED EDG_PREFERRED_LINKER_TRIAL)
+    # Avoid auto-selecting GNU ld.gold with Clang: gold is deprecated in
+    # binutils and emits hundreds of "Cannot export local symbol '__asan_...'"
+    # warnings on hidden assembly thunks listed in Clang's libclang_rt.asan
+    # --dynamic-list when -fsanitize=address is active.
+    if(NOT DEFINED EDG_PREFERRED_LINKER_TRIAL AND
+       NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
       find_program(GOLD_LINKER ld.gold NO_CACHE)
       if(NOT GOLD_LINKER STREQUAL "GOLD_LINKER-NOTFOUND")
         set(EDG_PREFERRED_LINKER_TRIAL gold)

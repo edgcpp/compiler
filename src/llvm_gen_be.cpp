@@ -175,15 +175,23 @@ llvm_gen_be_error_t llvm_sync_fe_target_configuration(const char* triple_str) no
 }
 
 /**
- * @brief Applies global symbol visibility (`-fvisibility=*` and `-fvisibility-inlines-hidden`) to @p mod.
- * @details Updates non-declaration functions and globals with `DefaultVisibility` to match
- *          `be_state->symbol_visibility` and marks inline/linkonce_odr functions hidden when requested.
+ * @brief Applies global symbol visibility (`-fvisibility=*` and `-fvisibility-inlines-hidden`) and PIC/PIE module flags to @p mod.
+ * @details Resolves the effective relocation model via `llvm_resolve_effective_reloc_model`, sets
+ *          `"PIC Level"` / `"PIE Level"` module metadata when `PIC_` is active, and updates
+ *          non-declaration functions and globals with `DefaultVisibility` to match
+ *          `be_state->symbol_visibility` (marking inline/linkonce_odr functions hidden when requested).
  * @param[in,out] mod Active LLVM module.
- * @return llvm_gen_be_error_t::ok on success.
+ * @param[out] out_eff_reloc Non-null pointer receiving the resolved `llvm::Reloc::Model`.
+ * @return llvm_gen_be_error_t::ok on success, or an error code on failure.
  */
-static llvm_gen_be_error_t apply_module_visibility_and_pic_options(llvm::Module* mod) noexcept {
-  LLVM_GEN_BE_CHECK(llvm_gen_be_step_oom_budget());
-  if (be_state->reloc_model && *be_state->reloc_model == llvm::Reloc::PIC_) {
+static llvm_gen_be_error_t apply_module_visibility_and_pic_options(
+    llvm::Module* mod,
+    llvm::Reloc::Model* out_eff_reloc) noexcept {
+  llvm::Reloc::Model eff_reloc = llvm::Reloc::Static;
+  LLVM_GEN_BE_CHECK(
+      llvm_resolve_effective_reloc_model(llvm::Triple(mod->getTargetTriple()), &eff_reloc));
+  *out_eff_reloc = eff_reloc;
+  if (eff_reloc == llvm::Reloc::PIC_) {
     llvm::Type* i32_ty = llvm::Type::getInt32Ty(mod->getContext());
     mod->setModuleFlag(
         llvm::Module::Max, "PIC Level",
@@ -301,7 +309,9 @@ llvm_gen_be_error_t generate_llvm_output_file(const char* base_name) noexcept {
     return llvm_gen_be_error_t::verification_failure;
   }
 
-  LLVM_GEN_BE_CHECK(apply_module_visibility_and_pic_options(be_state->module.get()));
+  llvm::Reloc::Model eff_reloc = llvm::Reloc::Static;
+  LLVM_GEN_BE_CHECK(
+      apply_module_visibility_and_pic_options(be_state->module.get(), &eff_reloc));
 
   llvm_opt_options_t opts = {};
   opts.opt_level = be_state->opt_level;
@@ -356,7 +366,7 @@ llvm_gen_be_error_t generate_llvm_output_file(const char* base_name) noexcept {
   const char* cpu_cstr = be_state->target_cpu.empty() ? nullptr : be_state->target_cpu.c_str();
   const char* feat_cstr = be_state->target_features.empty() ? nullptr : be_state->target_features.c_str();
   llvm_gen_be_error_t tm_err = create_target_machine(
-      triple_str.c_str(), cpu_cstr, feat_cstr, cg_opt, be_state->reloc_model, be_state->code_model, &tm);
+      triple_str.c_str(), cpu_cstr, feat_cstr, cg_opt, eff_reloc, be_state->code_model, &tm);
   if (tm_err != llvm_gen_be_error_t::ok) {
     return tm_err;
   }
@@ -855,7 +865,7 @@ llvm_gen_be_error_t llvm_apply_invocation_options(
       be_state->reloc_model = be_state->shared_link
                                   ? std::optional<llvm::Reloc::Model>(llvm::Reloc::PIC_)
                                   : std::nullopt;
-      be_state->pie_mode = 0;
+      be_state->pie_mode = (opts->static_link && !be_state->shared_link) ? -1 : 0;
       break;
   }
 

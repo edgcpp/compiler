@@ -83,8 +83,13 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
     add_compile_options(-Werror)
   endif()
 
-  # If we found a better linker than the default, use it.
-  if(DEFINED EDG_PREFERRED_LINKER AND NOT (APPLE AND EDG_PREFERRED_LINKER STREQUAL "lld"))
+  # If we found a better linker than the default, use it (skipping ld.gold with
+  # Clang + ASan, where gold warns on hidden __asan_check_* dynamic-list symbols).
+  if(DEFINED EDG_PREFERRED_LINKER AND
+     NOT (APPLE AND EDG_PREFERRED_LINKER STREQUAL "lld") AND
+     NOT (CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND
+          $CACHE{EDG_CPFE_USE_ASAN} AND
+          EDG_PREFERRED_LINKER STREQUAL "gold"))
     add_link_options("-fuse-ld=${EDG_PREFERRED_LINKER}")
   endif()
 else()

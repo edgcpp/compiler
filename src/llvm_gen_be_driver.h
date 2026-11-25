@@ -36,6 +36,23 @@ struct llvm_toolchain_config_t {
 };
 
 /**
+ * @brief Resolves the effective LLVM relocation model for a target triple and backend state.
+ * @details Honors an explicit `be_state->reloc_model` override when present, selects
+ *          `llvm::Reloc::Static` for static non-shared links (`-static`), defaults hosted
+ *          ELF targets (e.g., Linux, BSD, Android) as well as Mach-O and 64-bit Windows COFF
+ *          targets to `llvm::Reloc::PIC_` so emitted objects link cleanly with PIE-by-default
+ *          system toolchains, and falls back to `llvm::Reloc::Static` for bare-metal ELF,
+ *          32-bit COFF, and WebAssembly modules.
+ * @param[in] triple Target LLVM triple being lowered or emitted.
+ * @param[out] out_reloc Non-null pointer receiving the resolved `llvm::Reloc::Model`.
+ * @return `llvm_gen_be_error_t::ok` on success, `invalid_argument` if @p out_reloc is null,
+ *         or `out_of_memory` on allocation budget exhaustion.
+ */
+llvm_gen_be_error_t llvm_resolve_effective_reloc_model(
+    const llvm::Triple& triple,
+    llvm::Reloc::Model* out_reloc) noexcept;
+
+/**
  * @brief Probes the host/target environment to discover SDK, CRT, and library paths for @p triple.
  * @details Inspects Linux multiarch/GCC directories, macOS CommandLineTools/Xcode SDKs, or
  *          Windows MSVC/WindowsSDK directories, honoring @p sysroot_override when non-null.

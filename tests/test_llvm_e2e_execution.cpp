@@ -13,6 +13,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <dlfcn.h>
+#include <llvm/BinaryFormat/ELF.h>
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/MemoryBuffer.h>
 #include <llvm/Support/Path.h>
@@ -1218,6 +1219,164 @@ int main() {
 }
 
 /**
+ * @brief Counts total and non-PIC relocations in an `x86_64` ELF64 relocatable object file.
+ * @details Parses the ELF64 section header table and `SHT_RELA` entries in @p obj_path without
+ *          exceptions, counting `R_X86_64_32`, `R_X86_64_32S`, and `.rela.text*` `R_X86_64_64`
+ *          relocations that PIE linkers reject on Linux x86_64.
+ * @param[in] obj_path Path to the emitted ELF64 `.o` file.
+ * @param[out] out_total Receives the total number of `Elf64_Rela` entries across all sections.
+ * @param[out] out_non_pic Receives the number of PIE-incompatible relocations found.
+ * @return `llvm_gen_be_error_t::ok` on success, `invalid_argument` on null outputs, or `io_error` / `verification_failure`.
+ */
+static llvm_gen_be_error_t count_elf64_x86_64_relocations(
+    const std::string& obj_path,
+    size_t* out_total,
+    size_t* out_non_pic) noexcept {
+  if (!out_total || !out_non_pic) {
+    return llvm_gen_be_error_t::invalid_argument;
+  }
+  *out_total = 0;
+  *out_non_pic = 0;
+
+  llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> buf_or_err =
+      llvm::MemoryBuffer::getFile(obj_path);
+  if (!buf_or_err) {
+    return llvm_gen_be_error_t::io_error;
+  }
+  llvm::StringRef bytes = (*buf_or_err)->getBuffer();
+  if (bytes.size() < sizeof(llvm::ELF::Elf64_Ehdr)) {
+    return llvm_gen_be_error_t::verification_failure;
+  }
+
+  llvm::ELF::Elf64_Ehdr ehdr{};
+  std::memcpy(&ehdr, bytes.data(), sizeof(ehdr));
+  if (std::memcmp(ehdr.e_ident, llvm::ELF::ElfMagic, 4) != 0 ||
+      ehdr.e_shentsize != sizeof(llvm::ELF::Elf64_Shdr) ||
+      ehdr.e_shoff + static_cast<size_t>(ehdr.e_shnum) * sizeof(llvm::ELF::Elf64_Shdr) > bytes.size() ||
+      ehdr.e_shstrndx >= ehdr.e_shnum) {
+    return llvm_gen_be_error_t::verification_failure;
+  }
+
+  const char* base = bytes.data();
+  llvm::ELF::Elf64_Shdr shstr_hdr{};
+  std::memcpy(
+      &shstr_hdr,
+      base + ehdr.e_shoff + static_cast<size_t>(ehdr.e_shstrndx) * sizeof(llvm::ELF::Elf64_Shdr),
+      sizeof(shstr_hdr));
+  if (shstr_hdr.sh_offset + shstr_hdr.sh_size > bytes.size()) {
+    return llvm_gen_be_error_t::verification_failure;
+  }
+  llvm::StringRef shstrtab{base + shstr_hdr.sh_offset, shstr_hdr.sh_size};
+
+  for (uint16_t si = 0; si < ehdr.e_shnum; ++si) {
+    llvm::ELF::Elf64_Shdr shdr{};
+    std::memcpy(
+        &shdr,
+        base + ehdr.e_shoff + static_cast<size_t>(si) * sizeof(llvm::ELF::Elf64_Shdr),
+        sizeof(shdr));
+    if (shdr.sh_type != llvm::ELF::SHT_RELA || shdr.sh_entsize != sizeof(llvm::ELF::Elf64_Rela)) {
+      continue;
+    }
+    if (shdr.sh_offset + shdr.sh_size > bytes.size() || shdr.sh_name >= shstrtab.size()) {
+      return llvm_gen_be_error_t::verification_failure;
+    }
+    llvm::StringRef sec_name{shstrtab.data() + shdr.sh_name};
+    const bool is_text_rela = sec_name.starts_with(".rela.text");
+    const size_t count = shdr.sh_size / sizeof(llvm::ELF::Elf64_Rela);
+    for (size_t ri = 0; ri < count; ++ri) {
+      llvm::ELF::Elf64_Rela rela{};
+      std::memcpy(
+          &rela,
+          base + shdr.sh_offset + ri * sizeof(llvm::ELF::Elf64_Rela),
+          sizeof(rela));
+      const uint32_t r_type = rela.getType();
+      ++(*out_total);
+      if (r_type == llvm::ELF::R_X86_64_32 ||
+          r_type == llvm::ELF::R_X86_64_32S ||
+          (is_text_rela && r_type == llvm::ELF::R_X86_64_64)) {
+        ++(*out_non_pic);
+      }
+    }
+  }
+  return llvm_gen_be_error_t::ok;
+}
+
+/**
+ * @brief Verifies that hosted Linux `x86_64` object emission defaults to PIC relocations for PIE linking.
+ * @details Cross-compiles a C++20 TU containing `.rodata` string literals, globals, and exception
+ *          personality references to `x86_64-unknown-linux-gnu` both with default flags (asserting
+ *          zero PIE-incompatible relocations) and with `-fno-pic` (asserting `Reloc::Static` is honored).
+ * @param[in] cpfe_bin Path to `cpfe` executable.
+ * @param[in] work_dir Scratch directory path.
+ * @return `llvm_gen_be_error_t::ok` on success, or an error code on failure.
+ */
+static llvm_gen_be_error_t test_e2e_elf_x86_64_default_pic_relocations(
+    const std::string& cpfe_bin,
+    const std::string& work_dir) noexcept {
+  std::string src = work_dir + "/e2e_elf_pic.cpp";
+  std::string pic_obj = work_dir + "/e2e_elf_pic_default.o";
+  std::string static_obj = work_dir + "/e2e_elf_pic_static.o";
+
+  LLVM_GEN_BE_CHECK(write_text_file(src, R"CPP(
+int g_elf_pic_counter = 7;
+const char* elf_pic_banner() noexcept { return "edg_elf_pic_rodata"; }
+int elf_pic_probe(bool do_throw) {
+  try {
+    if (do_throw) throw 123;
+    return ++g_elf_pic_counter + elf_pic_banner()[0];
+  } catch (int v) {
+    return v;
+  }
+}
+)CPP"));
+
+  int rc = -1;
+  LLVM_GEN_BE_CHECK(run_cmd(
+      cpfe_bin,
+      {cpfe_bin, "--target=x86_64-unknown-linux-gnu", "-nostdinc", "--c++20", "-c", src, "-o", pic_obj},
+      &rc));
+  if (rc != 0) return llvm_gen_be_error_t::code_gen_failure;
+
+  size_t pic_total = 0;
+  size_t pic_non_pic = 0;
+  LLVM_GEN_BE_CHECK(count_elf64_x86_64_relocations(pic_obj, &pic_total, &pic_non_pic));
+  if (pic_total == 0 || pic_non_pic != 0) {
+    return llvm_gen_be_error_t::verification_failure;
+  }
+
+  LLVM_GEN_BE_CHECK(run_cmd(
+      cpfe_bin,
+      {cpfe_bin, "--target=x86_64-unknown-linux-gnu", "-nostdinc", "--c++20", "-fno-pic", "-c", src, "-o", static_obj},
+      &rc));
+  if (rc != 0) return llvm_gen_be_error_t::code_gen_failure;
+
+  size_t static_total = 0;
+  size_t static_non_pic = 0;
+  LLVM_GEN_BE_CHECK(count_elf64_x86_64_relocations(static_obj, &static_total, &static_non_pic));
+  if (static_total == 0 || static_non_pic == 0) {
+    return llvm_gen_be_error_t::verification_failure;
+  }
+  return llvm_gen_be_error_t::ok;
+}
+
+/**
+ * @brief Runs a named end-to-end test suite and logs a diagnostic to `llvm::errs()` on failure.
+ * @details Percolates `suite_err` verbatim so `main` can abort immediately with clear CI logs.
+ * @param[in] suite_name Human-readable name of the E2E suite.
+ * @param[in] suite_err Result returned by the E2E suite function.
+ * @return `suite_err` unchanged.
+ */
+static llvm_gen_be_error_t report_e2e_suite_result(
+    const char* suite_name,
+    llvm_gen_be_error_t suite_err) noexcept {
+  if (suite_err != llvm_gen_be_error_t::ok) {
+    llvm::errs() << "FAIL: " << (suite_name ? suite_name : "unknown")
+                 << " (error=" << static_cast<int>(suite_err) << ")\n";
+  }
+  return suite_err;
+}
+
+/**
  * @brief Entry point for `test_llvm_e2e_execution`.
  * @details Locates sibling `cpfe` binary, prepares isolated scratch directory under `.tmp/agent-llvm/e2e_suite`,
  *          and executes all end-to-end native compilation and execution tests.
@@ -1241,14 +1400,15 @@ int main([[maybe_unused]] int argc, char** argv) noexcept {
   llvm::sys::fs::make_absolute(abs_work);
   setenv("TMPDIR", abs_work.c_str(), 1);
 
-  if (test_e2e_types_nullptr_bool_bitint(cpfe_bin, work_dir) != llvm_gen_be_error_t::ok) return 1;
-  if (test_e2e_atomics(cpfe_bin, work_dir) != llvm_gen_be_error_t::ok) return 1;
-  if (test_e2e_complex_clang_abi(cpfe_bin, work_dir) != llvm_gen_be_error_t::ok) return 1;
-  if (test_e2e_source_location_header(cpfe_bin, work_dir) != llvm_gen_be_error_t::ok) return 1;
-  if (test_e2e_cxx_abi_vtable_ptrmem_raii_eh(cpfe_bin, work_dir) != llvm_gen_be_error_t::ok) return 1;
-  if (test_e2e_coroutines_o0_and_o2(cpfe_bin, work_dir) != llvm_gen_be_error_t::ok) return 1;
-  if (test_e2e_omp_simd_shared_multitu(cpfe_bin, work_dir) != llvm_gen_be_error_t::ok) return 1;
-  if (test_e2e_hardened_regression_suite(cpfe_bin, work_dir) != llvm_gen_be_error_t::ok) return 1;
+  if (report_e2e_suite_result("test_e2e_types_nullptr_bool_bitint", test_e2e_types_nullptr_bool_bitint(cpfe_bin, work_dir)) != llvm_gen_be_error_t::ok) return 1;
+  if (report_e2e_suite_result("test_e2e_atomics", test_e2e_atomics(cpfe_bin, work_dir)) != llvm_gen_be_error_t::ok) return 1;
+  if (report_e2e_suite_result("test_e2e_complex_clang_abi", test_e2e_complex_clang_abi(cpfe_bin, work_dir)) != llvm_gen_be_error_t::ok) return 1;
+  if (report_e2e_suite_result("test_e2e_source_location_header", test_e2e_source_location_header(cpfe_bin, work_dir)) != llvm_gen_be_error_t::ok) return 1;
+  if (report_e2e_suite_result("test_e2e_cxx_abi_vtable_ptrmem_raii_eh", test_e2e_cxx_abi_vtable_ptrmem_raii_eh(cpfe_bin, work_dir)) != llvm_gen_be_error_t::ok) return 1;
+  if (report_e2e_suite_result("test_e2e_coroutines_o0_and_o2", test_e2e_coroutines_o0_and_o2(cpfe_bin, work_dir)) != llvm_gen_be_error_t::ok) return 1;
+  if (report_e2e_suite_result("test_e2e_omp_simd_shared_multitu", test_e2e_omp_simd_shared_multitu(cpfe_bin, work_dir)) != llvm_gen_be_error_t::ok) return 1;
+  if (report_e2e_suite_result("test_e2e_hardened_regression_suite", test_e2e_hardened_regression_suite(cpfe_bin, work_dir)) != llvm_gen_be_error_t::ok) return 1;
+  if (report_e2e_suite_result("test_e2e_elf_x86_64_default_pic_relocations", test_e2e_elf_x86_64_default_pic_relocations(cpfe_bin, work_dir)) != llvm_gen_be_error_t::ok) return 1;
 
   std::puts("test_llvm_e2e_execution PASSED!");
   return 0;

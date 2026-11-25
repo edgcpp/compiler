@@ -37,6 +37,52 @@
 BEGIN_EDG_NAMESPACE
 
 /**
+ * @brief Resolves the effective LLVM relocation model for a target triple and backend state.
+ * @details Honors an explicit `be_state->reloc_model` override when present, selects
+ *          `llvm::Reloc::Static` for static non-shared links (`-static`), defaults hosted
+ *          ELF targets (e.g., Linux, BSD, Android) as well as Mach-O and 64-bit Windows COFF
+ *          targets to `llvm::Reloc::PIC_` so emitted objects link cleanly with PIE-by-default
+ *          system toolchains, and falls back to `llvm::Reloc::Static` for bare-metal ELF,
+ *          32-bit COFF, and WebAssembly modules.
+ * @param[in] triple Target LLVM triple being lowered or emitted.
+ * @param[out] out_reloc Non-null pointer receiving the resolved `llvm::Reloc::Model`.
+ * @return `llvm_gen_be_error_t::ok` on success, `invalid_argument` if @p out_reloc is null,
+ *         or `out_of_memory` on allocation budget exhaustion.
+ */
+llvm_gen_be_error_t llvm_resolve_effective_reloc_model(
+    const llvm::Triple& triple,
+    llvm::Reloc::Model* out_reloc) noexcept {
+    if (!out_reloc) {
+        return llvm_gen_be_error_t::invalid_argument;
+    }
+    LLVM_GEN_BE_CHECK(llvm_gen_be_step_oom_budget());
+    if (be_state) {
+        if (be_state->reloc_model.has_value()) {
+            *out_reloc = *be_state->reloc_model;
+            return llvm_gen_be_error_t::ok;
+        }
+        if (be_state->static_link && !be_state->shared_link) {
+            *out_reloc = llvm::Reloc::Static;
+            return llvm_gen_be_error_t::ok;
+        }
+    }
+    if (triple.isOSDarwin()) {
+        *out_reloc = llvm::Reloc::PIC_;
+        return llvm_gen_be_error_t::ok;
+    }
+    if (triple.isOSWindows()) {
+        *out_reloc = triple.isArch64Bit() ? llvm::Reloc::PIC_ : llvm::Reloc::Static;
+        return llvm_gen_be_error_t::ok;
+    }
+    if (triple.isOSBinFormatELF() && triple.getOS() != llvm::Triple::UnknownOS) {
+        *out_reloc = llvm::Reloc::PIC_;
+        return llvm_gen_be_error_t::ok;
+    }
+    *out_reloc = llvm::Reloc::Static;
+    return llvm_gen_be_error_t::ok;
+}
+
+/**
  * @brief Normalizes a macOS version string (`"15"`, `"15.2"`, or `"15.2.1"`) into `major.minor.patch`.
  * @details Appends `.0.0` or `.0` as needed so `ld64.lld -platform_version macos` receives a 3-component version.
  * @param[in] raw Raw macOS version string.
@@ -704,9 +750,12 @@ llvm_gen_be_error_t invoke_embedded_lld_lto(void) noexcept {
         default: cg_opt = llvm_codegen_opt_level_t::Default; break;
     }
 
+    llvm::Reloc::Model eff_reloc = llvm::Reloc::Static;
+    LLVM_GEN_BE_CHECK(llvm_resolve_effective_reloc_model(llvm::Triple(triple_str), &eff_reloc));
+
     llvm::TargetMachine* tm = nullptr;
     llvm_gen_be_error_t tm_err = create_target_machine(
-        triple_str.c_str(), nullptr, nullptr, cg_opt, std::nullopt, std::nullopt, &tm);
+        triple_str.c_str(), nullptr, nullptr, cg_opt, eff_reloc, be_state->code_model, &tm);
     if (tm_err != llvm_gen_be_error_t::ok) {
         return tm_err;
     }

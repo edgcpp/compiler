@@ -100,12 +100,20 @@ def main() -> int:
         res = subprocess.run(
             [test_bin],
             env=env,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
             check=False,
         )
         if res.returncode != 0:
-            print(f"Error: Test binary failed: {test_bin}", file=sys.stderr)
+            if res.stdout:
+                sys.stderr.write(res.stdout)
+                if not res.stdout.endswith("\n"):
+                    sys.stderr.write("\n")
+            print(
+                f"Error: Test binary failed (exit {res.returncode}): {test_bin}",
+                file=sys.stderr,
+            )
             return 1
 
     profraw_files = sorted(glob.glob(os.path.join(profraw_dir, "*.profraw")))

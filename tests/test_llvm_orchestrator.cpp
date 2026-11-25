@@ -561,6 +561,10 @@ llvm_gen_be_error_t test_lifecycle(void) noexcept {
   assert(invoke_embedded_lld_lto() == llvm_gen_be_error_t::code_gen_failure);
   g_fail_init_targets = 0;
 
+  g_llvm_be_oom_countdown = 0;
+  assert(invoke_embedded_lld_lto() == llvm_gen_be_error_t::out_of_memory);
+  g_llvm_be_oom_countdown = -1;
+
   g_fail_create_tm = -1;
   assert(invoke_embedded_lld_lto() == llvm_gen_be_error_t::code_gen_failure);
   g_fail_create_tm = 0;
@@ -1277,6 +1281,65 @@ llvm_gen_be_error_t test_lifecycle(void) noexcept {
       inv.target_triple = "invalid_unknown_arch_xyz-unknown-none";
       assert(llvm_apply_invocation_options(&inv) == llvm_gen_be_error_t::invalid_argument);
       inv.target_triple = nullptr;
+
+      // Cover static_link == true under default_reloc (both shared_library and executable)
+      inv.reloc_mode = edg_reloc_mode_t::default_reloc;
+      inv.static_link = true;
+      inv.artifact_kind = edg_output_artifact_kind_t::shared_library;
+      assert(llvm_apply_invocation_options(&inv) == llvm_gen_be_error_t::ok);
+      assert(be_state->pie_mode == 0);
+      inv.artifact_kind = edg_output_artifact_kind_t::executable;
+      assert(llvm_apply_invocation_options(&inv) == llvm_gen_be_error_t::ok);
+      assert(be_state->pie_mode == -1);
+      inv.static_link = false;
+
+      // Cover all branches of llvm_resolve_effective_reloc_model
+      {
+        llvm::Reloc::Model resolved_rm = llvm::Reloc::Static;
+        assert(llvm_resolve_effective_reloc_model(llvm::Triple("x86_64-unknown-linux-gnu"), nullptr) ==
+               llvm_gen_be_error_t::invalid_argument);
+        g_llvm_be_oom_countdown = 0;
+        assert(llvm_resolve_effective_reloc_model(llvm::Triple("x86_64-unknown-linux-gnu"), &resolved_rm) ==
+               llvm_gen_be_error_t::out_of_memory);
+        g_llvm_be_oom_countdown = -1;
+
+        LLVMBackendState* saved_rm_be = be_state;
+        be_state = nullptr;
+        assert(llvm_resolve_effective_reloc_model(llvm::Triple("x86_64-unknown-linux-gnu"), &resolved_rm) ==
+               llvm_gen_be_error_t::ok && resolved_rm == llvm::Reloc::PIC_);
+        be_state = saved_rm_be;
+
+        be_state->reloc_model = llvm::Reloc::Static;
+        assert(llvm_resolve_effective_reloc_model(llvm::Triple("x86_64-unknown-linux-gnu"), &resolved_rm) ==
+               llvm_gen_be_error_t::ok && resolved_rm == llvm::Reloc::Static);
+        be_state->reloc_model = llvm::Reloc::PIC_;
+        assert(llvm_resolve_effective_reloc_model(llvm::Triple("riscv64-unknown-elf"), &resolved_rm) ==
+               llvm_gen_be_error_t::ok && resolved_rm == llvm::Reloc::PIC_);
+
+        be_state->reloc_model = std::nullopt;
+        be_state->static_link = true;
+        be_state->shared_link = false;
+        assert(llvm_resolve_effective_reloc_model(llvm::Triple("x86_64-unknown-linux-gnu"), &resolved_rm) ==
+               llvm_gen_be_error_t::ok && resolved_rm == llvm::Reloc::Static);
+        be_state->shared_link = true;
+        assert(llvm_resolve_effective_reloc_model(llvm::Triple("x86_64-unknown-linux-gnu"), &resolved_rm) ==
+               llvm_gen_be_error_t::ok && resolved_rm == llvm::Reloc::PIC_);
+        be_state->static_link = false;
+        be_state->shared_link = false;
+
+        assert(llvm_resolve_effective_reloc_model(llvm::Triple("aarch64-apple-darwin"), &resolved_rm) ==
+               llvm_gen_be_error_t::ok && resolved_rm == llvm::Reloc::PIC_);
+        assert(llvm_resolve_effective_reloc_model(llvm::Triple("x86_64-pc-windows-msvc"), &resolved_rm) ==
+               llvm_gen_be_error_t::ok && resolved_rm == llvm::Reloc::PIC_);
+        assert(llvm_resolve_effective_reloc_model(llvm::Triple("i686-pc-windows-msvc"), &resolved_rm) ==
+               llvm_gen_be_error_t::ok && resolved_rm == llvm::Reloc::Static);
+        assert(llvm_resolve_effective_reloc_model(llvm::Triple("x86_64-unknown-linux-gnu"), &resolved_rm) ==
+               llvm_gen_be_error_t::ok && resolved_rm == llvm::Reloc::PIC_);
+        assert(llvm_resolve_effective_reloc_model(llvm::Triple("riscv64-unknown-elf"), &resolved_rm) ==
+               llvm_gen_be_error_t::ok && resolved_rm == llvm::Reloc::Static);
+        assert(llvm_resolve_effective_reloc_model(llvm::Triple("wasm32-unknown-wasi"), &resolved_rm) ==
+               llvm_gen_be_error_t::ok && resolved_rm == llvm::Reloc::Static);
+      }
 
       // Cover link-only (0 source files, >0 object files) and all linker_passthrough_args branches (-fuse-ld=, -F, -Wl,, -Xlinker, other)
       const char* extra_pass_arr[] = {"-fuse-ld=lld", "-F/System/Library/Frameworks", "-Wl,-z,now", "-Xlinker", "--custom-pass"};
