@@ -1669,7 +1669,9 @@ index for the type file.
         a_type_ptr underlying_type = type->variant.typeref.type;
 
         result = this->find_or_enter_type(underlying_type);
-      } else if (is_typeref_kind(type, trk_none)) {
+      } else if (is_typeref_kind(type, trk_none) ||
+                 type_has_collapsed_reference_spelling(type)) {
+        /* The IFC needs only the underlying type for these typerefs. */
         a_type_ptr underlying_type = type->variant.typeref.type;
 
         result = this->find_or_enter_type(underlying_type);

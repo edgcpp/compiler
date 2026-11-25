@@ -4642,18 +4642,30 @@ and type is the specified type.
 
 
 void record_cast_position_in_expr_rescan_info(
-                                             an_expr_node_ptr  expr,
-                                             a_source_position *start_position,
-                                             a_source_position *type_position,
-                                             a_type_ptr        cast_type)
+                                 an_expr_node_ptr   expr,
+                                 a_cast_source_form source_form,
+                                 a_source_position  *start_position,
+                                 a_source_position  *type_position,
+                                 a_type_ptr         cast_type)
 /*
 Record the source position of a cast in the rescan information
 associated with that cast, allocating the rescan info if needed.
 expr is the cast expression; start_position is the source position
 of the start of the cast; type_position is the source position of the
-type within the cast; and cast_type is the type cast to.
+type within the cast; and cast_type is the type cast to.  source_form
+identifies an explicit cast whose type spelling can be used to regenerate
+the expression.
 */
 {
+#if BACK_END_IS_CP_GEN_BE
+  if (source_form != csf_none && is_cast_operation_node(expr) &&
+      !expr->compiler_generated && expr->variant.operation.is_reference_cast &&
+      type_is(cast_type, tk_typeref)) {
+    expr->variant.operation.reference_cast_type = cast_type;
+  }  /* if */
+#else /* !BACK_END_IS_CP_GEN_BE */
+  (void)source_form;
+#endif /* BACK_END_IS_CP_GEN_BE */
   if (expr_stack->possible_rescan_context &&
       !is_error_node(expr)) {
     if (is_operation_node(expr) &&
@@ -4715,12 +4727,18 @@ something, or when the original operand was not an expression (e.g.,
 it was a constant), it can be NULL.
 */
 {
-  if (expr_stack->possible_rescan_context) {
+  if (expr_stack->possible_rescan_context
+#if BACK_END_IS_CP_GEN_BE
+      || (source_form != csf_none && type_is(cast_type, tk_typeref) &&
+          is_any_reference_type(cast_type))
+#endif /* BACK_END_IS_CP_GEN_BE */
+      ) {
     an_expr_node_ptr expr = find_primary_cast_node(orig_operand_expr,
                                                    source_form,
                                                    operand);
     if (expr != NULL) {
-      record_cast_position_in_expr_rescan_info(expr, start_position,
+      record_cast_position_in_expr_rescan_info(expr, source_form,
+                                               start_position,
                                                type_position, cast_type);
     }  /* if */
   }  /* if */
@@ -5637,7 +5655,9 @@ dynamic init that underlies the cast, or NULL if there isn't one.
       orig_type = eriep->type;
     }  /* if */
   }  /* if */
-  /* Determine the result type for the cast. */
+  /* Substitute the semantic destination type.  The collapsed-reference
+     spelling wrapper is dropped by type substitution, so a rescanned cast
+     cannot inherit an unsubstituted spelling from the prototype. */
   check_assertion(eriep != NULL && eriep->type != NULL);
   *cast_type = do_type_substitution_for_rescan(orig_type, rcblock, eriep);
   if (actual_dip != NULL) *actual_dip = dip;

@@ -21074,6 +21074,11 @@ options is a set of substitution options.
           expr_copy = copy_node(expr);
           set_node_operator(expr_copy, op, operation_type,
                             expr->is_lvalue, new_operand_1);
+#if BACK_END_IS_CP_GEN_BE
+          /* This operation has been substituted.  Its source type can
+             still name an alias or decltype from the original scope. */
+          expr_copy->variant.operation.reference_cast_type = NULL;
+#endif /* BACK_END_IS_CP_GEN_BE */
           copy_node_value_category(expr, expr_copy);
         }  /* if */
       }  /* if */
@@ -23493,6 +23498,14 @@ copied again.
       break;
     case enk_operation:
       /* Copy the operands of the operation. */
+#if BACK_END_IS_CP_GEN_BE
+      if ((options & (CE_COPYING_FROM_ONE_FUNC_TO_ANOTHER |
+                      CE_DOING_INLINING_OF_FUNCTION_CALL)) ||
+          (in_file_scope(expr_copy) && !in_file_scope(expr))) {
+        /* The written type can refer to entities in the original scope. */
+        expr_copy->variant.operation.reference_cast_type = NULL;
+      }  /* if */
+#endif /* BACK_END_IS_CP_GEN_BE */
 #if MINIMAL_INLINING
       /* Some short-circuited operations can be simplified while they are
          copied if the first operand value is constant. */

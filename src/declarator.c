@@ -5677,6 +5677,45 @@ __w64 annotation, and __based variable specifiers).  The given type must be a
 
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 
+#if BACK_END_IS_CP_GEN_BE
+
+static a_type_ptr preserve_collapsed_reference_spelling(
+                                              a_type_ptr         type,
+                                              a_type_ptr         base_type,
+                                              a_boolean          rvalue_ref,
+                                              a_decl_parse_state *state)
+/*
+Return type, the result of reference collapsing, with the base type spelling
+and reference operator retained when scanning a cast type-id.
+*/
+{
+  a_type_ptr result = type;
+
+  if (state->preserve_cast_reference_spelling &&
+      state->qualifiers == TQ_NONE && !is_error_type(type)) {
+    a_type_ptr naming_type = skip_lexical_typerefs(base_type);
+    if (type_is(naming_type, tk_typeref) &&
+        (typeref_is_typedef(naming_type) ||
+         typeref_is_type_operator(naming_type, /*include_intrinsics=*/TRUE))) {
+      result = alloc_type(tk_typeref);
+      result->variant.typeref.kind =
+          rvalue_ref ? trk_collapsed_rvalue_reference
+                     : trk_collapsed_lvalue_reference;
+      result->variant.typeref.type = type;
+      result->variant.typeref.extra_info->operator_type_arg = base_type;
+      result->variant.typeref.is_dependent =
+                                    naming_type->variant.typeref.is_dependent;
+      result->variant.typeref.is_nonreal =
+                                      naming_type->variant.typeref.is_nonreal;
+      result->variant.typeref.is_prototype_instantiation =
+                      naming_type->variant.typeref.is_prototype_instantiation;
+    }  /* if */
+  }  /* if */
+  return result;
+}  /* preserve_collapsed_reference_spelling */
+
+#endif /* BACK_END_IS_CP_GEN_BE */
+
 a_type_ptr pointer_declarator(
                    a_type_ptr                       specifiers_type,
                    a_decl_parse_state               *state,
@@ -5973,10 +6012,16 @@ Microsoft extended decl modifiers are also scanned, but they are ignored
               a_source_position_ptr  qual_pos =
                    (state->qualifiers == TQ_RESTRICT) ? &state->restrict_pos
                                                       : &state->qualifiers_pos;
-              complete_type = make_reference_to_reference(
+              a_type_ptr collapsed_type = make_reference_to_reference(
                                 complete_type, rvalue_ref_case,
                                 /*tracking_ref=*/FALSE,
                                 state->qualifiers, qual_pos, (a_boolean*)NULL);
+#if BACK_END_IS_CP_GEN_BE
+              collapsed_type = preserve_collapsed_reference_spelling(
+                               collapsed_type, complete_type, rvalue_ref_case,
+                               state);
+#endif /* BACK_END_IS_CP_GEN_BE */
+              complete_type = collapsed_type;
               state->unused_qualifiers = FALSE;
             } else {
               /* Type "reference to reference" is illegal. */
@@ -8534,6 +8579,12 @@ past_postfix_declarator_operators:
                   make_reference_to_reference(complete_type, is_rvalue_ref,
                                               tracking_ref, state->qualifiers,
                                               qual_pos, (a_boolean*)NULL);
+#if BACK_END_IS_CP_GEN_BE
+        if (!tracking_ref) {
+          derived_type = preserve_collapsed_reference_spelling(
+                          derived_type, complete_type, is_rvalue_ref, state);
+        }  /* if */
+#endif /* BACK_END_IS_CP_GEN_BE */
       }  /* if */
       state->unused_qualifiers = FALSE;
       /* The second reference component is essentially ignored.  We do not

@@ -806,7 +806,8 @@ static void gen_statement_list(a_statement_ptr stmt_list,
                                a_boolean       is_stmt_expression);
 static void gen_cast(a_type_ptr type);
 static a_boolean is_expl_temp_or_field_thereof(an_expr_node_ptr expr);
-static void gen_type_operator(a_type_ptr tp);
+static void gen_type_operator(a_type_ptr tp,
+                              a_type_ptr collapsed_reference = NULL);
 static void gen_expr(an_expr_node_ptr expr,
                      a_boolean        need_parens,
                      a_boolean        obj_expr_of_mfunc_operator);
@@ -9380,7 +9381,17 @@ the same instance might not be).
 }  /* expr_has_enk_param_ref */
 
 
-static void gen_type_operator(a_type_ptr tp)
+static a_const_char *collapsed_reference_suffix(a_type_ptr type)
+/*
+Return the reference operator written on a reference type that collapsed.
+*/
+{
+  return is_typeref_kind(type, trk_collapsed_rvalue_reference) ? "&&" : "&";
+}  /* collapsed_reference_suffix */
+
+
+static void gen_type_operator(a_type_ptr tp,
+             /* Defaulted: */ a_type_ptr collapsed_reference)
 /*
 Emit a type operator (decltype, etc.) or type builtin construct.  If the
 argument to the construct has associated source sequence entries, the type
@@ -9389,7 +9400,9 @@ source sequence entries were skipped); the source sequence entries
 associated with the argument should be reactivated in such cases.  If the
 operand of the type operator is an unusable expression (because of scope or
 access issues), the result type is put out directly instead of the type
-operator.
+operator.  If collapsed_reference is non-NULL, it records a written
+reference operator to append and the collapsed type to emit if the type
+operator cannot be written.
 */
 {
   a_source_sequence_scan_state saved_state = null_source_sequence_scan_state;
@@ -9530,7 +9543,10 @@ operator.
     /* The operand is inaccessible or otherwise unusable.  Put out the
        resulting type itself instead of reconstituting the operator
        invocation. */
-    gen_type(skip_lexical_typerefs(tp->variant.typeref.type));
+    a_type_ptr result = collapsed_reference != NULL ? collapsed_reference : tp;
+    gen_type(skip_lexical_typerefs(result->variant.typeref.type));
+  } else if (collapsed_reference != NULL) {
+    write_tok_str(collapsed_reference_suffix(collapsed_reference));
   }  /* if */
   if (tp->definition_delayed) {
     /* Restore the source sequence list position. */
@@ -9972,6 +9988,13 @@ elaborated-type-specifier, even if it would be required in some contexts.
            nested-name-specifier is given by the trk_name_qualifier's type
            supplement, which might also involve lexical typerefs. */
         a_scope_ptr qual_scope = NULL;
+        a_type_ptr  naming_type = skip_lexical_typerefs(refp);
+        if (naming_type->force_typename_kwd) {
+          /* This path emits the qualifier directly, bypassing the check
+             for the g++ workaround in gen_name. */
+          options |= GN_DEPENDENT;
+          naming_type->force_typename_kwd = FALSE;
+        }  /* if */
         nqp = trp->variant.typeref.extra_info->name_qualifier;
         if (is_class_struct_union_type(refp)) {
           /* Check for and eliminate references to an injected-class-name.
@@ -15706,6 +15729,41 @@ Return TRUE if the given expression will be put out as a braced-init-list.
 }  /* expr_is_braced_init_list */
 
 
+static void gen_cast_type(a_type_ptr type,
+                          a_boolean  c_style)
+/*
+Emit the destination type of a cast.  Use the written reference suffix
+only when the base type can also be written.
+*/
+{
+  if (type_has_collapsed_reference_spelling(type)) {
+    a_type_ptr base_type = type->variant.typeref.extra_info->operator_type_arg;
+    a_type_ptr naming_type = skip_lexical_typerefs(base_type);
+    a_type_ptr resolved_type = NULL;
+    if (typeref_is_type_operator(naming_type, /*include_intrinsics=*/TRUE)) {
+      a_boolean saved_suppress = naming_type->suppress_operator;
+      if (c_style && typeref_is_type_transforming_intrinsic(naming_type)) {
+        /* An intrinsic after '(' can be parsed as an expression. */
+        naming_type->suppress_operator = TRUE;
+      }  /* if */
+      gen_type_operator(naming_type, type);
+      naming_type->suppress_operator = saved_suppress;
+    } else if (typedef_is_invisible(naming_type, &resolved_type,
+                                    /*suppress_const=*/FALSE, &octl)) {
+      /* The fallback already incorporates reference collapsing. */
+      gen_type(type->variant.typeref.type);
+    } else {
+      /* gen_type could expand the typedef and emit a reference operator
+         before the written suffix.  The typedef itself is visible here. */
+      gen_type_reference(base_type);
+      write_tok_str(collapsed_reference_suffix(type));
+    }  /* if */
+  } else {
+    gen_type(type);
+  }  /* if */
+}  /* gen_cast_type */
+
+
 static void gen_cast(a_type_ptr type)
 /*
 Generate an old-style cast to the indicated type.
@@ -15714,7 +15772,7 @@ Generate an old-style cast to the indicated type.
   a_boolean type_operators_suppressed =
                                      set_type_operator_suppression(type, TRUE);
   m_write_tok_ch('(');
-  gen_type(type);
+  gen_cast_type(type, /*c_style=*/TRUE);
   m_write_tok_ch(')');
   if (type_operators_suppressed) {
     (void)set_type_operator_suppression(type, FALSE);
@@ -15730,6 +15788,8 @@ is_reinterpret_cast indicate it.
 */
 {
   a_type_ptr            dest_type = expr->type;
+  a_type_ptr            written_type =
+                                   expr->variant.operation.reference_cast_type;
   an_expr_operator_kind op = expr->variant.operation.kind;
   an_expr_node_ptr      operand_1 = expr->variant.operation.operands;
   a_type                ref_type;
@@ -15754,6 +15814,12 @@ is_reinterpret_cast indicate it.
        different from that of its conversion operator. */
     operand_1->keep_as_cast_for_cp_gen_be = TRUE;
   }  /* if */
+  if (written_type != NULL && standalone_identical_types(written_type,
+                                                         dest_type)) {
+    /* A copy whose destination type has changed cannot use the spelling
+       retained from the original cast. */
+    dest_type = written_type;
+  }  /* if */
   /* Skip any implicit steps for a base or derived class cast. */
   while (is_operation_node(operand_1) &&
          operand_1->variant.operation.implicit_step_of_explicit_cast) {
@@ -15775,7 +15841,11 @@ is_reinterpret_cast indicate it.
     new_cast_keyword = "dynamic_cast";
   }  /* if */
   if (gcc_is_generated_code_target && in_prototype_instantiation_context) {
-    a_type_ptr tp = skip_lexical_typerefs(dest_type);
+    a_type_ptr tp = dest_type;
+    if (type_has_collapsed_reference_spelling(tp)) {
+      tp = tp->variant.typeref.extra_info->operator_type_arg;
+    }  /* if */
+    tp = skip_lexical_typerefs(tp);
     while (type_is(tp, tk_pointer) || type_is(tp, tk_array)) {
       if (type_is(tp, tk_pointer)) {
         tp = skip_typerefs_not_typedefs(type_pointed_to(tp));
@@ -15804,7 +15874,7 @@ is_reinterpret_cast indicate it.
     /* Use a new-style cast. */
     write_tok_str(new_cast_keyword);
     write_tok_str("< ");
-    gen_type(dest_type);
+    gen_cast_type(dest_type, /*c_style=*/FALSE);
     write_tok_str(">(");
     gen_expression(operand_1);
     write_tok_ch(')');

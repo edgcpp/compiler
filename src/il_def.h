@@ -9765,6 +9765,13 @@ enum a_typeref_kind : a_byte {
                            the type as written. */
   trk_pack_index,       /* A typeref representing a C++26 pack-index-specifier
                            (T...[N]). */
+  trk_collapsed_lvalue_reference,
+  trk_collapsed_rvalue_reference,
+                        /* A reference cast type written with & or && on a
+                           type that already denotes a reference.  The
+                           underlying type is the collapsed reference and
+                           operator_type_arg records the written base type.
+                           These typerefs do not represent type operators. */
 };
 
 /*
@@ -15355,6 +15362,14 @@ typedef struct an_expr_node {
       an_expr_node_ptr  
                 operands;
                         /* The list of operands. */
+#if BACK_END_IS_CP_GEN_BE
+      a_type_ptr
+                reference_cast_type;
+                        /* The full destination type of a reference cast
+                           when needed to retain its spelling.  Same-scope
+                           copies keep it.  The back end checks it against
+                           the semantic destination type before use. */
+#endif /* BACK_END_IS_CP_GEN_BE */
     } operation;
 
     /* When kind == enk_constant: */

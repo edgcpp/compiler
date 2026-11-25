@@ -2591,6 +2591,7 @@ extern void record_typed_operator_position_in_expr_rescan_info(
 
 extern void record_cast_position_in_expr_rescan_info(
                                              an_expr_node_ptr  expr,
+                                             a_cast_source_form source_form,
                                              a_source_position *start_position,
                                              a_source_position *type_position,
                                              a_type_ptr        cast_type);

@@ -1,0 +1,26 @@
+[GH #586]
+C++-generating back end: spelling of reference casts (IL CHANGE)
+
+The changes for EDGcpfe/26294 in version 6.8 could cause the C++-generating
+back end to emit a synthetic name for a lambda closure type in the
+destination type of a reference cast.  The generated C++ could then fail
+to compile.  The front end now records the written reference cast type in
+the IL, including a reference operator applied to a type that already
+denotes a reference.  This lets the back end retain the alias or decltype
+used to name the type.  Consider this example in C++17 mode.
+
+  void f() {
+    auto&& l = [] {};
+    using R = decltype(l);
+    auto&& r = static_cast<decltype(l)&&>(l);
+    auto& s = static_cast<R&>(l);
+    auto& t = (decltype(l)&)l;
+    (void)r;
+    (void)s;
+    (void)t;
+  }
+
+  int& g(int& x) {
+    using R = int&;
+    return static_cast<R&&>(x);  // The written R&& collapses to int&.
+  }

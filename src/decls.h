@@ -1223,6 +1223,10 @@ typedef struct a_decl_parse_state {
 			   in which is_implicit_type_context is set.  This
 			   is used to make sure a lower level routine does not
 			   set is_implicit_type_context. */
+#if BACK_END_IS_CP_GEN_BE
+  a_bit_field	preserve_cast_reference_spelling:1;
+			/* TRUE when scanning the type of a cast. */
+#endif /* BACK_END_IS_CP_GEN_BE */
   a_bit_field	is_implicit_type_context:1;
 			/* TRUE if this is a context in which a dependent
 			   qualified name is considered to be a type (a

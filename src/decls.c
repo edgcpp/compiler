@@ -243,6 +243,9 @@ be restored).
     dps->retrieve_initializer_from_cache = FALSE;
     dps->last_declarator = FALSE;
     dps->type_is_injected_class_name = FALSE;
+#if BACK_END_IS_CP_GEN_BE
+    dps->preserve_cast_reference_spelling = FALSE;
+#endif /* BACK_END_IS_CP_GEN_BE */
     dps->is_implicit_type_context = FALSE;
     dps->for_requires_expr_params = FALSE;
     dps->decl_being_cached = FALSE;
@@ -13636,6 +13639,9 @@ non-NULL, any _Alignas attributes that precede the type are returned in
   init_decl_parse_state(&dps);
   dps.disallow_variably_modified_type = const_expr_context;
   dps.not_possible_implicit_type_context = !is_new_style;
+#if BACK_END_IS_CP_GEN_BE
+  dps.preserve_cast_reference_spelling = !C_mode();
+#endif /* BACK_END_IS_CP_GEN_BE */
   dps.deferred_alignas_attributes = alignas_attributes;
   type_name_full(&dps);
   if (type_definition != NULL) {
