@@ -1,0 +1,19 @@
+[GH #592]
+Argument-dependent lookup in range-based for and structured bindings
+
+As clarified by Core issue 1442, a range-based for statement uses only
+argument-dependent lookup for nonmember begin and end functions.  Previously,
+the front end always included namespace std in that lookup, even when std was
+not associated with the range type.  For example, with --c++11:
+
+  namespace N { struct S { }; }
+  namespace std {
+    int *begin(N::S &);
+    int *end(N::S &);
+  }
+  void f(N::S &s) {
+    for (int i : s) { }  // Previously accepted, now an error.
+  }
+
+The same correction applies to nonmember get in tuple-like structured
+bindings (C++17 and later).

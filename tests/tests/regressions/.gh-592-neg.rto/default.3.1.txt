@@ -1,0 +1,15 @@
+fe_only -DTEST_NUMBER=3 -tused --c++11 --clang_version 220100 Test_name.c
+"Test_name.c", line 27: error: this range-based "for" statement requires a suitable "begin" function and none was found
+    for (int i : s) { }
+                 ^
+
+"Test_name.c", line 27: error: this range-based "for" statement requires a suitable "end" function and none was found
+    for (int i : s) { }
+                 ^
+
+"Test_name.c", line 17: error: this range-based "for" statement requires a suitable "end" function and none was found
+      for (int i : r) (void)i;
+                   ^
+          detected during instantiation of "void range_adl::iterate(T &) [with T=range_adl::Range]" at line 20
+
+3 errors detected in the compilation of "Test_name.c".

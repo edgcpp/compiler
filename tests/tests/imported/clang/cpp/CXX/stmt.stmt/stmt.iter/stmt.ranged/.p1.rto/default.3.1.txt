@@ -237,6 +237,14 @@ fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
       int *end();
            ^
 
+"Test_name.c", line 250: error: this range-based "for" statement requires a suitable "begin" function and none was found
+    for (auto a : StdBeginEnd()) {} // expected-error {{invalid range expression of type 'StdBeginEnd'; no viable 'begin'}}
+                  ^
+
+"Test_name.c", line 250: error: this range-based "for" statement requires a suitable "end" function and none was found
+    for (auto a : StdBeginEnd()) {} // expected-error {{invalid range expression of type 'StdBeginEnd'; no viable 'begin'}}
+                  ^
+
 "Test_name.c", line 270: error: this range-based "for" statement requires a suitable "begin" function and none was found
     for (auto u : NS::NoADL()) { // expected-error {{invalid range expression of type 'NS::NoADL'; no viable 'begin' function available}}
                   ^
@@ -305,4 +313,4 @@ fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
                 ^
           detected during instantiation of "void rdar13712739::foo(const T &) [with T=int]" at line 290
 
-55 errors detected in the compilation of "Test_name.c".
+57 errors detected in the compilation of "Test_name.c".
