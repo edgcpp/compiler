@@ -11951,8 +11951,15 @@ arrays with class elements.
     entity_node = NULL;  /* Allocate in __vec_new. */
 #if ABI_CHANGES_FOR_PLACEMENT_DELETE
     if (sized_delete) {
-      /* Create a size argument for the deallocation routine. */
-      delete_args = make_reusable_copy(args, /*vars_can_change=*/TRUE);
+      /* Create a size argument for the deallocation routine.  args itself
+         is discarded (the number of elements is passed to the runtime
+         instead), so the copy must not depend on evaluating it.  args is
+         computed only from constants and a lowered temporary that is set
+         before the allocation (see size_arg_for_new), so a plain copy is
+         safe. */
+      check_assertion(is_invariant_expr(args, /*vars_can_change=*/FALSE,
+                                        /*treat_as_potential_prvalue=*/FALSE));
+      delete_args = make_reusable_copy(args, /*vars_can_change=*/FALSE);
       prefix_size_node = get_prefix_size_node(elem_type, new_routine);
       if (prefix_size_node != NULL) {
         /* Add in the size of the prefix, if applicable. */
