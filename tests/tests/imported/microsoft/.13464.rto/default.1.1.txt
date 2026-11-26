@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --microsoft --c++14 Test_name.c
+"Test_name.c", line 25: error: no instance of function template "AA::ff4" matches the argument list
+            argument types are: (int, C1<int, int>, K<int>)
+                  AA::ff4(4,c,k); // ambiguous, should be an error
+                  ^
+"Test_name.c", line 15: note: candidate function template "AA::ff4" failed deduction
+                  static void ff4(int sizeOFPP, A<X, C1...> ...a)
+                              ^
+
+1 error detected in the compilation of "Test_name.c".

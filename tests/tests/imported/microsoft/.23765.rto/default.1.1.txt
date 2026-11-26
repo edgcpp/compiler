@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --microsoft_v 1928 --time_limit 10 Test_name.c
+"Test_name.c", line 11: error: excessive recursion at instantiation of class "NDimVectorGenerator<18446744073709551552UL>"
+      using type = vector<typename NDimVectorGenerator<N - 1>::type>;
+                                                               ^
+          detected during:
+            instantiation of class "NDimVectorGenerator<N> [with N=18446744073709551553UL]" at line 11
+            instantiation of class "NDimVectorGenerator<N> [with N=18446744073709551554UL]" at line 11
+            instantiation of class "NDimVectorGenerator<N> [with N=18446744073709551555UL]" at line 11
+            instantiation of class "NDimVectorGenerator<N> [with N=18446744073709551556UL]" at line 11
+            instantiation of class "NDimVectorGenerator<N> [with N=18446744073709551557UL]" at line 11
+            [ 54 instantiation contexts not shown ]
+            instantiation of class "NDimVectorGenerator<N> [with N=18446744073709551612UL]" at line 11
+            instantiation of class "NDimVectorGenerator<N> [with N=18446744073709551613UL]" at line 11
+            instantiation of class "NDimVectorGenerator<N> [with N=18446744073709551614UL]" at line 11
+            instantiation of class "NDimVectorGenerator<N> [with N=18446744073709551615UL]" at line 11
+            instantiation of class "NDimVectorGenerator<N> [with N=0UL]" at line 15
+
+"Test_name.c", line 11: error: incomplete type "NDimVectorGenerator<18446744073709551552UL>" is not allowed
+      using type = vector<typename NDimVectorGenerator<N - 1>::type>;
+                                   ^
+          detected during:
+            instantiation of class "NDimVectorGenerator<N> [with N=18446744073709551553UL]" at line 11
+            instantiation of class "NDimVectorGenerator<N> [with N=18446744073709551554UL]" at line 11
+            instantiation of class "NDimVectorGenerator<N> [with N=18446744073709551555UL]" at line 11
+            instantiation of class "NDimVectorGenerator<N> [with N=18446744073709551556UL]" at line 11
+            instantiation of class "NDimVectorGenerator<N> [with N=18446744073709551557UL]" at line 11
+            [ 54 instantiation contexts not shown ]
+            instantiation of class "NDimVectorGenerator<N> [with N=18446744073709551612UL]" at line 11
+            instantiation of class "NDimVectorGenerator<N> [with N=18446744073709551613UL]" at line 11
+            instantiation of class "NDimVectorGenerator<N> [with N=18446744073709551614UL]" at line 11
+            instantiation of class "NDimVectorGenerator<N> [with N=18446744073709551615UL]" at line 11
+            instantiation of class "NDimVectorGenerator<N> [with N=0UL]" at line 15
+
+2 errors detected in the compilation of "Test_name.c".

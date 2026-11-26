@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --microsoft_version=1925 --ms_c++17 --set_flag coroutines Test_name.c
+"Test_name.c", line 47: warning: missing co_return statement while "std::experimental::coroutine_traits<IAO>::promise_type" has no "return_void" at end of function "f"
+  IAO f()
+      ^
+
+"Test_name.c", line 42: warning: returning reference to local temporary
+              Expression&& await_transform(Expression&& expression) { return {}; }
+                                                                             ^
+          detected during instantiation of "Expression &&std::experimental::coroutine_traits<IAO, Args...>::promise_type::await_transform(Expression &&) [with Args=<>, Expression=IAO]" at line 49
+
