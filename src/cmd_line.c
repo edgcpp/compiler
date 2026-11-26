@@ -4317,6 +4317,11 @@ default mode (e.g., exception handling).
     /* A field selection on a class prvalue is an xvalue (CWG 616).  GCC 9+
        and Clang 4+ also do that in C++11 mode. */
     selection_from_prvalue_is_xvalue = TRUE;
+    if (!microsoft_mode && !clangcpp_version_is(<70000)) {
+      /* Subscripting an array prvalue or xvalue is an xvalue (CWG 1213).
+         Clang adopted that in Clang 7; MSVC still yields an lvalue. */
+      subscript_of_array_rvalue_is_xvalue = TRUE;
+    }  /* if */
   }  /* if */
   if (cpp14_mode) {
     /* Features enabled in C++14 mode. */
@@ -13503,6 +13508,7 @@ variables declared in cmd_line.h.
   aggregate_classes_can_have_user_ctors = TRUE;
   generalized_template_template_matching = FALSE;
   selection_from_prvalue_is_xvalue = FALSE;
+  subscript_of_array_rvalue_is_xvalue = FALSE;
   alias_declarations_enabled = FALSE;
   variadic_templates_enabled = FALSE;
   inline_namespaces_enabled = FALSE;

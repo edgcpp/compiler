@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --c++14 Test_name.c
+"Test_name.c", line 12: error: expression must be an lvalue or a function designator
+  int *p1 = &A().i[0];                       // Error.
+             ^
+
+"Test_name.c", line 13: error: expression must be an lvalue or a function designator
+  int *p2 = &static_cast<T2 &&>(a)[0];       // Error.
+             ^
+
+"Test_name.c", line 14: error: initial value of reference to non-const must be an lvalue
+  int &r1 = A().i[0];                        // Error.
+            ^
+
+"Test_name.c", line 15: error: initial value of reference to non-const must be an lvalue
+  int &r2 = 0[A().i];                        // Error.
+            ^
+
+"Test_name.c", line 17: error: expression must be a modifiable lvalue
+    A().i[0] = 1;                            // Error.
+    ^
+
+"Test_name.c", line 18: error: expression must be a modifiable lvalue
+    ++T2{1, 2}[1];                           // Error.
+      ^
+
+6 errors detected in the compilation of "Test_name.c".

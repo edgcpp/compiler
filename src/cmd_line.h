@@ -1747,6 +1747,13 @@ EXTERN_THREAD a_boolean
 			   the selection is a prvalue. */
 
 EXTERN_THREAD a_boolean
+		subscript_of_array_rvalue_is_xvalue;
+			/* TRUE if subscripting an array prvalue or xvalue
+			   produces an xvalue (C++14 / CWG 1213; GCC 9 and
+			   Clang 7 also apply it in C++11 mode, MSVC does
+			   not).  When FALSE, the result is an lvalue. */
+
+EXTERN_THREAD a_boolean
 		alias_declarations_enabled;
 			/* TRUE if C++11 alias-declarations and alias templates
 			   are allowed. */

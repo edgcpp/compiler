@@ -11005,10 +11005,11 @@ like a cast.
 
 void conv_rvalue_reference_result_to_xvalue(an_operand *operand)
 /*
-The indicated operand is the result of an rvalue reference operation (e.g.,
-a cast to an rvalue reference type or a call of a function returning an
-rvalue reference type).  It's been created as an lvalue; convert it to
-an xvalue instead.
+The indicated operand is the result of an operation that produces an xvalue:
+an rvalue reference operation (e.g., a cast to an rvalue reference type or a
+call of a function returning an rvalue reference type), or a member selection
+or array subscript on an rvalue (Core issues 616 and 1213).  It's been
+created as an lvalue; convert it to an xvalue instead.
 */
 {
   /* Note that function designators are not changed -- a cast to an
