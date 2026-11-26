@@ -1,5 +1,5 @@
 fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_diagnostics Test_name.c
-"Test_name.c", line 11: warning: a value of type "int *(*)[4]" cannot be used to initialize an entity of type "const int *(*)[4]"
+"Test_name.c", line 11: error: a value of type "int *(*)[4]" cannot be used to initialize an entity of type "const int *(*)[4]"
   const int *(*ap2)[4] = &a; // { dg-error "cannot convert" }
                          ^
 
@@ -23,7 +23,7 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
   int *(*const bp8)[4] = &b; // { dg-error "cannot convert" }
                          ^
 
-"Test_name.c", line 31: warning: a value of type "int *(*)[3]" cannot be used to initialize an entity of type "const int *(*)[3]"
+"Test_name.c", line 31: error: a value of type "int *(*)[3]" cannot be used to initialize an entity of type "const int *(*)[3]"
   int const *(*cp2)[3] = c; // { dg-error "cannot convert" }
                          ^
 
@@ -67,4 +67,4 @@ fe_only -DTEST_NUMBER=1 --gnu_version=999999 -tused -e 200 --no_wrap --no_wrap_d
   int const *const (*const cp3)[3] = c;
                            ^
 
-5 errors detected in the compilation of "Test_name.c".
+7 errors detected in the compilation of "Test_name.c".

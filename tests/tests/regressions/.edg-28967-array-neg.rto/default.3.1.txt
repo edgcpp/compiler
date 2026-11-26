@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=3 --c++20 --clang --clang_version=60000 Test_name.c
+"Test_name.c", line 14: error: argument of type "A **" (aka "int (**)[3]") is incompatible with parameter of type "const A **"
+    take(p);
+         ^
+
+"Test_name.c", line 15: error: argument of type "int *(*)[3]" is incompatible with parameter of type "const int *(*)[3]"
+    take2(q);
+          ^
+
+"Test_name.c", line 18: error: argument of type "double *const (*)[3]" is incompatible with parameter of type "const double *const (*)[3]"
+    take3(r);
+          ^
+
+3 errors detected in the compilation of "Test_name.c".
