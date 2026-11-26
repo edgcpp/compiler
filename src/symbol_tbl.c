@@ -6591,9 +6591,13 @@ the options being used for the lookup.
   sym_ptr->synthesized_namespace_projection = TRUE;
   sym_ptr->do_not_reuse = !can_be_reused;
   sym_ptr->qualified_lookup = qualified_lookup;
-  if (qualified_lookup && qualifier_namespace != NULL) {
-    set_namespace_membership(sym_ptr, (a_source_correspondence*)NULL,
-                             qualifier_namespace);
+  if (qualified_lookup) {
+    /* For a file scope qualified lookup (i.e., "::x"), the symbol has no
+       parent namespace. */
+    if (qualifier_namespace != NULL) {
+      set_namespace_membership(sym_ptr, (a_source_correspondence*)NULL,
+                               qualifier_namespace);
+    }  /* if */
   } else if (scope_is(ssep, sck_namespace) ||
              scope_is(ssep, sck_namespace_extension)) {
     /* For an unqualified lookup, if the symbol is being created in a namespace
