@@ -357,9 +357,8 @@ The number of elements in the array is returned in *number_of_elements.
   size = app->size;
   *number_of_elements = ~(app->encoded_number_of_elements);
   size_to_check = element_size * *number_of_elements;
-  /* The array size is adjusted to always allocate at least a byte of
-     storage for the array. */
-  if (size_to_check == 0) size_to_check = 1;
+  /* The array size is not adjusted when a prefix is used (see
+     array_new_general). */
   if (size != size_to_check) _array_pointer_not_from_vec_new();
 #else /* defined(__EDG_IA64_ABI) */
   app = ((an_alloc_prefix_ptr)array_ptr) - 1;
@@ -490,10 +489,15 @@ use.
 #endif /* defined(__EDG_IA64_ABI) */
 #endif /* EXCEPTION_HANDLING && ABI_COMPATIBILITY_VERSION >= 406 */
     array_size = number_of_elements * element_size;
-    /* Always allocate at least a byte of storage for the array to guarantee
-       that the pointer returned to the caller (which points after the prefix)
-       cannot be the same as a subsequently allocated object. */
-    if (array_size == 0) array_size = 1;
+    /* Without a prefix, always allocate at least a byte of storage for the
+       array to guarantee that the pointer returned to the caller cannot be
+       the same as a subsequently allocated object.  With a prefix, the size
+       is not adjusted: the deallocation size is recomputed from the element
+       count (as in the IA-64 ABI), and arrays allocated by the caller (e.g.,
+       by placement new) are not adjusted either, so a two-operand delete
+       routine would otherwise be passed a size different from the one
+       allocated. */
+    if (array_size == 0 && prefix_size == 0) array_size = 1;
     if (array_ptr == NULL) {
       /* Allocate the array if a pointer has not been supplied by the
          caller. */
