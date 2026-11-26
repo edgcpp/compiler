@@ -1,0 +1,18 @@
+[GH #485]
+C-generating back end: scoped enumerations with a signed underlying type
+
+The C-generating back end emitted a scoped enumeration as a C enum type.  The
+C compiler could give that enum type an unsigned representation, so a negative
+value of a scoped enumeration whose underlying type is signed (int, when no
+enum-base is specified) was converted to a large positive value.  The
+underlying integer type is now used instead, as it already was for enums with
+an explicit enum-base.  Bit fields of an enumeration type with a fixed
+underlying type (a scoped enumeration, or one with an explicit enum-base) now
+also take their signedness from that type, so a bit field of an enumeration
+with underlying type bool can hold the value true.  For example:
+
+  enum class E { ZERO = 0 };
+  int main() {
+    E e = static_cast<E>(-1);
+    long widened = static_cast<long>(e);  // Was 4294967295, now -1.
+  }
