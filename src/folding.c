@@ -11455,6 +11455,11 @@ successful, return TRUE.
                                     result_type->variant.integer.int_kind);
       folded = TRUE;
     }  /* if */
+    if (folded) {
+      /* set_unsigned_integer_constant assigns an integer type, which may
+         differ from the type of the built-in function. */
+      result->type = result_type;
+    }  /* if */
   }  /* if */
   return folded;
 }  /* fold_lock_free_query_if_possible */
