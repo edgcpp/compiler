@@ -2738,6 +2738,9 @@ Display the indicated type entry.
       if (ptr->variant.typeref.has_variably_modified_type) {
         disp_boolean("has_variably_modified_type", TRUE);
       }  /* if */
+      if (ptr->variant.typeref.typeof_operand_pending) {
+        disp_boolean("typeof_operand_pending", TRUE);
+      }  /* if */
 #if BACK_END_IS_CP_GEN_BE
       if (ptr->variant.typeref.surrounding_name_linkage_state !=
                                               (a_name_linkage_kind)nlk_none) {
