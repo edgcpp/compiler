@@ -10980,7 +10980,10 @@ do_keep_constant:
                                                       eff_insert_location);
         }  /* if */
         if (!dip->variant.constant.non_constant) {
-          /* Analogous to dik_constant. */
+          /* Analogous to dik_constant.  Record the entry state anyway, so
+             that the completion processing below sees no change (rather
+             than removing cleanups recorded before this initialization). */
+          latest_initialization_on_entry = eff_context->latest_initialization;
           lower_constant(dip->variant.constant.ptr);
           goto do_assignment;
         }  /* if */
@@ -11100,6 +11103,32 @@ do_keep_constant:
          but this dynamic initialization isn't in the tree anymore. */
       free_destructible_entity_descr(dip->destructible_entity_descr);
       dip->destructible_entity_descr = NULL;
+    }  /* if */
+  } else if ((options & LDIO_THROW) &&
+             (dyn_init_is(dip, dik_nonconstant_aggregate) ||
+              dyn_init_is(dip, dik_lambda)) &&
+             latest_initialization_on_entry !=
+                                          eff_context->latest_initialization) {
+    /* A thrown aggregate (which has no destructor entry; the runtime
+       destroys the exception object) has been completely initialized.
+       Remove the cleanups for its partially-constructed subobjects from
+       the cleanup state, so that they are not run (in addition to the
+       destruction of the exception object) when it is thrown.  The
+       aggregate has no init_expr_lifetime of its own (only constructor
+       initializations get one, for default arguments), so its temporaries
+       are in the current context, which is also the effective one. */
+    a_boolean some_cloned, some_ordered;
+    check_assertion(init_expr_lifetime == NULL &&
+                    curr_context == eff_context);
+    adjust_cleanup_state_for_aggregate_init(eff_context->latest_initialization,
+                                            latest_initialization_on_entry,
+                                            eff_insert_location,
+                                            &some_cloned,
+                                            &some_ordered);
+    if (exceptions_enabled) {
+      insert_code_to_indicate_cleanup_state(curr_context->curr_cleanup_state,
+                                            eff_insert_location,
+                                            /*unreachable=*/FALSE);
     }  /* if */
   }  /* if */
   /* If the dynamic init defines a lifetime that surrounds the initialization,
