@@ -6630,6 +6630,7 @@ enum a_gcc_pragma_kind : a_byte {
   gcc_pk_push_options,          /* #pragma GCC push_options */
   gcc_pk_pop_options,           /* #pragma GCC pop_options */
   gcc_pk_reset_options,         /* #pragma GCC reset_options */
+  gcc_pk_diagnostic,            /* #pragma GCC diagnostic ... */
   gcc_pk_last
 };
 
@@ -9579,10 +9580,11 @@ typedef struct an_integer_type_supplement {
   a_type_ptr
 		base_type;
 			/* For enumeration types, the type explicitly set as
-			   the underlying type (if any).  Otherwise NULL.
-			   If non-NULL, has_explicit_enum_base will be TRUE.
-			   (In C++/CLI mode this can be a value class type
-			   that maps on an integral type.) */
+			   the underlying type (if any), including any
+			   cv-qualification.  Otherwise NULL.  If non-NULL,
+			   has_explicit_enum_base will be TRUE.  (In C++/CLI
+			   mode this can be a value class type that maps on an
+			   integral type.) */
   /* When variant.integer.int_kind is ik_bit_precise or
      ik_unsigned_bit_precise: */
   a_targ_size_t

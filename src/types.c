@@ -814,6 +814,26 @@ when bool_is_keyword is FALSE (which, among other times, means when in C mode).
 }  /* is_bool_type */
 
 
+#if !STANDALONE_UTILITY_PROGRAM
+
+a_type_ptr explicit_enum_underlying_type(a_type_ptr enum_type)
+/*
+Return the explicitly specified underlying type of enum_type, or NULL if
+there is no explicit base.  enum_type must be an enumeration type with no
+typerefs.  Ignore cv-qualification without changing the base recorded in the
+IL for source reproduction.
+*/
+{
+  a_type_ptr  base_type = integer_type_supp(enum_type)->base_type;
+
+  return base_type != NULL
+             ? remove_qualifiers(base_type, TQ_CONST | TQ_VOLATILE)
+             : NULL;
+}  /* explicit_enum_underlying_type */
+
+#endif /* !STANDALONE_UTILITY_PROGRAM */
+
+
 a_boolean enum_has_bool_underlying_type(a_type_ptr tp)
 /*
 Return TRUE if the given type is an enumeration type whose fixed underlying
@@ -3614,18 +3634,17 @@ diagnostic in error cases.  error_pos is the position to use for diagnostics
     case trk_is_underlying_type:
       if (is_enum_type(tp)) {
         /* Extract the underlying integral type. */
-        an_integer_type_supplement_ptr  itsp;
         result = skip_typerefs(tp);
-        itsp = integer_type_supp(result);
         if (result->incomplete) {
           if (diagnostic_should_be_issued) {
             pos_ty_error(ec_incomplete_type_not_allowed, error_pos, tp);
           }  /* if */
           result = error_type();
         } else if (result->variant.integer.has_explicit_enum_base) {
-          result = itsp->base_type;
+          result = explicit_enum_underlying_type(result);
 #if GNU_EXTENSIONS_ALLOWED
-        } else if (itsp->underlying_type_should_use_unsigned) {
+        } else if (integer_type_supp(result)->
+                                         underlying_type_should_use_unsigned) {
           /* Usually, the underlying type of an enum type corresponds to
              the integer type the enum type promotes to.  In GCC that is
              not the case, and "int_kind" represents the integer kind
@@ -13358,7 +13377,7 @@ See conversion_possible.
              is a promotion, and is preferred over other kinds of promotions.
              (See core issue 1601 and [conv.prom]/4 in N4659.)  Not all
              versions of Clang and GCC implemented this. */
-          base_type = source_type->variant.integer.extra_info->base_type;
+          base_type = explicit_enum_underlying_type(source_type);
           if (cpp14_mode &&
               !(gpp_version_is(<100000) || clang_version_is(<100000)) &&
               identical_types(base_type, dest_type)) {
