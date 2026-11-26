@@ -1,0 +1,16 @@
+[GH #556]
+Array designators in initializers of variable-length arrays
+
+In GNU C++ mode, an array designator in the initializer of a variable-length
+array was lowered as if the array had a constant size: the designated values
+were silently lost, rows were written past the end of the array, or an
+internal error occurred.  Such designators are now diagnosed (g++ does not
+support them either).  For example, with --c++11 --g++:
+
+  void f(int n) {
+    int a[n] = {[1] = 7};          // Previously the 7 was lost, now an error.
+    int b[3][n] = {[1] = {1, 2}};  // Previously an internal error.
+  }
+
+Designators for arrays of constant size within such an initializer and field
+designators are still accepted.

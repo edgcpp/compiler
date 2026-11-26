@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --c++11 --g++ Test_name.c
+"Test_name.c", line 17: error: an array designator cannot be used in the initializer of a variable-length array
+    int a1[n] = {[1] = 7};
+                 ^
+
+"Test_name.c", line 18: error: an array designator cannot be used in the initializer of a variable-length array
+    int a2[3][n] = {[1] = {1, 2}};
+                    ^
+
+"Test_name.c", line 19: error: an array designator cannot be used in the initializer of a variable-length array
+    int a3[3][n] = {{[1] = 7}};
+                     ^
+
+"Test_name.c", line 20: error: an array designator cannot be used in the initializer of a variable-length array
+    int a4[n][3] = {[1] = {1, 2}};
+                    ^
+
+"Test_name.c", line 21: error: an array designator cannot be used in the initializer of a variable-length array
+    int a5[3][n] = {[2] = {[1] = 7}};
+                    ^
+
+"Test_name.c", line 22: error: an array designator cannot be used in the initializer of a variable-length array
+    int a6[n] = {[0 ... 1] = 4};
+                 ^
+
+6 errors detected in the compilation of "Test_name.c".

@@ -2198,9 +2198,19 @@ could be a template-dependent value or an error).
       *p_dependent = TRUE;
       first_idx = last_idx = 0;
     }  /* if */
-    if (no_bound ||
-        (first_idx < atype->variant.array.variant.number_of_elements &&
-         last_idx < atype->variant.array.variant.number_of_elements)) {
+    if (!C_mode() && is_vla_type(atype)) {
+      /* GNU C++ allows a VLA to be initialized, but the lowering of
+         designated initializers assumes that the size of the designated
+         array is known at compile time.  g++ does not support this either
+         ("non-trivial designated initializers not supported").  (In C, a
+         VLA cannot be initialized at all.) */
+      okay = FALSE;
+      if (!is->no_diagnostics) {
+        pos_error(ec_array_designator_for_vla, init_component_pos(icp));
+      }  /* if */
+    } else if (no_bound ||
+               (first_idx < atype->variant.array.variant.number_of_elements &&
+                last_idx < atype->variant.array.variant.number_of_elements)) {
       okay = TRUE;
       *idx = first_idx;
     } else {
