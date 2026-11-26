@@ -59,50 +59,6 @@ EXTERN_C void _array_pointer_not_from_vec_new();
                                   to one of the vector handling routines. */
 #endif /* ifndef __EDG_IA64_ABI */
 
-struct an_array_alloc_eh_info {
-  void*	array_ptr;
-			/* Pointer to the memory allocated for the array. */
-  ptrdiff_t  
-		number_of_elements;
-			/* Total number of elements in the array. */
-  size_t  
-		element_size;
-			/* Size of each element. */
-  size_t  
-		prefix_size;
-                        /* Size of the array prefix. */
-  size_t  
-		elements_processed;
-			/* Number of elements constructed or destructed so
-			   far. */
-  a_boolean
-		is_vec_new;
-			/* TRUE if this is a vec_new operation, FALSE if this
-			   is a vec_delete. */
-  a_boolean
-		free_memory_on_cleanup;
-			/* TRUE if the memory for the array was allocated by
-			   new and should be freed during object cleanup. */
-  a_destructor_ptr
-		destructor;
-			/* Pointer to the destructor to be called for each
-			   element of the array. */
-  a_delete_ptr
-		delete_routine;
-			/* Pointer to the delete routine to be called to
-			   deallocate an array. */
-
-  a_boolean	is_two_arg;
-			/* TRUE if the delete routine is the two argument
-			   form.  FALSE if it is the single argument form. */
-#ifdef __EDG_IA64_ABI
-  a_boolean     terminate_immediately;
-                        /* TRUE if any exception during the destruction of the
-                           array elements should result in termination.  */
-#endif /* defined(__EDG_IA64_ABI) */
-};
-
-
 /*
 Increment a void* pointer by a given value.
 */
@@ -811,105 +767,7 @@ operators where the delete operator, if any, takes two arguments.
 }  /* __cxa_vec_new3 */
 
 
-EXTERN_C void ABI_NAMESPACE::__cxa_vec_ctor(
-                                         void              *array_ptr,
-                                         size_t            number_of_elements,
-                                         size_t            element_size,
-                                         a_constructor_ptr ctor,
-                                         a_destructor_ptr  dtor)
-/*
-The entry point used for constructing an array of objects where the memory has
-already been allocated.
-*/
-{
-  (void)(array_new_general(array_ptr, (ptrdiff_t)number_of_elements,
-                           element_size, /*prefix_size=*/0, (void *)NULL,
-                           ctor, dtor, (a_new_ptr)NULL, (a_delete_ptr)NULL,
-                           /*is_two_arg=*/FALSE, /*zero_init=*/FALSE));
-}  /* __cxa_vec_ctor */
-
-
-EXTERN_C void ABI_NAMESPACE::__cxa_vec_cctor(
-                                    void                   *array_ptr,
-                                    void                   *src_array_ptr,
-                                    size_t                 number_of_elements,
-                                    size_t                 element_size,
-                                    a_copy_constructor_ptr ctor,
-                                    a_destructor_ptr       dtor)
-/*
-The entry point used for copying an array of objects.
-*/
-{
-  (void)(array_new_general(array_ptr, (ptrdiff_t)number_of_elements,
-                           element_size, /*prefix_size=*/0, src_array_ptr,
-                           (a_constructor_ptr)ctor, dtor, (a_new_ptr)NULL,
-                            (a_delete_ptr)NULL, /*is_two_arg=*/FALSE, 
-                            /*zero_init=*/FALSE));
-}  /* __cxa_vec_cctor */
-
 #endif /* defined(__EDG_IA64_ABI) */
-
-#if EXCEPTION_HANDLING
-EXTERN_C void __cleanup_vec_new_or_delete(an_eh_stack_entry_ptr ehsep)
-/*
-Called by the exception handling cleanup routine to do the cleanup
-processing for a vec_new or vec_delete operation that was interrupted by
-an exception.
-*/
-{
-  /* Call the destructor, if specified, on each element in the array, in
-     reverse order. */
-  an_array_alloc_eh_info_ptr	aaehip = ehsep->variant.array_alloc_eh_info;
-  a_destructor_ptr		dtor = aaehip->destructor;
-  size_t  			number_of_elements;
-  size_t  			element_size;
-  void*               		arr_ptr;
-  void*				array_ptr;
-  size_t  			i;
-  size_t  		        first_element;
-
-#ifdef __EDG_IA64_ABI
-  if (aaehip->terminate_immediately) {
-    __call_terminate();
-  }  /* if */
-#endif /* defined(__EDG_IA64_ABI) */
-  array_ptr = (void *)aaehip->array_ptr;
-  element_size = aaehip->element_size;
-  if (aaehip->is_vec_new) {
-    /* Cleaning up a vec_new.  Destroy the fully constructed elements of
-       the array in reverse order. */
-    number_of_elements = aaehip->elements_processed;
-    first_element = number_of_elements - 1;
-  } else {
-    first_element = aaehip->number_of_elements -
-                    aaehip->elements_processed - 1;
-    number_of_elements = first_element + 1;
-  }  /* if */
-  if (dtor != NULL) {
-    /* If there is a destructor, destroy the objects. */
-    for (i = 0,
-         arr_ptr = (void *)(((char *)array_ptr) +
-                                                first_element * element_size);
-         i < number_of_elements;
-         i++, increment_ptr(arr_ptr, -(int)(element_size))) {
-#ifndef __EDG_IA64_ABI
-      /* Call the destructor with 0x2 - whole object = TRUE
-                                  0x1 - delete object = FALSE. */
-      (*dtor)(arr_ptr, 0x2 /*whole object = TRUE, delete = FALSE*/);
-#else /* ifdef __EDG_IA64_ABI */
-      (*dtor)(arr_ptr);
-#endif /* ifdef __EDG_IA64_ABI */
-    }  /* for */
-  }  /* if */
-  if (aaehip->free_memory_on_cleanup) {
-    /* Call the routine to free the memory. */
-    size_t	size = element_size * aaehip->number_of_elements;
-    free_array(array_ptr, size, aaehip->prefix_size,
-               aaehip->delete_routine, aaehip->is_two_arg);
-  }  /* if */
-}  /* __cleanup_vec_new_or_delete */
-#endif /* EXCEPTION_HANDLING */
-
 
 #ifndef __EDG_IA64_ABI
 /*ARGSUSED*/ /* terminate_immediately is used only in the IA-64 ABI. */
@@ -1055,22 +913,6 @@ requires two arguments.
 }  /* __array_delete */
 #endif /* ABI_CHANGES_FOR_ARRAY_NEW_AND_DELETE */
 #else /* defined(__EDG_IA64_ABI) */
-EXTERN_C void ABI_NAMESPACE::__cxa_vec_dtor(
-                                          void             *array_ptr,
-                                          size_t           number_of_elements,
-                                          size_t           element_size,
-                                          a_destructor_ptr dtor)
-/*
-Run the destructors for an array of objects.
-*/
-{
-  array_delete_general(array_ptr, number_of_elements, element_size,
-                       /*prefix_size=*/0, dtor, /*delete_flag=*/FALSE,
-                       (a_delete_ptr)NULL, /*is_two_arg=*/FALSE,
-                       /*terminate_immediately=*/FALSE);
-}  /* __cxa_vec_dtor */
-
-
 EXTERN_C void ABI_NAMESPACE::__cxa_vec_delete(void             *array_ptr,
                                               size_t           element_size,
                                               size_t           prefix_size,
@@ -1156,6 +998,47 @@ some reason (i.e., overflow, less than zero, too small for initializer list).
 
 #endif /* defined(__EDG_IA64_ABI) */
 
+#if EXCEPTION_HANDLING
+EXTERN_C void __cleanup_vec_new_or_delete(an_eh_stack_entry_ptr ehsep)
+/*
+Use ehsep to clean up an interrupted array construction or destruction.
+This is kept with the allocating vector routines so that it links
+vec_newdel.o, and hence these definitions of the allocating vector entry
+points, into every program that uses exception handling.
+*/
+{
+  an_array_alloc_eh_info_ptr info = ehsep->variant.array_alloc_eh_info;
+  size_t count;
+  size_t i;
+
+#ifdef __EDG_IA64_ABI
+  if (info->terminate_immediately) {
+    __call_terminate();
+  }  /* if */
+#endif /* defined(__EDG_IA64_ABI) */
+  if (info->is_vec_new) {
+    count = info->elements_processed;
+  } else {
+    count = info->number_of_elements - info->elements_processed;
+  }  /* if */
+  if (info->destructor != NULL) {
+    for (i = count; i != 0; --i) {
+      void *element = (char *)info->array_ptr + (i - 1) * info->element_size;
+#ifndef __EDG_IA64_ABI
+      (*info->destructor)(element, 0x2);
+#else /* defined(__EDG_IA64_ABI) */
+      (*info->destructor)(element);
+#endif /* defined(__EDG_IA64_ABI) */
+    }  /* for */
+  }  /* if */
+  if (info->free_memory_on_cleanup) {
+    free_array(info->array_ptr,
+               info->element_size * info->number_of_elements,
+               info->prefix_size, info->delete_routine, info->is_two_arg);
+  }  /* if */
+}  /* __cleanup_vec_new_or_delete */
+#endif /* EXCEPTION_HANDLING */
+
 #ifndef __EDG_IA64_ABI                                     
 EXTERN_C void _array_pointer_not_from_vec_new()
 /*
@@ -1168,4 +1051,3 @@ The name is intended to describe the nature of the problem to the user
   __abort_execution(ec_array_not_from_vec_new);
 }
 #endif /* ifndef __EDG_IA64_ABI */
-

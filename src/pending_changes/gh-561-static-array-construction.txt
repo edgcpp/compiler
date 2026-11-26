@@ -1,0 +1,10 @@
+[GH #561]
+Construction of arrays that are not allocated by new
+
+Arrays with static, automatic, or otherwise preallocated storage are now
+constructed by generated loops when no exception cleanup is needed, and
+otherwise by new runtime routines that do not depend on the array new and
+delete support, so that programs that are compiled without exception
+handling and do not use array new no longer pull in the allocating vector
+runtime.  Generated code that uses these routines requires the matching
+runtime library.

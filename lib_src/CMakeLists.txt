@@ -58,7 +58,7 @@ set(BARE_FILE_NAMES array_del array_del_aligned array_new
     newnothrow newnothrow_aligned placedel placenew pure_virt rtti
     set_new sized_array_del sized_array_del_aligned sized_del
     sized_del_aligned static_init stdexcept thread_dtor throw
-    typeinfo vars vec_cctor vec_newdel vla_alloc)
+    typeinfo vars vec_cctor vec_newdel vec_preallocated vla_alloc)
 
 # Load the specified macro configuration for the runtime library (i.e.,
 # cpprtlib).

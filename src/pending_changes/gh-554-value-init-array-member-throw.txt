@@ -1,0 +1,13 @@
+[GH #554]
+Array members not cleaned up when their value-initialization throws
+
+When a constructor called for the value-initialization of an array member
+threw, the elements already constructed were not destroyed (and cleanups of
+preceding members could be lost), e.g.,
+
+  struct P { int i; E e; };  // E has a constructor and a destructor
+  struct G { P a[4]; };
+  G g{};
+
+Default member initializers, multidimensional and nested arrays, and
+"new G{}" were affected as well.

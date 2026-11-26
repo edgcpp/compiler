@@ -1,0 +1,10 @@
+[GH #558]
+Brace initialization of variable-length arrays with variable-length rows
+
+An initializer for a GNU variable-length array whose rows have variable
+length, e.g.,
+
+  int a[2][n] = {{1}, {2, 3}};
+  D b[2][n] = {};  // D has a destructor
+
+generated C that used an undeclared temporary, or caused an internal error.

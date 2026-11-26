@@ -47,5 +47,47 @@ operations that are in process.
 */
 typedef struct an_array_alloc_eh_info *an_array_alloc_eh_info_ptr;
 
-#endif /* ifndef VEC_NEWDEL_H */
+struct an_array_alloc_eh_info {
+  void* array_ptr;      /* Pointer to the memory allocated for the array. */
+  ptrdiff_t number_of_elements;
+                        /* Total number of elements in the array. */
+  size_t element_size;  /* Size of each element. */
+  size_t prefix_size;   /* Size of the array prefix. */
+  size_t elements_processed;
+                        /* Number of elements constructed or destructed. */
+  a_boolean is_vec_new; /* TRUE for construction, FALSE for destruction. */
+  a_boolean free_memory_on_cleanup;
+                        /* TRUE if cleanup must free the array storage. */
+  a_destructor_ptr destructor;
+                        /* Destructor for each element of the array. */
+  a_delete_ptr delete_routine;
+                        /* Deallocation routine, or NULL for the default. */
+  a_boolean is_two_arg; /* TRUE for a two-argument deallocation routine. */
+#ifdef __EDG_IA64_ABI
+  a_boolean terminate_immediately;
+                        /* TRUE if a destructor throw requires termination. */
+#endif /* defined(__EDG_IA64_ABI) */
+};
 
+EXTERN_C void __edg_vec_dtor(void              *array_ptr,
+                             size_t            number_of_elements,
+                             size_t            element_size,
+                             a_destructor_ptr  dtor);
+
+EXTERN_C void *__edg_vec_ctor(void              *array_ptr,
+                              size_t            number_of_elements,
+                              size_t            element_size,
+                              a_constructor_ptr ctor,
+                              a_destructor_ptr  dtor,
+                              int               zero_init);
+
+#ifndef __EDG_IA64_ABI
+EXTERN_C void __edg_vec_cctor(void                   *array_ptr,
+                              size_t                 number_of_elements,
+                              size_t                 element_size,
+                              a_copy_constructor_ptr ctor,
+                              void                   *src_array_ptr,
+                              a_destructor_ptr       dtor);
+#endif /* ifndef __EDG_IA64_ABI */
+
+#endif /* ifndef VEC_NEWDEL_H */

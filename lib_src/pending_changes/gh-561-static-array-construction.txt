@@ -1,0 +1,7 @@
+[GH #561]
+Runtime support for constructing preallocated arrays
+
+The construction and destruction of arrays that are not allocated by array
+new (__edg_vec_ctor, __edg_vec_dtor, and related routines) is now in
+vec_preallocated.c, separate from the array new and delete support in
+vec_newdel.c.  Exception cleanup for such arrays always uses __edg_vec_dtor.

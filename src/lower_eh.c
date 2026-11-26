@@ -3408,7 +3408,9 @@ region description entry).
        The value put in the table is arbitrary, but use -1. */
     elem_count = -1;
     elem_type = entity_type;
-    if (!ipdp->array_element_sequence) {
+    if (is_array_type(entity_type)) {
+      /* The count is in elements of the innermost array, both for a whole
+         VLA and for a sequence of array elements that are arrays. */
       elem_type = underlying_array_element_type(entity_type);
     }  /* if */
   } else if (ipdp->array_element_sequence) {
@@ -4100,6 +4102,12 @@ The region table variable is created if necessary.
       set_var_init_pos_descr(dip->variable->vla_element_count_variable, &ipd);
       make_handle_for_entity(&ipd, &vla_elem_count_handle, insert_location);
     }  /* if */
+  } else if (dedp->runtime_elem_count_var != NULL) {
+    /* A sequence of array elements whose number is known only at run time
+       is described like a VLA. */
+    is_vla = TRUE;
+    set_var_init_pos_descr(dedp->runtime_elem_count_var, &ipd);
+    make_handle_for_entity(&ipd, &vla_elem_count_handle, insert_location);
   }  /* if */    
 #endif /* ABI_COMPATIBILITY_VERSION < 306 */
   dedp->next_in_region_table = next_dip;
@@ -4209,7 +4217,8 @@ stop_before == NULL means stop at the beginning of the current lifetime.
   } else
 #endif /* !RUNTIME_VLA_DEALLOCATION_NEEDS_ELEMENT_COUNT */
   /* Do not insert code here. */
-  if (is_dynamic_init_for_vla(dip)) {
+  if (is_dynamic_init_for_vla(dip) ||
+      dedp->runtime_elem_count_var != NULL) {
     /* The entry has a VLA element count entry, so clone that too. */
     (void)clone_raw_region_table_entry(next_entry, &region_number);
   }  /* if */
