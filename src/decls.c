@@ -19123,51 +19123,69 @@ done:
 }  /* get_tuple_element_type */
 
 
+a_type_ptr tuple_like_element_binding_type(a_type_ptr         element_type,
+                                           a_boolean          lvalue_binding,
+                                           a_source_position  *diag_pos)
+/*
+Return the type of the binding variable for tuple-like element_type (from
+std::tuple_element): add an lvalue reference if lvalue_binding is TRUE (the
+binding initializer is an lvalue), otherwise an rvalue reference, collapsing
+reference types as needed.
+*/
+{
+  a_type_ptr  result;
+
+  if (is_reference_type(element_type)) {
+    result = make_reference_to_reference(element_type,
+                                         /*rvalue_ref=*/!lvalue_binding,
+                                         /*tracking_ref=*/FALSE, TQ_NONE,
+                                         diag_pos, (a_boolean*)NULL);
+  } else {
+    result = lvalue_binding ? make_reference_type(element_type)
+                            : make_rvalue_reference_type(element_type);
+  }  /* if */
+  return result;
+}  /* tuple_like_element_binding_type */
+
+
 static a_type_ptr tuple_like_binding_type(a_variable_ptr     container,
+                                          a_variable_ptr     binding,
                                           a_type_ptr         tp,
                                           a_targ_size_t      elem_idx,
                                           a_source_position  *diag_pos,
                                           an_init_component  **p_icp)
 /*
-Return the type of a binding variable for a tuple-like container.  tp
-represents the container type E (from the container e represented by container)
-and elem_idx is the element number n (starting at zero) being bound to.  The
-returned type entry is the type obtained from instantiating
-std::tuple_element<n, E>::type, but with an lvalue or rvalue reference layer
-applied to it: an lvalue reference if the initializer for the binding is an
-lvalue and an rvalue reference otherwise.  The initializer for the binding is
-returned in *p_icp.  If E is a class type with a member "get", that initializer
-is "e.get<n>()"; otherwise, it is "get<n>(e)" where "get" is looked up using
+Return the type of the binding variable for the tuple-like container variable
+container, whose type E is tp; elem_idx is the element number n (starting at
+zero).  binding is the variable being defined.  The type is
+std::tuple_element<n, E>::type with a reference layer: an lvalue reference if
+the initializer for the binding is an lvalue, and an rvalue reference
+otherwise, collapsing references as needed.  Return the initializer for the
+binding in *p_icp.  If E is a class type with a member get, that initializer is
+e.get<n>(); otherwise, it is get<n>(e) where get is looked up using
 argument-dependent lookup only.
 */
 {
   a_type_ptr  e_type;
   a_boolean   lvalue_binding;
+  a_token_sequence_number
+              tsn;
 
   e_type = get_tuple_element_type(elem_idx, tp, diag_pos);
   if (is_error_type(e_type)) goto done;
   /* Determine the initializer. */
+  tsn = symbol_for(binding)->token_sequence_number;
   determine_get_call_for_tuple_like_binding(container, tp, elem_idx,
-                                            diag_pos, p_icp,
+                                            diag_pos, tsn, p_icp,
                                             &lvalue_binding);
-  /* Add a reference on top of e_type, applying the reference-collapsing
-     rules if needed.  An lvalue reference is added if lvalue_binding is
-     TRUE, an rvalue reference otherwise. */
-  if (is_reference_type(e_type)) {
-    e_type = make_reference_to_reference(e_type,
-                                         /*rvalue_ref=*/!lvalue_binding,
-                                         /*tracking_ref=*/FALSE,
-                                         TQ_NONE, diag_pos, (a_boolean*)NULL);
-  } else {
-    e_type = lvalue_binding ? make_reference_type(e_type)
-                            : make_rvalue_reference_type(e_type);
-  }  /* if */
+  /* Add the reference layer of the binding to the element type. */
+  e_type = tuple_like_element_binding_type(e_type, lvalue_binding, diag_pos);
 done:
   return e_type;
 }  /* tuple_like_binding_type */
 
 
-static a_field_ptr next_bindable_field(a_field_ptr field)
+a_field_ptr next_bindable_field(a_field_ptr field)
 /*
 Given a pointer to a field (or NULL), return a pointer to the first field at
 or after the given field that a structured binding can bind to.  If there is
@@ -19203,19 +19221,17 @@ fields are unnamed bit fields.  Otherwise, return its list of fields.
 }  /* get_direct_fields_if_nonempty */
 
 
-static a_boolean check_simple_struct_for_binding(
-                                               a_type_ptr         tp,
-                                               a_targ_size_t      *n_elements,
-                                               a_field_ptr        *p_fields,
-                                               a_boolean          for_decltype,
-                                               a_source_position  *pos)
+static a_boolean check_simple_struct_for_binding(a_type_ptr        tp,
+                                                 a_targ_size_t     *n_elements,
+                                                 a_field_ptr       *p_fields,
+                                                 a_source_position *pos)
 /*
 Return TRUE if the given type is a simple class type whose nonstatic data
 members are all direct members or all members of the same unambiguous base
 class.  If so, set *n_elements to the number of such data members and
 *p_fields to the list of fields to bind to (this list may include unnamed bit
 fields that should not be bound to).  Otherwise, issue a diagnostic at the
-given position unless for_decltype is TRUE.
+given position.
 */
 {
   a_boolean    result = TRUE;
@@ -19225,14 +19241,10 @@ given position unless for_decltype is TRUE.
   complete_type_is_needed(tp);
   if (tp->kind != (a_type_kind)tk_struct &&
       tp->kind != (a_type_kind)tk_class) {
-    if (!for_decltype) {
-      pos_ty_error(ec_invalid_struct_binding_type, pos, tp);
-    }  /* if */
+    pos_ty_error(ec_invalid_struct_binding_type, pos, tp);
     result = FALSE;
   } else if (class_type_supp(tp)->is_lambda_closure_class) {
-    if (!for_decltype) {
-      pos_error(ec_struct_binding_lambda, pos);
-    }  /* if */
+    pos_error(ec_struct_binding_lambda, pos);
     result = FALSE;
   } else {
     a_base_class_ptr  bcp = base_classes_of(tp);
@@ -19245,9 +19257,7 @@ given position unless for_decltype is TRUE.
       a_field_ptr  base_fields = get_direct_fields_if_nonempty(bcp->type);
       if (base_fields != NULL) {
         if (fields != NULL) {
-          if (!for_decltype) {
-            pos_ty_error(ec_invalid_struct_binding_type, pos, tp);
-          }  /* if */
+          pos_ty_error(ec_invalid_struct_binding_type, pos, tp);
           result = FALSE;
           break;
         } else {
@@ -19263,9 +19273,7 @@ given position unless for_decltype is TRUE.
         n += 1;
         if (fp->is_anonymous_parent_object ||
             field_is_property_or_event(fp)) {
-          if (!for_decltype) {
-            pos_ty_error(ec_invalid_struct_binding_type, pos, tp);
-          }  /* if */
+          pos_ty_error(ec_invalid_struct_binding_type, pos, tp);
           result = FALSE;
           break;
         }  /* if */
@@ -19279,6 +19287,106 @@ given position unless for_decltype is TRUE.
   }  /* if */
   return result;
 }  /* check_simple_struct_for_binding */
+
+
+static a_boolean struct_binding_member_is_accessible(a_field_ptr  fp)
+/*
+Return TRUE if the nonstatic data member fp is accessible where the structured
+binding is declared (N5050 [dcl.struct.bind]/8).  Emulated versions before
+P0969R0 require public members; GCC also rejects protected members if the
+context lacks member-access privilege.
+*/
+{
+  a_boolean  inaccessible;
+
+  if (clang_version_is(<80000) || gpp_version_is(<80000) ||
+      ms_version_is(<1915)) {
+    inaccessible = fp->source_corresp.access != as_public;
+  } else {
+    inaccessible = !have_access_to_symbol(symbol_for(fp)) ||
+                   (gpp_version_is(any_version) &&
+                    fp->source_corresp.access == as_protected &&
+                    !have_member_access_privilege(parent_class_of(fp)));
+  }  /* if */
+  return !inaccessible;
+}  /* struct_binding_member_is_accessible */
+
+
+a_boolean determine_struct_binding_components(
+                                        a_type_ptr         type,
+                                        a_targ_size_t      *p_n_elements,
+                                        a_field_ptr        *p_fields,
+                                        a_boolean          *p_is_array_case,
+                                        a_boolean          *p_is_tuple_case,
+                                        a_boolean          check_member_access,
+                                        a_source_position  *pos)
+/*
+Return TRUE if type can be bound by a structured binding declaration (N5050
+[dcl.struct.bind]): an array with a known bound, a tuple-like class, or a
+simple struct.  Set *p_n_elements to the binding size, *p_fields to the
+simple-struct fields (NULL otherwise), and *p_is_array_case and
+*p_is_tuple_case for the case.  If check_member_access is TRUE, the
+simple-struct fields must also be accessible.  Diagnose errors at pos and
+return FALSE.  Tuple-like takes precedence over the simple-struct case; a
+malformed std::tuple_size is not retried as a simple struct.  This analysis
+is shared by structured binding declarations and destructuring expansion
+statements.
+*/
+{
+  a_boolean  result = FALSE;
+
+  *p_n_elements = 0;
+  *p_fields = NULL;
+  *p_is_array_case = FALSE;
+  *p_is_tuple_case = FALSE;
+  if (is_array_type(type)) {
+    *p_is_array_case = TRUE;
+    if (is_incomplete_array_type(type) || is_vla_type(type)) {
+      /* An array of unknown bound or run-time length has no binding size
+         (N5050 [dcl.struct.bind]/6). */
+      pos_ty_error(ec_invalid_struct_binding_type, pos, skip_typerefs(type));
+    } else {
+      *p_n_elements =
+             skip_typerefs(type)->variant.array.variant.number_of_elements;
+      result = TRUE;
+    }  /* if */
+  } else if (is_union_type(type)) {
+    /* Reject unions before the tuple-like case (N5050 [dcl.pre]/7), even
+       though std::tuple_size can be specialized for a union. */
+    pos_ty_error(ec_invalid_struct_binding_type, pos, skip_typerefs(type));
+  } else if (is_class_struct_union_type(type)) {
+    a_boolean  tuple_err = FALSE;
+
+    if (is_tuple_like_type(type, p_n_elements, &tuple_err)) {
+      *p_is_tuple_case = TRUE;
+      result = TRUE;
+    } else if (!tuple_err) {
+      complete_type_is_needed(type);
+      if (is_incomplete_type(type)) {
+        issue_incomplete_type_diag(pos, type);
+      } else if (check_simple_struct_for_binding(type, p_n_elements, p_fields,
+                                                 pos)) {
+        result = TRUE;
+        if (check_member_access) {
+          a_field_ptr  fp;
+          for (fp = next_bindable_field(*p_fields); fp != NULL;
+               fp = next_bindable_field(fp->next)) {
+            if (!struct_binding_member_is_accessible(fp)) {
+              pos_sy_error(ec_struct_binding_private_member, pos,
+                           symbol_for(fp));
+              result = FALSE;
+              break;
+            }  /* if */
+          }  /* for */
+        }  /* if */
+      }  /* if */
+    }  /* if */
+  } else {
+    /* Other types (e.g., scalars) cannot be bound. */
+    pos_ty_error(ec_invalid_struct_binding_type, pos, skip_typerefs(type));
+  }  /* if */
+  return result;
+}  /* determine_struct_binding_components */
 
 
 static a_variable_ptr declare_struct_binding_variable(
@@ -19477,18 +19585,16 @@ can be fully determined.
       expect_error();
     } else if (is_template_dependent_type(container_type)) {
       dependent_case = TRUE;
-    } else if (is_array_type(container_type)) {
-      array_case = TRUE;
-      n_elements = skip_typerefs(container_type)
-                                   ->variant.array.variant.number_of_elements;
-    } else if (is_tuple_like_type(container_type, &n_elements, &err)) {
-      tuple_case = TRUE;
-    } else if (check_simple_struct_for_binding(container_type, &n_elements,
-                                               &fp, /*for_decltype=*/FALSE,
+    } else if (!determine_struct_binding_components(
+                                               container_type, &n_elements,
+                                               &fp, &array_case, &tuple_case,
+                                               /*check_member_access=*/FALSE,
                                                &dps->declarator_pos)) {
-      struct_case = TRUE;
-    } else {
+      /* This also rejects tuple-like unions and arrays of unknown bound or
+         runtime length, as required for structured bindings. */
       err = TRUE;
+    } else if (!array_case && !tuple_case) {
+      struct_case = TRUE;
     }  /* if */
     binding_entry = container->variant.bindings;
     binding_tail = &container->variant.bindings;
@@ -19558,7 +19664,7 @@ can be fully determined.
     } else if (array_case) {
       btype = array_element_type(container_type);
     } else if (tuple_case) {
-      btype = tuple_like_binding_type(container, container_type, n-1,
+      btype = tuple_like_binding_type(container, vp, container_type, n-1,
                                       &dps->declarator_pos, &icp);
       if (is_error_type(btype)) {
         err = TRUE;
@@ -19578,17 +19684,7 @@ can be fully determined.
         tqs &= ~TQ_CONST;
       }  /* if */
       btype = make_qualified_type(btype, tqs);
-      if ((clang_version_is(<80000) || gpp_version_is(<80000) ||
-           ms_version_is(<1915)) ? fp->source_corresp.access != as_public
-                                 : !have_access_to_symbol(symbol_for(fp)) ||
-          (gpp_version_is(any_version) &&
-           fp->source_corresp.access == as_protected &&
-           !have_member_access_privilege(parent_class_of(fp)))) {
-        /* The original specification for structured bindings only permitted
-           binding public members.  P0969R0 changed the rule to just requiring
-           that the members be accessible.  GCC and Clang both added support
-           for this change in their version 8.x, but GCC appears to have
-           excluded protected member access. */
+      if (!struct_binding_member_is_accessible(fp)) {
         pos_sy_error(ec_struct_binding_private_member,
                      &vp->source_corresp.decl_position, symbol_for(fp));
         err = TRUE;

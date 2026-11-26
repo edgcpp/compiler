@@ -38972,27 +38972,38 @@ STATIC_THREAD a_token_cache_ptr
 
 
 void determine_get_call_for_tuple_like_binding(
-                                           a_variable_ptr     container,
-                                           a_type_ptr         tp,
-                                           a_targ_size_t      elem_idx,
-                                           a_source_position  *diag_pos,
-                                           an_init_component  **p_icp,
-                                           a_boolean          *lvalue_binding)
+                                      a_variable_ptr           container,
+                                      a_type_ptr               tp,
+                                      a_targ_size_t            elem_idx,
+                                      a_source_position        *diag_pos,
+                                      a_token_sequence_number  tsn,
+                                      an_init_component        **p_icp,
+                                      a_boolean                *lvalue_binding)
 /*
-Let e be the given structured binding container variable of a tuple-like type.
-If tp has a member "get", produce an expression "e.get<elem_idx>()".
-Otherwise, produce "get<elem_index>(e)" where "get" is looked up via argument-
-dependent lookup only.  Set *lvalue_binding to TRUE if the produced expression
-is an lvalue.
+Let e be the structured binding container, of tuple-like type tp.  Build
+"e.get<elem_idx>()" if member lookup finds a function template with a leading
+nontype template parameter (or any member named "get" in older emulation
+modes).  Otherwise, build "get<elem_idx>(e)" using only argument-dependent
+lookup; tsn is the token sequence number from which that lookup is done.
+Store the initializer in *p_icp, use diag_pos for diagnostics, and set
+*lvalue_binding to TRUE if the expression is an lvalue.
 */
 {
-  a_constant_ptr       i_con = local_constant();
-  a_symbol_ptr         mem_sym;
-  a_symbol_locator     loc;
-  an_operand           e_opnd;
-  an_expr_stack_entry  expr_stack_entry, *saved_expr_stack;
+  a_constant_ptr          i_con = local_constant();
+  a_symbol_ptr            mem_sym;
+  a_symbol_locator        loc;
+  an_operand              e_opnd;
+  an_expr_stack_entry     expr_stack_entry, *saved_expr_stack;
+  an_object_lifetime_ptr  saved_curr_lifetime;
 
   save_expr_stack(&saved_expr_stack);
+  /* Do not make the generated expression a child of a lifetime that belongs
+     to the surrounding expression. */
+  saved_curr_lifetime = curr_object_lifetime;
+  if (curr_object_lifetime != NULL &&
+      curr_object_lifetime->kind == olk_expr_temporary) {
+    curr_object_lifetime = curr_object_lifetime->parent_lifetime;
+  }  /* if */
   push_expr_stack((an_expression_kind)ek_normal, &expr_stack_entry,
                   /*force_object_lifetime=*/FALSE,
                   /*suppress_object_lifetime=*/FALSE);
@@ -39032,9 +39043,10 @@ is an lvalue.
                                  (an_arg_list_elem_ptr)NULL, &e_opnd,
                                  operand_of_arg_list_elem(*p_icp));
     } else {
-      int            saved_n_internal_opnds = n_internal_opnds;
-      an_operand_ptr *saved_internal_opnd_array = internal_opnd_array;
-      an_operand_ptr opnds[2];
+      int                  saved_n_internal_opnds = n_internal_opnds;
+      an_operand_ptr       *saved_internal_opnd_array = internal_opnd_array;
+      an_operand_ptr       opnds[2];
+      an_expr_stack_entry  *saved_inner_stack;
 
       if (edg_get_expr_cache == NULL) {
         edg_get_expr_cache = new_fe<a_token_cache>(/*is_reusable=*/TRUE);
@@ -39046,10 +39058,10 @@ is an lvalue.
       opnds[0] = &e_opnd;
       opnds[1] = &i_opnd;
       internal_opnd_array = opnds;  /*lint !e733 !e789*/
-      save_expr_stack(&saved_expr_stack);
+      save_expr_stack(&saved_inner_stack);
       push_expr_stack((an_expression_kind)ek_normal, &expr_stack_entry,
                       /*force_object_lifetime=*/FALSE,
-                      /*suppress_object_lifetime=*/FALSE);
+                      /*suppress_object_lifetime=*/TRUE);
       expr_stack->suppress_diagnostics = TRUE;
       add_stop_token(tok_semicolon);
       *p_icp = scan_expr_into_new_init_component(EOPT_NO_OPTIONS);
@@ -39064,9 +39076,12 @@ is an lvalue.
       internal_opnd_array = saved_internal_opnd_array;
       n_internal_opnds = saved_n_internal_opnds;
       (void)required_token(tok_semicolon, ec_exp_semicolon);
+      pop_expr_stack();
+      restore_expr_stack(saved_inner_stack);
     }  /* if */
     if (!err) {
       check_assertion(*p_icp != NULL && is_expression_component(*p_icp));
+      bundle_curr_expr_lifetime(*p_icp, /*fix_up_dtors=*/FALSE);
       *lvalue_binding = is_an_lvalue(operand_of_arg_list_elem(*p_icp));
     }  /* if */
   } else {
@@ -39075,11 +39090,6 @@ is an lvalue.
     an_arg_list_elem_ptr     arg;
     a_template_arg_ptr       tap;
     an_arg_operand_ptr       tap_opnd = alloc_arg_operand();
-    a_token_sequence_number  tsn;
-    an_il_entity_list_entry  *ep = container->variant.bindings;
-    a_targ_size_t            k;
-    for (k = 0; k<elem_idx; ++k) ep = ep->next;
-    tsn = symbol_for((a_variable_ptr)ep->entity.ptr)->token_sequence_number;
     tap = alloc_template_arg((a_templ_arg_kind)tak_nontype);
     tap->arg_operand = tap_opnd;
     make_constant_operand(i_con, &tap_opnd->operand);
@@ -39095,6 +39105,7 @@ is an lvalue.
   }  /* if */
   pop_expr_stack();
   restore_expr_stack(saved_expr_stack);
+  curr_object_lifetime = saved_curr_lifetime;
   release_local_constant(&i_con);
 }  /* determine_get_call_for_tuple_like_binding */
 
@@ -52109,13 +52120,17 @@ through their next fields; an empty list is represented by NULL.
 }  /* scan_expansion_initializer */
 
 
-static void expansion_initializer_operand(an_expr_node_ptr          expr,
-                                          an_expr_copy_options_set  options,
-                                          an_operand                *operand)
+static void expansion_initializer_operand(
+                         an_expr_node_ptr          expr,
+                         an_expr_copy_options_set  options,
+                         an_operand                *operand,
+                         a_boolean                 is_synthesized_cast = FALSE)
 /*
 Reconstruct operand from the retained expansion initializer expr, copying
 its expressions with options.  Preserve operand properties without redoing
-name lookup or semantic analysis in the element's scope.
+name lookup or semantic analysis in the element's scope.  is_synthesized_cast
+indicates that expr is the generated static_cast<decltype(ui)&&>(ui) for a
+destructured component rather than the binding ui itself.
 */
 {
   an_expr_rescan_info_entry_ptr  rescan_info = expr->extra.rescan_info;
@@ -52155,25 +52170,55 @@ name lookup or semantic analysis in the element's scope.
     make_braced_init_operand_from_list(list, &rescan_info->saved_operand,
                                        operand);
   } else {
-    /* A retained constant stays a constant operand (see
-       make_operand_from_copied_expr). */
     make_operand_from_copied_expr(expr, options, operand);
+    if (!is_synthesized_cast) {
+      an_expr_node_ptr  id_expr = strip_ref_indirect(expr,
+                                                     /*parens_also=*/FALSE);
+      if (expr->is_lvalue && is_variable_node(id_expr) &&
+          node_variable(id_expr)->is_struct_binding) {
+        operand->is_id_expression = TRUE;
+      }  /* if */
+    }
   }  /* if */
   operand->position = expr->position;
 }  /* expansion_initializer_operand */
 
 
+a_boolean diagnose_indefinite_expansion_initializer(a_statement_ptr  statement)
+/*
+Diagnose an unresolved overload set in the single-expression initializer of
+statement.  Return TRUE if diagnosed.  Scanning preserves overload sets for
+target-type resolution, but the generated range variable has no target type.
+*/
+{
+  an_expr_node_ptr  expr;
+  an_operand        operand;
+  a_boolean         diagnosed = FALSE;
+
+  expr = skip_object_lifetimes(expn_info_of(statement)->initializer);
+  if (has_saved_indefinite_function_operand(expr)) {
+    /* Reconstruct the saved operand, which carries the overload set symbol
+       for the diagnostic. */
+    expansion_initializer_operand(expr, CE_NO_OPTIONS, &operand);
+    error_if_indefinite_function(&operand);
+    diagnosed = TRUE;
+  }  /* if */
+  return diagnosed;
+}  /* diagnose_indefinite_expansion_initializer */
+
+
 void set_expansion_element_binding(a_variable_ptr   variable,
                                    an_expr_node_ptr element_expr,
-                 /* Defaulted: */  a_boolean        extend_temporaries)
+                 /* Defaulted: */  a_boolean        extend_temporaries,
+                 /* Defaulted: */  a_boolean        is_synthesized_cast)
 /*
-Initialize variable from a copy of element_expr, deducing any placeholder
-type (see bind_enhanced_for_variable).  variable is a per-element copy of the
-for-range-declaration.  Copying keeps the retained expansion-initializer
-separate from lowered code.  When extend_temporaries is TRUE (as for the
-elements of an enumerating expansion), those temporaries persist through the
-element block.  The caller defines any structured bindings after this
-initialization.
+Initialize variable (a per-element variable or the generated range variable)
+from a copy of element_expr, deducing any placeholder type.  With
+extend_temporaries, initializer temporaries survive through the element block
+or, for the range variable, through the entire expansion.  is_synthesized_cast
+is TRUE when element_expr is the generated static_cast<decltype(ui)&&>(ui) for
+a component rather than the binding ui itself.  The caller defines any
+structured bindings after this initialization.
 */
 {
   an_operand            operand;
@@ -52193,9 +52238,11 @@ initialization.
   expr_stack_entry.expansion_initializer = extend_temporaries;
   expr_stack_entry.destructions_preceding_expr =
                                             curr_object_lifetime->destructions;
-  expansion_initializer_operand(initializer_expr,
+  expansion_initializer_operand(
+                         initializer_expr,
                          extend_temporaries ? CE_EXTEND_INITIALIZER_TEMPORARIES
-                                            : CE_NO_OPTIONS, &operand);
+                                            : CE_NO_OPTIONS,
+                         &operand, is_synthesized_cast);
   /* Object arrays are initialized by set_variable_initializer.  Reference
      initialization handles a braced-init-list itself, including binding a
      reference to an array temporary. */
@@ -52222,11 +52269,258 @@ initialization.
 }  /* set_expansion_element_binding */
 
 
+static void set_up_destructuring_binding(a_variable_ptr      binding,
+                                         a_variable_ptr      container,
+                                         a_source_position   *pos)
+/*
+Set up the common metadata for binding, a synthesized structured binding
+associated with container in a destructuring expansion.  pos is the source
+position of the expansion initializer.  Mark the binding used because the
+per-element declaration consumes its value.
+*/
+{
+  binding->is_struct_binding = TRUE;
+  binding->variant.container = container;
+  binding->source_corresp.decl_position = *pos;
+  mark_variable_value_set(symbol_for(binding));
+  mark_referenced(symbol_for(binding), pos);
+  binding->used = TRUE;
+}  /* set_up_destructuring_binding */
+
+
+an_expr_node_ptr make_destructuring_field_element_expr(
+                                      a_variable_ptr     container,
+                                      a_field_ptr        field,
+                                      a_boolean          materialize_bit_field,
+                                      a_source_position  *pos)
+/*
+Synthesize the binding ui for field component container.field of a
+destructuring expansion (N5050 [stmt.expand]/5.3).  Return an expression
+denoting ui (an lvalue); the caller converts it to an xvalue when needed.
+This mirrors record_struct_binding_expr_for_field.  If materialize_bit_field
+is TRUE and field is a bit-field, apply the rvalue reference cast here, which
+materializes a temporary.  pos is the generated expression's position.  Return
+NULL if an error was diagnosed (e.g., a conversion to an inaccessible base
+class); the caller then abandons the expansion.
+*/
+{
+  an_operand            selector, result_opnd;
+  a_symbol_ptr          field_sym = symbol_for(field);
+  a_symbol_locator      field_loc;
+  an_expr_stack_entry   expr_stack_entry;
+  a_type_ptr            container_type = container->type,
+                        binding_type = field->type;
+  a_type_qualifier_set  container_tqs;
+  an_expr_node_ptr      result = NULL;
+
+  push_expr_stack(ek_normal, &expr_stack_entry,
+                  /*force_object_lifetime=*/FALSE,
+                  /*suppress_object_lifetime=*/FALSE);
+  make_lvalue_variable_operand(container, pos, pos, &selector,
+                               (a_ref_entry_ptr)NULL);
+  make_locator_for_symbol(field_sym, &field_loc);
+  cast_pointer_for_field_selection(&selector, /*is_arrow_operator=*/FALSE,
+                                   field_sym, field_sym,
+                                   /*access_control_error_reported=*/FALSE,
+                                   /*do_protected_member_check=*/TRUE, pos);
+  do_field_selection_operation(&selector, selector.type,
+                               /*is_arrow_operator=*/FALSE,
+                               /*compiler_generated=*/TRUE,
+                               &field_loc, pos, pos, (a_ref_entry_ptr)NULL,
+                               &result_opnd);
+  if (!is_error_operand(&result_opnd)) {
+    if (is_reference_type(container_type)) {
+      container_type = type_pointed_to(container_type);
+    }  /* if */
+    container_tqs = get_type_qualifiers(container_type);
+    if (is_reference_type(binding_type)) {
+      binding_type = type_pointed_to(binding_type);
+      container_tqs = TQ_NONE;
+    } else if (field->is_mutable) {
+      container_tqs &= ~TQ_CONST;
+    }  /* if */
+    binding_type = make_qualified_type(binding_type, container_tqs);
+    if (materialize_bit_field && field->is_bit_field) {
+      a_ruled_out_expr_kind_set  ruled_out_expr_kinds = 0;
+      /* Cast to decltype(ui)&&, not just to the intermediate prvalue. */
+      process_static_cast(make_rvalue_reference_type(binding_type),
+                          &result_opnd, pos, pos, /*is_safe_cast=*/FALSE,
+                          &ruled_out_expr_kinds);
+    } else {
+      a_variable_ptr  binding;
+      binding = alloc_temporary_variable(binding_type, /*force_static=*/FALSE);
+      set_up_destructuring_binding(binding, container, pos);
+      binding->init_kind = initk_binding;
+      binding->initializer.bound_expr = make_node_from_operand(&result_opnd);
+      make_lvalue_variable_operand(binding, pos, pos, &result_opnd,
+                                   (a_ref_entry_ptr)NULL);
+    }  /* if */
+    result = make_node_from_operand(&result_opnd);
+  }  /* if */
+  pop_expr_stack();
+  return result;
+}  /* make_destructuring_field_element_expr */
+
+
+an_expr_node_ptr make_destructuring_array_element_expr(
+                                               a_variable_ptr     container,
+                                               a_type_ptr         element_type,
+                                               a_targ_size_t      elem_idx,
+                                               a_source_position  *pos)
+/*
+Array counterpart of make_destructuring_field_element_expr: Create the binding
+ui for element elem_idx of container and return an expression denoting ui (an
+lvalue).  element_type is the array element type.  This mirrors
+record_struct_binding_expr_for_array_element.  pos is the generated
+expression's position.
+*/
+{
+  a_constant_ptr    n_constant = local_constant();
+  an_expr_node_ptr  c_node, n_node, subscript_expr, result_expr;
+
+  set_integer_constant(n_constant, (a_host_large_integer)elem_idx,
+                       targ_size_t_int_kind);
+  n_node = alloc_node_for_constant(alloc_shareable_constant(n_constant));
+  release_local_constant(&n_constant);
+  c_node = var_lvalue_expr(container);
+  if (is_reference_type(container->type)) {
+    c_node->is_lvalue = FALSE;
+    c_node = add_ref_indirection_to_node(c_node);
+  }  /* if */
+  c_node = conv_array_expr_to_pointer(c_node);
+  c_node->next = n_node;
+  subscript_expr = make_operator_node(eok_subscript, element_type, c_node);
+  subscript_expr->is_lvalue = TRUE;
+  if (strict_cpp17_eval_order) {
+    /* Not strictly necessary, but for consistency with other eok_subscript
+       operations. */
+    subscript_expr->variant.operation.eval_left_to_right = TRUE;
+  }  /* if */
+  subscript_expr->position = *pos;
+  {
+    a_variable_ptr  binding;
+    an_operand      binding_operand;
+    binding = alloc_temporary_variable(element_type, /*force_static=*/FALSE);
+    set_up_destructuring_binding(binding, container, pos);
+    binding->init_kind = initk_binding;
+    binding->initializer.bound_expr = subscript_expr;
+    make_lvalue_variable_operand(binding, pos, pos, &binding_operand,
+                                 (a_ref_entry_ptr)NULL);
+    result_expr = make_node_from_operand(&binding_operand);
+  }
+  return result_expr;
+}  /* make_destructuring_array_element_expr */
+
+
+an_expr_node_ptr make_destructuring_tuple_element_expr(
+                                         a_variable_ptr           container,
+                                         a_type_ptr               range_type,
+                                         a_targ_size_t            elem_idx,
+                                         a_source_position        *pos,
+                                         a_token_sequence_number  tsn,
+                                         a_boolean                is_constexpr,
+                                         a_boolean                *p_erroneous,
+                                         a_variable_ptr           *p_binding)
+/*
+Synthesize tuple binding ui for element elem_idx of container, whose
+referenced type is range_type, and set *p_binding.  Initialize the binding
+from its get call; the caller places that initialization before all element
+blocks.  Return an expression for vi (N5050 [stmt.expand]/5.3): an xvalue if
+container is an rvalue reference and Ti&& is an rvalue reference to an object
+type, otherwise an lvalue.  tsn is the token sequence number from which the
+get lookup is done; pos is the generated expression's position.  is_constexpr
+indicates whether the source for-range-declaration has a constexpr specifier.
+If an error is detected, set *p_erroneous to TRUE and return NULL; otherwise
+set it to FALSE.
+*/
+{
+  an_init_component_ptr  icp = NULL;
+  an_expr_node_ptr       elem_node = NULL;
+  a_boolean              lvalue_binding = FALSE;
+  a_boolean              erroneous = FALSE;
+  a_type_ptr             element_type = get_tuple_element_type(elem_idx,
+                                                               range_type,
+                                                               pos);
+
+  if (is_error_type(element_type)) {
+    erroneous = TRUE;
+  } else {
+    /* determine_get_call_for_tuple_like_binding manages its own expression
+       stack (as it does when a structured binding declaration is processed),
+       so none may be pushed here. */
+    determine_get_call_for_tuple_like_binding(container, range_type,
+                                              elem_idx, pos, tsn, &icp,
+                                              &lvalue_binding);
+    if (icp == NULL || is_error_component(icp)) {
+      /* An error was already diagnosed. */
+      if (icp != NULL) free_init_component_list(icp);
+      erroneous = TRUE;
+    } else {
+      a_type_ptr  binding_type;
+      binding_type = tuple_like_element_binding_type(element_type,
+                                                     lvalue_binding, pos);
+      if (is_error_type(binding_type)) {
+        free_init_component_list(icp);
+        erroneous = TRUE;
+      } else {
+        an_operand              elem_operand;
+        an_expr_stack_entry     expr_stack_entry, *saved_expr_stack;
+        an_object_lifetime_ptr  saved_curr_lifetime;
+        a_boolean               expr_stack_popped = FALSE;
+
+        /* Initialize the synthesized binding in the expression context that
+           owns the get-call temporaries, so reference binding can move their
+           destructions to the expansion scope. */
+        save_expr_stack(&saved_expr_stack);
+        saved_curr_lifetime = curr_object_lifetime;
+        if (curr_object_lifetime != NULL &&
+            curr_object_lifetime->kind == olk_expr_temporary) {
+          curr_object_lifetime = curr_object_lifetime->parent_lifetime;
+        }  /* if */
+        push_expr_stack(ek_normal, &expr_stack_entry,
+                        /*force_object_lifetime=*/FALSE,
+                        /*suppress_object_lifetime=*/FALSE);
+        extract_operand_from_expression_component(icp, &elem_operand,
+                                                  /*free_icp=*/TRUE);
+        if (is_error_operand(&elem_operand)) {
+          discard_curr_expr_object_lifetime();
+          erroneous = TRUE;
+        } else {
+          *p_binding = alloc_temporary_variable(binding_type,
+                                                /*force_static=*/FALSE);
+          (*p_binding)->is_synthesized_expn_var = TRUE;
+          (*p_binding)->is_constexpr = is_constexpr;
+          set_up_destructuring_binding(*p_binding, container, pos);
+          bind_enhanced_for_variable(*p_binding, &elem_operand,
+                                     &expr_stack_popped);
+          check_assertion(!expr_stack_popped);
+        }  /* if */
+        pop_expr_stack();
+        restore_expr_stack(saved_expr_stack);
+        curr_object_lifetime = saved_curr_lifetime;
+        if (!erroneous) {
+          elem_node = var_lvalue_expr(*p_binding);
+          elem_node->is_lvalue = FALSE;
+          elem_node = add_ref_indirection_to_node(elem_node);
+          if (!is_lvalue_reference_type(container->type) &&
+              !is_lvalue_reference_type(element_type) &&
+              !is_function_type(skip_reference_type(element_type))) {
+            elem_node->is_lvalue = FALSE;
+            elem_node->is_xvalue = TRUE;
+          }  /* if */
+          elem_node->position = *pos;
+        }  /* if */
+      }  /* if */
+    }  /* if */
+  }  /* if */
+  *p_erroneous = erroneous;
+  return elem_node;
+}  /* make_destructuring_tuple_element_expr */
+
+
 /*
 The state of the enclosing context that must be set aside while an expression
-is synthesized for the interpreter (see call_via_reflections and
-build_info_vector_construction), saved by push_synthesized_expr_context and
-put back by pop_synthesized_expr_context.
+is synthesized for the interpreter.
 */
 typedef struct {
   an_object_lifetime_ptr

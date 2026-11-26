@@ -12611,7 +12611,11 @@ pack, return NULL.  Return the number of actual bindings in *elements.
     vp = ssep->il_scope->nonstatic_variables;
   }  /* if */
   while (vp != NULL) {
-    if (vp->is_struct_binding_container) {
+    /* Synthesized expansion variables are created only after the prototype
+       scan, so they must not be counted when a pack reference is resolved
+       later. */
+    if (vp->is_struct_binding_container &&
+        !vp->is_synthesized_expn_var) {
       --binding_num;
       if (binding_num == 0) break;
     }  /* if */
@@ -14518,7 +14522,12 @@ that list to pedp.
                                        sp->variables : sp->nonstatic_variables;
               for (; vp != NULL; vp = vp->next) {
                 if (vp == binding_var) break;
-                if (vp->is_struct_binding_container) ++binding_num;
+                /* Synthesized expansion variables are created only after the
+                   prototype scan, so they must not be counted here. */
+                if (vp->is_struct_binding_container &&
+                    !vp->is_synthesized_expn_var) {
+                  ++binding_num;
+                }  /* if */
               }  /* for */
               if (vp != NULL) {
                 prp1->param_or_binding_num = binding_num;

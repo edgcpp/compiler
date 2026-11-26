@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 14: error: type "enum_bounds::E" has no components to bind to
+      template for (auto x : v) { (void)x; }
+                             ^
+
+"Test_name.c", line 27: error: type "pointer_bounds::X *" has no components to bind to
+      template for (auto x : p) { (void)x; }
+                             ^
+
+"Test_name.c", line 40: error: type "rvalue_only_bounds::S" has no components to bind to
+      template for (auto x : S{1}) { (void)x; }
+                             ^
+
+"Test_name.c", line 45: error: type "rvalue_only_bounds::S" has no components to bind to
+      template for (auto x : static_cast<S&&>(s)) { (void)x; }
+                             ^
+
+"Test_name.c", line 62: error: type "member_bounds::S" has no components to bind to
+      template for (auto x : s) { (void)x; }
+                             ^
+
+"Test_name.c", line 79: error: type "uninstantiated_member_bounds::S<int>" has no components to bind to
+      template for (auto x : s) { (void)x; }
+                             ^
+
+6 errors detected in the compilation of "Test_name.c".

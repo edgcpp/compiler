@@ -1903,7 +1903,8 @@ This is the statement-creation part of what gen_dynamic_initialization does
 for an ordinary local variable initialization (see decl_inits.c).  It is
 used for the per-element copies of the for-range-declaration of an expansion
 statement, whose initializers are bound after their declarations are scanned
-(see set_expansion_element_binding in expr.c).
+(see set_expansion_element_binding in expr.c), and for the synthesized range
+and tuple binding variables of a destructuring expansion.
 */
 {
   a_statement_ptr  init_stmt;
@@ -6152,20 +6153,25 @@ diagnostics.  Return TRUE if the initialization is a constant expression.
 
 
 static void expand_expansion_statement(
-                                    a_statement_ptr         sp,
-                                    an_expr_node_ptr        element_exprs,
-                                    a_label_ptr             break_label,
-                                    a_reachability_summary  entry_reachability,
-                                    a_boolean               check_constexpr)
+                                a_statement_ptr         sp,
+                                an_expr_node_ptr        element_exprs,
+                                a_variable_ptr          *synthesized_variables,
+                                a_label_ptr             break_label,
+                                a_reachability_summary  entry_reachability,
+                                a_boolean               check_constexpr)
 /*
-Do the compile-time expansion of an enumerating expansion statement (N5050
-[stmt.expand]/5.1): Build the block containing one element block per element,
-each holding a per-element copy of the for-range-declaration bound to that
-element followed by a rescan of the compound-statement, and record it in the
-expanded_statement field of the expansion supplement.  element_exprs is the
-chain of per-element expressions.  break_label is the break label for the
-statement, if any; each element gets its own continue label.  check_constexpr
-requests the constant-expression check for a "constexpr" for-range-declaration.
+Do the compile-time expansion of an expansion statement (N5050
+[stmt.expand]/5): Build the equivalent block with one element block per
+element, each holding a per-element copy of the for-range-declaration bound to
+that element followed by a rescan of the compound-statement, and record it in
+expanded_statement.  element_exprs is the chain of element expressions: the
+expansion-init-list elements for an enumerating expansion statement (N5050
+[stmt.expand]/5.1), or the synthesized components for a destructuring expansion
+statement (N5050 [stmt.expand]/5.3).  If non-NULL, the NULL-terminated
+synthesized_variables (the range variable, then the tuple bindings in index
+order) are initialized before the element blocks.  break_label is the break
+label, if any; each element gets its own continue label.  check_constexpr
+requests the constant-expression check for a constexpr for-range-declaration.
 entry_reachability is the reachability state at entry.  The expansion scope is
 on the scope stack, but the iterator scope is not, so the rescans are not in a
 dependent context.
@@ -6206,6 +6212,12 @@ dependent context.
      blocks are added to the wrapper block's statement list. */
   push_stmt_stack_full(ssk_compound, wrapper, curr_object_lifetime,
                        /*is_statement_expr=*/FALSE);
+  if (synthesized_variables != NULL) {
+    a_variable_ptr  *synthesized_cursor = synthesized_variables;
+    for (; *synthesized_cursor != NULL; ++synthesized_cursor) {
+      add_init_statement_for_variable_dynamic_init(*synthesized_cursor);
+    }  /* for */
+  }  /* if */
   /* Scan every element as reachable, regardless of earlier elements'
      control flow. */
   for (expr = element_exprs; expr != NULL; expr = expr->next) {
@@ -6257,7 +6269,45 @@ dependent context.
       }  /* if */
       set_expansion_element_binding(
                         variable, binding_expr,
-                        /*extend_temporaries=*/expn_info->initializer_is_list);
+                        /*extend_temporaries=*/expn_info->initializer_is_list,
+                        /*is_synthesized_cast=*/
+                            synthesized_variables != NULL &&
+                            !is_lvalue_reference_type(
+                                             synthesized_variables[0]->type));
+      if (synthesized_variables != NULL && variable->is_constexpr &&
+          variable->init_kind == initk_dynamic &&
+          variable->initializer.dynamic != NULL &&
+          !is_error_type(variable->type)) {
+        /* Evaluate a constexpr binding with the synthesized variables
+           available.  Do not do this for a non-constexpr binding: its value
+           can depend on the runtime range or on manifest constant
+           evaluation. */
+        a_diag_list      diag_list;
+        a_constant_ptr   folded_con = local_constant();
+        clear_diag_list(&diag_list);
+        if (interpret_expansion_element_binding(synthesized_variables,
+                                                variable,
+                                                &binding_expr->position,
+                                                folded_con, &diag_list)) {
+          /* Convert the existing dynamic-init entry in place so its
+             destructor, lifetime, and destruction-list links are kept. */
+          a_dynamic_init_ptr  folded_dip = variable->initializer.dynamic;
+          folded_dip->kind = dik_constant;
+          set_dynamic_init_constant(folded_dip,
+                                    move_local_constant_to_il(&folded_con));
+        } else {
+          error_with_notes(ec_expr_not_constant,
+                           &variable->source_corresp.decl_position,
+                           &diag_list);
+          constexpr_failed = TRUE;
+        }  /* if */
+        discard_more_info_list(&diag_list);
+        /* move_local_constant_to_il clears folded_con when it takes it
+           over. */
+        if (folded_con != NULL) {
+          release_local_constant(&folded_con);
+        }  /* if */
+      }  /* if */
       /* As for an ordinary initialized declaration, record whether the
          variable is constant-valued (e.g., so that a constexpr element can
          be used in constant expressions); this must precede the addition
@@ -6394,6 +6444,440 @@ dependent context.
 }  /* expand_expansion_statement */
 
 
+#if GENERATE_SOURCE_SEQUENCE_LISTS
+/*
+Saved source sequence settings, used to disable entries for generated
+constructs during scanning.
+*/
+struct a_saved_source_sequence_state {
+  a_boolean      global_flag;
+			/* Saved value of
+			   source_sequence_entries_disallowed. */
+  a_boolean      scope_flag;
+			/* Saved value of the top scope's
+			   source_sequence_entries_disallowed. */
+  a_scope_depth  depth;
+			/* Saved depth_scope_stack; scanning can reallocate the
+			   scope stack. */
+};
+
+
+static void disallow_source_sequence_entries(
+                                        a_saved_source_sequence_state *state)
+/*
+Save in state the source sequence settings, and disable entries for generated
+constructs while scanning.  The saved scope depth is needed because scanning
+can reallocate the scope stack.
+*/
+{
+  state->global_flag = source_sequence_entries_disallowed;
+  state->scope_flag = scope_stack_top().source_sequence_entries_disallowed;
+  state->depth = depth_scope_stack;
+  source_sequence_entries_disallowed = TRUE;
+  scope_stack_top().source_sequence_entries_disallowed = TRUE;
+}  /* disallow_source_sequence_entries */
+
+
+static void restore_source_sequence_entries(
+                               const a_saved_source_sequence_state *state)
+/*
+Restore the source sequence settings saved in state.
+*/
+{
+  source_sequence_entries_disallowed = state->global_flag;
+  scope_stack[state->depth].source_sequence_entries_disallowed =
+                                                            state->scope_flag;
+}  /* restore_source_sequence_entries */
+#endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
+
+
+static a_boolean destructuring_expansion_is_supported(
+                          an_expansion_stmt_info_ptr  expn_info,
+                          a_type_ptr                  *p_range_type,
+                          a_targ_size_t               *p_n_elements,
+                          a_field_ptr                 *p_fields,
+                          a_boolean                   *p_is_array_case,
+                          a_boolean                   *p_is_tuple_case,
+                          a_boolean                   *p_initializer_is_lvalue)
+/*
+Check whether expn_info's non-iterating single-expression initializer can be
+expanded as a destructuring expansion statement (N5050 [stmt.expand]/4.3):
+its type must be an array with a known bound or a class bindable by a
+structured binding declaration.  On success, set *p_range_type to the
+initializer type, *p_n_elements to the structured binding size, *p_fields to
+the simple-struct fields (NULL otherwise), *p_is_array_case and
+*p_is_tuple_case for the case, and *p_initializer_is_lvalue to the
+initializer's value category, and return TRUE.  Otherwise diagnose as a
+structured binding would and return FALSE.
+*/
+{
+  an_expr_node_ptr   expr = expansion_initializer_expression(expn_info);
+  a_type_ptr         type;
+  a_source_position  saved_error_position = error_position;
+  a_boolean          supported;
+
+  /* Use the initializer's qualified type, as for the equivalent auto&& range
+     declaration (N5050 [stmt.expand]/5.3). */
+  type = expr->type;
+  *p_range_type = type;
+  *p_initializer_is_lvalue = expr->is_lvalue;
+  /* Direct the structured-binding diagnostics, including those from
+     is_tuple_like_type via error_position, at the initializer. */
+  error_position = expr->position;
+  supported = determine_struct_binding_components(
+                                        type, p_n_elements, p_fields,
+                                        p_is_array_case, p_is_tuple_case,
+                                        /*check_member_access=*/TRUE,
+                                        &expr->position);
+  error_position = saved_error_position;
+  return supported;
+}  /* destructuring_expansion_is_supported */
+
+
+static a_variable_ptr make_expansion_range_variable(
+                                      an_expansion_stmt_info_ptr  expn_info,
+                                      a_boolean                   is_iterating)
+/*
+Create the compiler-generated range variable for the single-expression
+expansion initializer, initialized from a copy of that initializer so it is
+evaluated once.  is_iterating selects decltype(auto) (N5050 [stmt.expand]/5.2);
+otherwise auto&& is used (N5050 [stmt.expand]/5.3).  The variable keeps the
+initializer's cv-qualifiers and value category, and is constexpr when the
+for-range-declaration is.  Mark it referenced and value-set to avoid spurious
+warnings.
+*/
+{
+  an_expr_node_ptr   init_expr = expansion_initializer_expression(expn_info);
+  a_type_ptr         range_type;
+  a_variable_ptr     range_var;
+  a_boolean          is_constexpr = expn_info->iterator != NULL &&
+                                    expn_info->iterator->is_constexpr;
+
+  /* Keep the initializer's cv-qualifiers, as for the equivalent auto&& or
+     decltype(auto) declaration: destructuring a const object gives const
+     components. */
+  range_type = init_expr->type;
+  if (init_expr->is_lvalue) {
+    range_type = make_reference_type(range_type);
+  } else if (!is_iterating || init_expr->is_xvalue) {
+    range_type = make_rvalue_reference_type(range_type);
+  } else if (is_constexpr) {
+    /* A constexpr object is const. */
+    range_type = make_qualified_type(range_type, TQ_CONST);
+  }  /* if */
+  range_var = alloc_temporary_variable(range_type, /*force_static=*/FALSE);
+  range_var->is_synthesized_expn_var = TRUE;
+  range_var->source_corresp.decl_position = init_expr->position;
+  if (is_constexpr) {
+    /* The for-range-declaration's constexpr specifier applies to the
+       exposition-only range variable (N5050 [stmt.expand]/5.2-5.3). */
+    range_var->is_constexpr = TRUE;
+  }  /* if */
+  mark_variable_value_set(symbol_for(range_var));
+  mark_referenced(symbol_for(range_var),
+                  &range_var->source_corresp.decl_position);
+  range_var->used = TRUE;
+  set_expansion_element_binding(range_var, expn_info->initializer,
+                               /*extend_temporaries=*/TRUE);
+  return range_var;
+}  /* make_expansion_range_variable */
+
+
+static void expand_destructuring_expansion(
+                                 a_statement_ptr         sp,
+                                 a_variable_ptr          range_var,
+                                 a_type_ptr              range_type,
+                                 a_targ_size_t           n_elements,
+                                 a_field_ptr             fields,
+                                 a_boolean               is_array_case,
+                                 a_boolean               is_tuple_case,
+                                 a_boolean               initializer_is_lvalue,
+                                 a_boolean               is_constexpr,
+                                 a_label_ptr             break_label,
+                                 a_reachability_summary  entry_reachability,
+                                 a_boolean               *p_erroneous)
+/*
+Expand a destructuring expansion statement (N5050 [stmt.expand]/5.3).  The
+equivalent block starts with the range variable, already initialized by the
+caller (see make_expansion_range_variable), followed by one block per
+component.  Synthesize each vi as a reference to a generated binding for the
+field, array element, or tuple get-call result, then delegate to
+expand_expansion_statement.  range_type, n_elements, fields, is_array_case,
+is_tuple_case, and initializer_is_lvalue describe the components (see
+destructuring_expansion_is_supported).  is_constexpr indicates whether the
+for-range-declaration has a constexpr specifier; the remaining parameters are
+as for expand_expansion_statement.  On error, set *p_erroneous to TRUE and
+leave the statement in prototype form.
+*/
+{
+  an_expansion_stmt_info_ptr  expn_info = expn_info_of(sp);
+  an_expr_node_ptr            element_exprs = NULL;
+  an_expr_node_ptr            *element_tail = &element_exprs;
+  an_expr_node_ptr            init_expr;
+  a_source_position           pos;
+  a_boolean                   erroneous = FALSE;
+  Dyn_array<a_variable_ptr>   synthesized_variables;
+
+  db_enter(3, "expand_destructuring_expansion");
+  synthesized_variables.push_back(range_var);
+  init_expr = expansion_initializer_expression(expn_info);
+  pos = init_expr->position;
+  /* Synthesize the per-component expressions vi. */
+  if (n_elements == 0) {
+    /* No components: Only the range declaration remains, and the
+       compound-statement is never rescanned (N5050 [stmt.expand]/5.3). */
+  } else if (is_array_case) {
+    a_targ_size_t  k;
+    for (k = 0; k < n_elements; ++k) {
+      an_expr_node_ptr  elem = make_destructuring_array_element_expr(
+                                                range_var,
+                                                array_element_type(range_type),
+                                                k, &pos);
+      if (!initializer_is_lvalue) {
+        /* vi is static_cast<decltype(ui)&&>(ui): The component glvalue is
+           an xvalue. */
+        elem->is_lvalue = FALSE;
+        elem->is_xvalue = TRUE;
+      }  /* if */
+      *element_tail = elem;
+      element_tail = &elem->next;
+    }  /* for */
+  } else if (is_tuple_case) {
+    an_il_entity_list_entry_ptr  bindings = NULL;
+    an_il_entity_list_entry_ptr  *binding_tail = &bindings;
+    a_token_sequence_number      get_tsn =
+                        expn_info->decl_token_cache->get_first_token()
+                                                   ->get_starting_seq_number();
+
+    for (a_targ_size_t  k = 0; k < n_elements; ++k) {
+      a_variable_ptr    binding = NULL;
+      an_il_entity_list_entry_ptr
+                        entry;
+      an_expr_node_ptr  elem = make_destructuring_tuple_element_expr(
+                                              range_var, range_type, k, &pos,
+                                              get_tsn, is_constexpr,
+                                              &erroneous, &binding);
+      if (erroneous) break;
+      /* List position supplies the index for decltype(ui).  The synthesized
+         variable list still drives initialization before the element
+         blocks. */
+      entry = alloc_il_entity_list_entry();
+      entry->entity.kind = iek_variable;
+      entry->entity.ptr = (char*)binding;
+      *binding_tail = entry;
+      binding_tail = &entry->next;
+      synthesized_variables.push_back(binding);
+      *element_tail = elem;
+      element_tail = &elem->next;
+    }  /* for */
+    if (!erroneous) {
+      range_var->is_struct_binding_container = TRUE;
+      range_var->variant.bindings = bindings;
+    }  /* if */
+  } else {
+    a_field_ptr     fp = fields;
+    for (a_targ_size_t  k = 0; k < n_elements; ++k) {
+      an_expr_node_ptr  elem;
+      fp = next_bindable_field(fp);
+      elem = make_destructuring_field_element_expr(range_var, fp,
+                                                   !initializer_is_lvalue,
+                                                   &pos);
+      if (elem == NULL) {
+        /* The field selection was diagnosed (e.g. because of an
+           inaccessible base class); leave the statement in prototype
+           form. */
+        erroneous = TRUE;
+        break;
+      }  /* if */
+      if (!initializer_is_lvalue && !is_lvalue_reference_type(fp->type) &&
+          !is_function_type(skip_reference_type(fp->type)) &&
+          !fp->is_bit_field) {
+        /* vi is static_cast<decltype(ui)&&>(ui) (N5050 [stmt.expand]/5.3).
+           Only a cast to an rvalue reference to object type is an xvalue. */
+        elem->is_lvalue = FALSE;
+        elem->is_xvalue = TRUE;
+      }  /* if */
+      fp = fp->next;
+      *element_tail = elem;
+      element_tail = &elem->next;
+    }  /* for */
+  }  /* if */
+  synthesized_variables.push_back((a_variable_ptr)NULL);
+  if (!erroneous && is_constexpr && !is_template_dependent_context()) {
+    /* The range variable is a constexpr reference (N5050 [stmt.expand]/5.3),
+       so its initialization must satisfy the ordinary constexpr variable
+       rules.  In particular, a reference to a temporary with limited
+       lifetime is not permitted. */
+    a_diag_list      diag_list;
+    a_constant_ptr   folded_con = local_constant();
+    clear_diag_list(&diag_list);
+    if (range_var->init_kind == initk_dynamic &&
+        range_var->initializer.dynamic != NULL &&
+        !is_error_type(range_var->type)) {
+      a_dynamic_init_ptr  dip = range_var->initializer.dynamic;
+      if (!check_expansion_initialization_is_constant(range_var, &pos,
+                                                      folded_con,
+                                                      &diag_list)) {
+        erroneous = TRUE;
+      } else if (!dyn_init_is(dip, dik_constant)) {
+        /* Use the manifestly constant-evaluated result at runtime, too. */
+        detach_dynamic_init_lifetimes(dip);
+        dip->init_expr_lifetime = NULL;
+        dip->kind = dik_constant;
+        dip->variant.constant.lambda = NULL;
+        dip->variant.constant.non_constant = FALSE;
+        set_dynamic_init_constant(dip, move_local_constant_to_il(&folded_con));
+      }  /* if */
+    }  /* if */
+    discard_more_info_list(&diag_list);
+    if (folded_con != NULL) release_local_constant(&folded_con);
+    if (!erroneous) {
+      /* Validate the generated prefix declarations, including their
+         destructors, even when there are no elements or the per-element
+         declaration is not dynamically initialized. */
+      clear_diag_list(&diag_list);
+      if (!interpret_expansion_synthesized_variables(
+                                              synthesized_variables.begin(),
+                                              &pos, &diag_list)) {
+        error_with_notes(ec_expr_not_constant, &pos, &diag_list);
+        erroneous = TRUE;
+      }  /* if */
+      discard_more_info_list(&diag_list);
+    }  /* if */
+  }  /* if */
+  if (!erroneous) {
+    /* Do the common expansion; the synthesized bindings are initialized
+       before the element blocks. */
+    expand_expansion_statement(sp, element_exprs,
+                               synthesized_variables.begin(), break_label,
+                               entry_reachability,
+                               /*check_constexpr=*/FALSE);
+  }  /* if */
+  *p_erroneous = erroneous;
+  db_exit();
+}  /* expand_destructuring_expansion */
+
+
+static a_boolean has_member_begin_and_end(a_type_ptr  type)
+/*
+Return TRUE if the class type declares members begin and end, selecting the
+member begin-expr/end-expr interpretation of N5050 [stmt.expand]/3.1 and
+[stmt.ranged]/1.3.2.  The members need not be functions.
+*/
+{
+  a_boolean         result = FALSE;
+  a_symbol_locator  locator;
+
+  clear_locator(&locator, &null_source_position);
+  (void)find_symbol("begin", sizeof("begin")-1, &locator);
+  if (class_qualified_id_lookup(&locator, type, IDL_NO_OPTIONS) != NULL) {
+    clear_locator(&locator, &null_source_position);
+    (void)find_symbol("end", sizeof("end")-1, &locator);
+    result =
+      class_qualified_id_lookup(&locator, type, IDL_NO_OPTIONS) != NULL;
+  }  /* if */
+  return result;
+}  /* has_member_begin_and_end */
+
+
+static a_boolean adl_finds_viable_begin_or_end_function(
+                                                  a_type_ptr    range_type,
+                                                  a_const_char  *name,
+                                                  a_boolean     is_lvalue,
+                                                  a_boolean     is_xvalue)
+/*
+Return TRUE if argument-dependent lookup for name ("begin" or "end"), with
+an argument of range_type and the value category indicated by is_lvalue and
+is_xvalue, finds a viable candidate (N5050 [over.match.viable]).  Issue no
+diagnostics and ignore access control.
+*/
+{
+  a_symbol_locator            locator;
+  a_type_list_entry_ptr       type_list = NULL;
+  a_namespace_list_entry_ptr  ns_list = NULL;
+  a_type_list_entry_ptr       class_list = NULL;
+  a_symbol_list_entry_ptr     slep, symbol_list;
+  an_arg_list_elem_ptr        arg_list = NULL;
+  a_boolean                   found = FALSE;
+
+  clear_locator(&locator, &null_source_position);
+  (void)find_symbol(name, strlen(name), &locator);
+  add_to_arg_dependent_lookup_list(range_type, &type_list);
+  symbol_list = argument_dependent_lookup((a_symbol_ptr)NULL, &locator,
+                                          &type_list, &ns_list, &class_list);
+  if (symbol_list != NULL) {
+    an_operand            range_operand;
+    an_expr_stack_entry   *saved_expr_stack;
+    an_expr_stack_entry   expr_stack_entry;
+    /* The viability check is done outside of any expression scanning context,
+       so establish an isolated expression stack for it. */
+    save_expr_stack(&saved_expr_stack);
+    push_expr_stack(ek_sizeof, &expr_stack_entry,
+                    /*force_object_lifetime=*/FALSE,
+                    /*suppress_object_lifetime=*/FALSE);
+    make_dummy_lvalue_operand(range_type, &range_operand);
+    if (is_xvalue) {
+      conv_rvalue_reference_result_to_xvalue(&range_operand);
+    } else if (!is_lvalue) {
+      range_operand.variant.expression->is_lvalue = FALSE;
+      range_operand.state = (an_operand_state)os_prvalue;
+    }  /* if */
+    arg_list = alloc_arg_list_elem_for_operand(&range_operand);
+    for (slep = symbol_list; slep != NULL && !found; slep = slep->next) {
+      a_symbol_ptr  fund_sym = fundamental_symbol_of(slep->symbol);
+      if ((symbol_is(fund_sym, sk_routine) ||
+           symbol_is(fund_sym, sk_overloaded_function) ||
+           symbol_is(fund_sym, sk_function_template)) &&
+          overloaded_function_match_possible(slep->symbol,
+                                             oc_range_based_for_bounds,
+                                             /*is_template_id=*/FALSE,
+                                             (a_template_arg_ptr)NULL,
+                                             arg_list, /*have_selector=*/FALSE,
+                                             (an_operand *)NULL)) {
+        found = TRUE;
+      }  /* if */
+    }  /* for */
+    pop_expr_stack();
+    restore_expr_stack(saved_expr_stack);
+  }  /* if */
+  if (arg_list != NULL) free_arg_list(arg_list);
+  free_list_of_symbol_list_entries(symbol_list);
+  return found;
+}  /* adl_finds_viable_begin_or_end_function */
+
+
+static a_boolean is_expansion_iterable(an_expr_node_ptr  expr)
+/*
+Return TRUE if the expansion-initializer expr is expansion-iterable (N5050
+[stmt.expand]/3), making the statement an iterating expansion statement (N5050
+[stmt.expand]/4.2).  Arrays are not expansion-iterable.  A class type is
+iterable if it has begin and end members (N5050 [stmt.expand]/3.1) or if
+argument-dependent lookups for begin(E) and end(E) each find a viable
+candidate (N5050 [stmt.expand]/3.2), using expr's value category.
+*/
+{
+  a_boolean   result = FALSE;
+  a_type_ptr  type = expr->type;
+
+  if (is_any_reference_type(type)) {
+    type = type_pointed_to(type);
+  }  /* if */
+  if (!is_error_type(type) && !is_array_type(type)) {
+    /* The member lookup can depend on an uninstantiated specialization. */
+    complete_type_is_needed(type);
+    result = (is_class_struct_union_type(type) &&
+              has_member_begin_and_end(type)) ||
+             (adl_finds_viable_begin_or_end_function(
+                                    type, "begin", expr->is_lvalue,
+                                    expr->is_xvalue) &&
+              adl_finds_viable_begin_or_end_function(
+                                    type, "end", expr->is_lvalue,
+                                    expr->is_xvalue));
+  }  /* if */
+  return result;
+}  /* is_expansion_iterable */
+
+
 static void check_expansion_statement(a_statement_ptr    sp,
                                       a_decl_parse_state *dps,
                                       a_label_ptr        break_label,
@@ -6402,11 +6886,11 @@ static void check_expansion_statement(a_statement_ptr    sp,
                                       a_boolean          *p_erroneous,
                                       a_boolean          *p_deferred)
 /*
-Classify the expansion statement sp (*dps is the declaration parse state of
-its for-range-declaration) and, for a non-dependent enumerating expansion,
-do the compile-time expansion.  Dependent cases remain in prototype form.
-break_label and entry_reachability are passed to expand_expansion_statement.
-*p_erroneous and *p_deferred report why the statement was not expanded.
+Classify sp (*dps is the declaration parse state of its for-range-declaration)
+and expand the non-dependent enumerating and destructuring cases.  Dependent
+cases remain in prototype form.  break_label and entry_reachability are passed
+to expand_expansion_statement; *p_erroneous and *p_deferred report why the
+statement was not expanded.
 */
 {
   an_expansion_stmt_info_ptr  expn_info = expn_info_of(sp);
@@ -6417,14 +6901,65 @@ break_label and entry_reachability are passed to expand_expansion_statement.
                                         p_deferred)) {
     if (expn_info->initializer_is_list) {
       /* An enumerating expansion statement (N5050 [stmt.expand]/4.1). */
-      expand_expansion_statement(sp, expn_info->initializer, break_label,
+      expand_expansion_statement(sp, expn_info->initializer,
+                                 (a_variable_ptr *)NULL, break_label,
                                  entry_reachability,
                                  /*check_constexpr=*/TRUE);
     } else {
-      /* Only enumerating expansion statements are supported for now. */
-      pos_error(ec_exp_lbrace,
-                &expansion_initializer_expression(expn_info)->position);
-      *p_erroneous = TRUE;
+      /* The expression form is a destructuring or iterating expansion.  All
+         synthesized entities below are compiler-generated and must not get
+         source sequence entries. */
+      a_variable_ptr    range_var;
+      an_expr_node_ptr  init_expr;
+      a_source_position pos;
+      a_boolean         erroneous = FALSE;
+#if GENERATE_SOURCE_SEQUENCE_LISTS
+      a_saved_source_sequence_state
+                        ss_state;
+#endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
+      init_expr = expansion_initializer_expression(expn_info);
+      pos = init_expr->position;
+      if (diagnose_indefinite_expansion_initializer(sp)) {
+        erroneous = TRUE;
+      } else {
+#if GENERATE_SOURCE_SEQUENCE_LISTS
+        disallow_source_sequence_entries(&ss_state);
+#endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
+        if (is_expansion_iterable(init_expr)) {
+          /* An iterating expansion statement (N5050 [stmt.expand]/4.2) is not
+             supported yet. */
+          pos_ty_error(ec_invalid_struct_binding_type, &pos,
+                       skip_typerefs(init_expr->type));
+          erroneous = TRUE;
+        } else {
+          a_type_ptr     range_type;
+          a_targ_size_t  n_elements;
+          a_field_ptr    fields;
+          a_boolean      is_array_case, is_tuple_case;
+          a_boolean      initializer_is_lvalue;
+          if (destructuring_expansion_is_supported(
+                                    expn_info, &range_type, &n_elements,
+                                    &fields, &is_array_case, &is_tuple_case,
+                                    &initializer_is_lvalue)) {
+            range_var = make_expansion_range_variable(expn_info,
+                                        /*is_iterating=*/FALSE);
+            expand_destructuring_expansion(sp, range_var, range_type,
+                                           n_elements, fields, is_array_case,
+                                           is_tuple_case,
+                                           initializer_is_lvalue,
+                                           (dps->dso_flags &
+                                            DSO_CONSTEXPR) != 0,
+                                           break_label, entry_reachability,
+                                           &erroneous);
+          } else {
+            erroneous = TRUE;
+          }  /* if */
+        }  /* if */
+#if GENERATE_SOURCE_SEQUENCE_LISTS
+        restore_source_sequence_entries(&ss_state);
+#endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
+      }  /* if */
+      if (erroneous) *p_erroneous = TRUE;
     }  /* if */
   }  /* if */
   db_exit();

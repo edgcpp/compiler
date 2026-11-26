@@ -2588,6 +2588,7 @@ Clear the fields of the given variable to default values.
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
   vp->is_enhanced_for_iterator    = FALSE;
   vp->is_expansion_iterator       = FALSE;
+  vp->is_synthesized_expn_var     = FALSE;
   vp->initializer_in_class        = FALSE;
   vp->constant_valued             = FALSE;
   vp->is_immutable                = FALSE;

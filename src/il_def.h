@@ -11722,6 +11722,11 @@ typedef struct a_variable {
 			/* TRUE for the variable introduced by the
 			   for-range-declaration of an expansion statement in
 			   the prototype scan of the statement. */
+  a_bit_field	is_synthesized_expn_var:1;
+			/* TRUE for a synthesized variable of a
+			   destructuring expansion statement (the range
+			   variable or a tuple binding), created after
+			   the prototype scan. */
   a_bit_field	initializer_in_class:1;
 			/* TRUE for static data members with in-class
 			   initializers. */
@@ -16147,10 +16152,10 @@ typedef struct an_expansion_stmt_info {
                            is TRUE, the elements of the expression-list as a
                            chain of expression nodes linked through their next
                            fields (as for the argument list of a call), or
-                           NULL for an empty list ({ }).  A single-expression
-                           initializer (initializer_is_list FALSE) is retained
-                           but is currently unsupported (the statement is
-                           rejected during checking).
+                           NULL for an empty list ({ }).  When
+                           initializer_is_list is FALSE, the
+                           single expression of an iterating or
+                           destructuring expansion statement.
                            NULL in error cases. */
   a_bit_field   initializer_is_list:1;
                         /* TRUE if the expansion-initializer is an

@@ -1605,9 +1605,25 @@ extern a_boolean is_tuple_like_type(a_type_ptr     tp,
                                     a_targ_size_t  *n_elements,
                                     a_boolean      *p_err);
 
+extern a_field_ptr next_bindable_field(a_field_ptr field);
+
+extern a_boolean determine_struct_binding_components(
+                                       a_type_ptr         type,
+                                       a_targ_size_t      *p_n_elements,
+                                       a_field_ptr        *p_fields,
+                                       a_boolean          *p_is_array_case,
+                                       a_boolean          *p_is_tuple_case,
+                                       a_boolean          check_member_access,
+                                       a_source_position  *pos);
+
 extern a_type_ptr get_tuple_element_type(a_targ_size_t      elem_idx,
                                          a_type_ptr         tp,
                                          a_source_position  *diag_pos = NULL);
+
+extern a_type_ptr tuple_like_element_binding_type(
+                                             a_type_ptr         element_type,
+                                             a_boolean          lvalue_binding,
+                                             a_source_position  *diag_pos);
 
 extern a_type_ptr decltype_for_struct_binding(a_variable_ptr  vp);
 
