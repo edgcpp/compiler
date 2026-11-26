@@ -51,15 +51,15 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     (void)(int A::*)((int F::*)0); // expected-error {{conversion from pointer to member of class 'F' to pointer to member of class 'A' via virtual base 'B' is not allowed}}
           ^
 
-"Test_name.c", line 181: warning: conversion from pointer to smaller integer
+"Test_name.c", line 181: error: invalid type conversion
     (void)(char)(fnp); // expected-error {{cast from pointer to smaller type 'char' loses information}}
           ^
 
-"Test_name.c", line 186: warning: conversion from pointer to smaller integer
+"Test_name.c", line 186: error: invalid type conversion
     (void)(char)((void*)0); // expected-error {{cast from pointer to smaller type 'char' loses information}}
           ^
 
-"Test_name.c", line 187: warning: conversion from pointer to smaller integer
+"Test_name.c", line 187: error: invalid type conversion
     (void)(char)((int*)0);  // expected-error {{cast from pointer to smaller type 'char' loses information}}
           ^
 
@@ -75,4 +75,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     (void)(int structure::*)(psf); // expected-error-re {{C-style cast from 'void (structure::*)(){{( __attribute__\(\(thiscall\)\))?}}' to 'int structure::*' is not allowed}}
           ^
 
-12 errors detected in the compilation of "Test_name.c".
+15 errors detected in the compilation of "Test_name.c".
