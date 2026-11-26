@@ -1,5 +1,22 @@
 Version 7.1
 
+11/25/26 [GH #591]
+Cv-qualification of explicitly specified enumeration underlying types
+
+Previously, cv-qualification of an explicitly specified underlying type could
+prevent promotion to the fixed underlying type from being preferred during
+overload resolution, resulting in the wrong function being selected.  For
+example, with --c++14:
+
+  enum E : const unsigned char { e };
+  void f(unsigned char);
+  void f(int) = delete;
+  void g() { f(e); }  // Previously a spurious error, now okay.
+
+The qualifiers now also no longer affect __underlying_type or the type of
+enumerators within the enum definition.
+
+
 11/24/26 [GH #182]
 "GCC diagnostic" pragmas
 
