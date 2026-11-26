@@ -1,0 +1,18 @@
+[GH #515]
+Lifetime of temporaries in aggregate initialization
+
+In C++, a temporary created in the initializer of an element of an aggregate
+was destroyed at the end of that element's initialization in some contexts
+(e.g., in the initializer of a variable, a mem-initializer, or a default
+member initializer), instead of when the initialization of the whole
+aggregate is complete.  It is now destroyed at the end of the complete
+initialization, including for nested aggregate initializers.  When emulating
+GCC versions before 12 or MSVC, which destroy such temporaries at the end of
+each element in the initializer of a variable, that behavior is kept for
+variables.  For example:
+
+  struct Temp { Temp(); ~Temp(); };
+  struct A { A(const Temp&); };
+  struct Pair { A a; int b; };
+  int f();
+  Pair p{A(Temp{}), f()};  // The Temp is now still alive when f is called.
