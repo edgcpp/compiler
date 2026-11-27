@@ -16120,6 +16120,67 @@ done:
 }  /* load_edg_type_vendor_extension */
 
 
+static a_float_kind float_kind_for_edg_float_type(
+                                        an_ifc_edg_float_type_sort float_sort)
+/*
+Given an EDG floating-point type extension sort, return the corresponding
+float kind.  If the sort does not denote a known floating-point type, return
+fk_last.
+*/
+{
+  a_float_kind result = (a_float_kind)fk_last;
+
+  switch (float_sort) {
+    case ifc_efts_float16:
+      result = (a_float_kind)fk_float16;
+      break;
+    case ifc_efts_fp16:
+      result = (a_float_kind)fk_fp16;
+      break;
+    case ifc_efts_float32x:
+      result = (a_float_kind)fk_float32x;
+      break;
+    case ifc_efts_float64x:
+      result = (a_float_kind)fk_float64x;
+      break;
+    case ifc_efts_float80:
+      result = (a_float_kind)fk_float80;
+      break;
+    case ifc_efts_float128:
+      result = (a_float_kind)fk_float128;
+      break;
+    case ifc_efts_std_bfloat16:
+      result = (a_float_kind)fk_std_bfloat16;
+      break;
+    default_is_unexpected();
+  }  /* switch */
+  return result;
+}  /* float_kind_for_edg_float_type */
+
+
+static a_type_ptr type_for_edg_float_type(an_ifc_edg_type_index type_idx)
+/*
+Given an EDG floating-point type extension index, return the corresponding
+float type.  If a problem occurs while retrieving the type, return NULL.
+*/
+{
+  a_type_ptr                 result = NULL;
+  Opt<an_ifc_edg_type_float> opt_ietf;
+
+  construct_node(&opt_ietf, type_idx);
+  if (opt_ietf.has_value()) {
+    an_ifc_edg_type_float ietf = *opt_ietf;
+    a_float_kind          float_kind =
+                             float_kind_for_edg_float_type(get_ifc_kind(ietf));
+
+    if (float_kind != (a_float_kind)fk_last) {
+      result = float_type(float_kind);
+    }  /* if */
+  }  /* if */
+  return result;
+}  /* type_for_edg_float_type */
+
+
 static a_type_ptr process_edg_type(an_ifc_edg_type_index type_idx)
 /*
 Return the type that corresponds to the specified EDG TypeIndex.  If there is
@@ -16131,26 +16192,35 @@ prefer type_for_type_index in other cases.
 {
   a_type_ptr result = NULL;
 
-  /* FIXME: As the path of least resistance, we just cache the type as a
-     typename-specifier and parse it; eventually we should be able to do
-     something smarter here. */
-  {
-    a_module_token_cache cache;
+  switch (type_idx.sort) {
+    case ifc_ets_edg_type_float:
+      /* A floating-point type extension denotes a float type directly, so
+         there is nothing to parse. */
+      result = type_for_edg_float_type(type_idx);
+      break;
+    case ifc_ets_edg_type_substituted:
+      /* FIXME: As the path of least resistance, we just cache the type as a
+         typename-specifier and parse it; eventually we should be able to do
+         something smarter here. */
+      { a_module_token_cache cache;
 
-    /* Create a fake "typename-specifier" and use that to parse the
-       type. */
-    cache_token(&cache, tok_typename);
-    cache_edg_type_first_part(&cache, type_idx, /*cinfo=*/{});
-    cache_edg_type_second_part(&cache, type_idx, /*cinfo=*/{});
-    if (!cache.is_valid()) {
-      goto invalid;
-    }  /* if */
+        /* Create a fake "typename-specifier" and use that to parse the
+           type. */
+        cache_token(&cache, tok_typename);
+        cache_edg_type_first_part(&cache, type_idx, /*cinfo=*/{});
+        cache_edg_type_second_part(&cache, type_idx, /*cinfo=*/{});
+        if (!cache.is_valid()) {
+          goto invalid;
+        }  /* if */
 
-    result = parse_typename_specifier_cache(module_of(type_idx), &cache);
-    if (result == NULL) {
-      goto invalid;
-    }  /* if */
-  }
+        result = parse_typename_specifier_cache(module_of(type_idx), &cache);
+      }
+      break;
+    default_is_unexpected();
+  }  /* switch */
+  if (result == NULL) {
+    goto invalid;
+  }  /* if */
   goto done;
 invalid:
   result = error_type();
@@ -22187,6 +22257,21 @@ scope); otherwise, return FALSE.
         goto invalid;
       default_is_unexpected();
     }  /* switch */
+  } else if (elaboration.sort == ifc_ts_type_vendor_extension &&
+             is_edg_authored(elaboration)) {
+    Opt<an_ifc_edg_type_index> opt_edg_type_idx =
+                                   load_edg_type_vendor_extension(elaboration);
+
+    if (!opt_edg_type_idx.has_value()) {
+      goto invalid;
+    }  /* if */
+
+    an_ifc_edg_type_index edg_type_idx = *opt_edg_type_idx;
+    if (edg_type_idx.sort == ifc_ets_edg_type_float) {
+      /* A floating-point type extension can always be expressed by direct
+         reference. */
+      result = TRUE;
+    }  /* if */
   } else if (elaboration.sort == ifc_ts_type_pointer) {
     Opt<an_ifc_type_pointer> opt_itp;
 
@@ -24391,6 +24476,15 @@ See cache_type_first_part for additional information.
 */
 {
   switch (type_idx.sort) {
+    case ifc_ets_edg_type_float:
+      { a_type_ptr edg_float_type = type_for_edg_float_type(type_idx);
+
+        if (edg_float_type == NULL) {
+          goto invalid;
+        }  /* if */
+        cache_resolved_type_token(cache, edg_float_type);
+      }
+      break;
     case ifc_ets_edg_type_substituted:
       { Opt<an_ifc_edg_type_substituted> opt_subst_type;
 
@@ -24452,6 +24546,7 @@ See cache_type_second_part for additional information.
 */
 {
   switch (type_idx.sort) {
+    case ifc_ets_edg_type_float:
     case ifc_ets_edg_type_substituted:
       /* Nothing to do for these types. */
       break;

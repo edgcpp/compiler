@@ -17524,16 +17524,29 @@ representation of the field "value".
 
   /* Ensure the value field exists in the current module version. */
   check_assertion(has_ifc_value(universal));
-  an_ifc_edg_type_index_0_43 stage_0;
-  an_ifc_edg_type_index      stage_1;
+  if (is_at_least(universal.get_file(), 0, 44)) {
+    an_ifc_edg_type_index_0_44 stage_0;
+    an_ifc_edg_type_index      stage_1;
 
-  /* Copy the field (EdgExtensionType::value - EdgTypeIndex) into
-     version-specific storage. */
-  static_assert(sizeof(stage_0) == 4,
-                "stage_0 is not properly sized storage!");
-  copy_from_node_field(&stage_0, universal.get_storage(), /*offset=*/0);
-  stage_1 = to_universal_index(universal.get_file(), stage_0);
-  result = stage_1;
+    /* Copy the field (EdgExtensionType::value - EdgTypeIndex) into
+       version-specific storage. */
+    static_assert(sizeof(stage_0) == 4,
+                  "stage_0 is not properly sized storage!");
+    copy_from_node_field(&stage_0, universal.get_storage(), /*offset=*/0);
+    stage_1 = to_universal_index(universal.get_file(), stage_0);
+    result = stage_1;
+  } else {
+    an_ifc_edg_type_index_0_43 stage_0;
+    an_ifc_edg_type_index      stage_1;
+
+    /* Copy the field (EdgExtensionType::value - EdgTypeIndex) into
+       version-specific storage. */
+    static_assert(sizeof(stage_0) == 4,
+                  "stage_0 is not properly sized storage!");
+    copy_from_node_field(&stage_0, universal.get_storage(), /*offset=*/0);
+    stage_1 = to_universal_index(universal.get_file(), stage_0);
+    result = stage_1;
+  }  /* if */
   return result;
 }  /* get_ifc_value */
 
@@ -18593,6 +18606,53 @@ universal representation of the field "initializer".
   result = stage_1;
   return result;
 }  /* get_ifc_initializer */
+
+
+/*
+Functions for reading data from IFC EdgTypeFloat nodes.
+*/
+
+
+template<>
+a_boolean has_ifc_kind(const an_ifc_edg_type_float &universal)
+/*
+Return TRUE if the given universal representation has the field "kind";
+otherwise, return FALSE.
+*/
+{
+  an_ifc_module_file *file = universal.get_file();
+  a_boolean          result = FALSE;
+
+  if (is_at_least(file, 0, 44)) {
+    result = TRUE;
+  }  /* if */
+  return result;
+}  /* has_ifc_kind */
+
+
+template<>
+an_ifc_edg_float_type_sort get_ifc_kind(const an_ifc_edg_type_float &universal)
+/*
+Given the universal representation of EdgTypeFloat, return the universal
+representation of the field "kind".
+*/
+{
+  an_ifc_edg_float_type_sort result;
+
+  /* Ensure the kind field exists in the current module version. */
+  check_assertion(has_ifc_kind(universal));
+  an_ifc_edg_float_type_sort_0_44 stage_0;
+  an_ifc_edg_float_type_sort      stage_1;
+
+  /* Copy the field (EdgTypeFloat::kind - EdgFloatTypeSort) into
+     version-specific storage. */
+  static_assert(sizeof(stage_0) == 4,
+                "stage_0 is not properly sized storage!");
+  copy_from_node_field(&stage_0, universal.get_storage(), /*offset=*/0);
+  stage_1 = to_universal_sort(stage_0);
+  result = stage_1;
+  return result;
+}  /* get_ifc_kind */
 
 
 /*

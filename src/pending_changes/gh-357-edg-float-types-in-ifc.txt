@@ -1,0 +1,18 @@
+//allowed_words: bf16 fp16 eifc
+[GH #357]
+Nonstandard floating-point types in EDG IFC module files
+
+The floating-point types that have no IFC fundamental type representation
+(_Float16 when it is not the standard type, __fp16, _Float32x, _Float64x,
+__float80 when it is distinct from long double, __float128, and __bf16) can
+now be written to and read from EDG IFC module files.  Previously, exporting
+a declaration that used one of these types caused a catastrophic error when
+the module file was written.  The types are written using a new EDG
+floating-point type extension (".edg.type.float"), so each one remains
+distinct from the standard type of the same size after import.  For example,
+with --c++20 --gnu_version=150100 --modules:
+
+  export module foo;
+  export int kind(_Float128) { return 1; }
+  export int kind(__float128) { return 2; }  // Previously, catastrophic
+                                             // error writing foo.eifc.

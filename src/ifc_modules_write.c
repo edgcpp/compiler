@@ -2689,6 +2689,62 @@ the enum type.
   return result;
 }  /* an_ifc_il_map::enter_enum_type */
 
+}  /* namespace */
+
+static an_ifc_edg_float_type_sort float_kind_to_edg_float_type(
+                                                      a_float_kind float_kind)
+/*
+Given a float kind that has no IFC fundamental type representation, return the
+corresponding EDG floating-point type extension sort.
+*/
+{
+  /* The initializer is never used: the cases below cover every float kind,
+     and the ones that cannot occur assert.  It is present because MSVC's
+     definitely-assigned analysis does not account for the [[noreturn]] on
+     assertion_failed reached through the case group below, and warns. */
+  an_ifc_edg_float_type_sort result = ifc_efts_float16;
+
+  switch (float_kind) {
+    case fk_float16:
+      result = ifc_efts_float16;
+      break;
+    case fk_fp16:
+      result = ifc_efts_fp16;
+      break;
+    case fk_float32x:
+      result = ifc_efts_float32x;
+      break;
+    case fk_float64x:
+      result = ifc_efts_float64x;
+      break;
+    case fk_float80:
+      result = ifc_efts_float80;
+      break;
+    case fk_float128:
+      result = ifc_efts_float128;
+      break;
+    case fk_std_bfloat16:
+      result = ifc_efts_std_bfloat16;
+      break;
+    case fk_float:
+    case fk_double:
+    case fk_long_double:
+    case fk_std_float16:
+    case fk_std_float32:
+    case fk_std_float64:
+    case fk_std_float128:
+    case fk_last:
+      /* The traditional float kinds are written as IFC fundamental types
+         rather than as an extension, and fk_last should not appear in the
+         IL. */
+      unexpected_condition();
+      break;
+    default_is_unexpected();
+  }  /* switch */
+  return result;
+}  /* float_kind_to_edg_float_type */
+
+namespace {
 
 an_ifc_type_index an_ifc_il_map::enter_float_type(a_type_ptr type)
 /*
@@ -2697,58 +2753,77 @@ for the float type.
 */
 {
   check_assertion(type->kind == tk_float);
-  an_ifc_type_fundamental
-                fund_type;
+  a_float_kind  float_kind = type->variant.float_kind;
   an_ifc_type_index
-                result = this->map_new_type(type, &fund_type);
+                result;
 
-  switch (type->variant.float_kind) {
+  switch (float_kind) {
     case fk_float:
-      set_ifc_basis(&fund_type, ifc_tbs_float);
-      set_ifc_precision(&fund_type, ifc_tps_default);
-      break;
     case fk_double:
-      set_ifc_basis(&fund_type, ifc_tbs_double);
-      set_ifc_precision(&fund_type, ifc_tps_default);
-      break;
     case fk_long_double:
-      set_ifc_basis(&fund_type, ifc_tbs_double);
-      set_ifc_precision(&fund_type, ifc_tps_long);
-      break;
     case fk_std_float128:
-      set_ifc_basis(&fund_type, ifc_tbs_float);
-      set_ifc_precision(&fund_type, ifc_tps_bit128);
-      break;
     case fk_std_float16:
-      set_ifc_basis(&fund_type, ifc_tbs_float);
-      set_ifc_precision(&fund_type, ifc_tps_bit16);
-      break;
     case fk_std_float32:
-      set_ifc_basis(&fund_type, ifc_tbs_float);
-      set_ifc_precision(&fund_type, ifc_tps_bit32);
-      break;
     case fk_std_float64:
-      set_ifc_basis(&fund_type, ifc_tbs_float);
-      set_ifc_precision(&fund_type, ifc_tps_bit64);
-      break;
+      { an_ifc_type_fundamental fund_type;
+        result = this->map_new_type(type, &fund_type);
+        switch(float_kind) {
+          case fk_float:
+            set_ifc_basis(&fund_type, ifc_tbs_float);
+            set_ifc_precision(&fund_type, ifc_tps_default);
+            break;
+          case fk_double:
+            set_ifc_basis(&fund_type, ifc_tbs_double);
+            set_ifc_precision(&fund_type, ifc_tps_default);
+            break;
+          case fk_long_double:
+            set_ifc_basis(&fund_type, ifc_tbs_double);
+            set_ifc_precision(&fund_type, ifc_tps_long);
+            break;
+          case fk_std_float128:
+            set_ifc_basis(&fund_type, ifc_tbs_float);
+            set_ifc_precision(&fund_type, ifc_tps_bit128);
+            break;
+          case fk_std_float16:
+            set_ifc_basis(&fund_type, ifc_tbs_float);
+            set_ifc_precision(&fund_type, ifc_tps_bit16);
+            break;
+          case fk_std_float32:
+            set_ifc_basis(&fund_type, ifc_tbs_float);
+            set_ifc_precision(&fund_type, ifc_tps_bit32);
+            break;
+          case fk_std_float64:
+            set_ifc_basis(&fund_type, ifc_tbs_float);
+            set_ifc_precision(&fund_type, ifc_tps_bit64);
+            break;
+          default: 
+            unexpected_condition();
+            break;
+        }  /* switch */
+      } 
+      break; 
     case fk_float16:
-    case fk_float128:
     case fk_fp16:
     case fk_float32x:
     case fk_float64x:
     case fk_float80:
+    case fk_float128:
     case fk_std_bfloat16:
-    case fk_last:
-      /* These extended floating-point kinds have no IFC fundamental-type
-         encoding that distinguishes them from other floating-point types
-         of the same size ("__fp16" and "__float128" in particular have
-         different manglings than "_Float16" and "_Float128"); they will
-         be covered by an EDG extension type. */
-      ifc_write_catastrophe();
+      /* The IFC has no fundamental type representation for these types, so
+         they are written using the EDG floating-point type extension. */
+      { an_ifc_edg_type_float
+                edg_float_type;
+
+        result = this->map_new_type(type, &edg_float_type);
+        set_ifc_kind(&edg_float_type,
+                     float_kind_to_edg_float_type(float_kind));
+      }
       break;
+    case fk_last:
+      /* fk_last should not appear in the IL. */
+      unexpected_condition();
     default_is_unexpected();
   }  /* switch */
-  set_ifc_sign(&fund_type, ifc_tss_signed);
   return result;
 }  /* an_ifc_il_map::enter_float_type */
 

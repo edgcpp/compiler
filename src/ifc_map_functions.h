@@ -365,6 +365,25 @@ extern an_ifc_edg_expr_sort to_universal_sort(
                                           an_ifc_edg_expr_sort_0_43 versioned);
 
 /*
+Functions for interacting with IFC EdgFloatTypeSort sorts.
+*/
+
+extern a_const_char* str_for(an_ifc_edg_float_type_sort universal);
+
+extern an_ifc_encoded_edg_float_type_sort to_encoded(
+                                         an_ifc_module_file         *file,
+                                         an_ifc_edg_float_type_sort universal);
+
+extern a_boolean is_known_sort(an_ifc_edg_float_type_sort_0_44 versioned);
+
+extern a_boolean validate_sort(an_ifc_module_file              *file,
+                               an_ifc_edg_float_type_sort_0_44 versioned,
+                               const an_ifc_validation_trace   *parent);
+
+extern an_ifc_edg_float_type_sort to_universal_sort(
+                                    an_ifc_edg_float_type_sort_0_44 versioned);
+
+/*
 Functions for interacting with IFC EdgTemplateArgumentSort sorts.
 */
 
@@ -402,6 +421,15 @@ extern a_boolean validate_sort(an_ifc_module_file            *file,
 
 extern an_ifc_edg_type_sort to_universal_sort(
                                           an_ifc_edg_type_sort_0_43 versioned);
+
+extern a_boolean is_known_sort(an_ifc_edg_type_sort_0_44 versioned);
+
+extern a_boolean validate_sort(an_ifc_module_file            *file,
+                               an_ifc_edg_type_sort_0_44     versioned,
+                               const an_ifc_validation_trace *parent);
+
+extern an_ifc_edg_type_sort to_universal_sort(
+                                          an_ifc_edg_type_sort_0_44 versioned);
 
 /*
 Functions for interacting with IFC ExpansionModeSort sorts.
@@ -1382,6 +1410,19 @@ extern a_boolean validate_index(an_ifc_module_file            *file,
 extern an_ifc_edg_type_index to_universal_index(
                                          an_ifc_module_file         *file,
                                          an_ifc_edg_type_index_0_43 versioned);
+
+extern an_ifc_edg_type_sort_0_44 edg_type_sort(
+                                         an_ifc_edg_type_index_0_44 versioned);
+
+extern uint32_t edg_type_value(an_ifc_edg_type_index_0_44 versioned);
+
+extern a_boolean validate_index(an_ifc_module_file            *file,
+                                an_ifc_edg_type_index_0_44    versioned,
+                                const an_ifc_validation_trace *parent);
+
+extern an_ifc_edg_type_index to_universal_index(
+                                         an_ifc_module_file         *file,
+                                         an_ifc_edg_type_index_0_44 versioned);
 
 extern an_ifc_encoded_edg_type_index to_encoded(
                                               an_ifc_module_file    *file,
@@ -4643,6 +4684,16 @@ that allows resolution of the return type for EdgTokenConstant nodes.
 template<>
 struct an_ifc_kind_metadata<an_ifc_edg_token_constant> {
   using return_type = an_ifc_edg_constant_token_sort;
+};  /* an_ifc_kind_metadata */
+
+
+/*
+The IFC kind field has multiple return types.  This type is a metadata type
+that allows resolution of the return type for EdgTypeFloat nodes.
+*/
+template<>
+struct an_ifc_kind_metadata<an_ifc_edg_type_float> {
+  using return_type = an_ifc_edg_float_type_sort;
 };  /* an_ifc_kind_metadata */
 
 
@@ -20535,6 +20586,46 @@ get<an_ifc_edg_trait_function_definition_storage>(
 template<>
 an_ifc_partition_kind
 get_ifc_partition_kind<an_ifc_edg_trait_function_definition>();
+
+
+
+template<>
+size_t get_ifc_buffer_size<an_ifc_edg_type_float_storage>(
+                                                     an_ifc_module_file *file);
+
+/*
+Functions for interacting with IFC EdgTypeFloat nodes.
+*/
+
+template<>
+a_boolean has_ifc_kind(const an_ifc_edg_type_float &universal);
+
+template<>
+an_ifc_edg_float_type_sort get_ifc_kind(
+                                       const an_ifc_edg_type_float &universal);
+
+template<>
+void set_ifc_kind(an_ifc_edg_type_float            *universal,
+                  const an_ifc_edg_float_type_sort &value);
+
+template<>
+a_boolean validate(const an_ifc_edg_type_float   &universal,
+                   const an_ifc_validation_trace *parent);
+
+#if DEBUG
+extern void db_node(const an_ifc_edg_type_float &universal, unsigned indent);
+
+extern void db_node(const an_ifc_edg_type_float &universal);
+#endif /* DEBUG */
+
+template<>
+an_ifc_edg_type_float_storage* get<an_ifc_edg_type_float_storage>(
+                                   an_ifc_module_file            *file,
+                                   an_ifc_edg_type_float_storage *storage,
+                                   a_boolean                     fill_storage);
+
+template<>
+an_ifc_partition_kind get_ifc_partition_kind<an_ifc_edg_type_float>();
 
 
 
