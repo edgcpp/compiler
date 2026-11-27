@@ -55230,6 +55230,14 @@ is TRUE if the expression is the immediate operand of an "&" operator.
                                  &sym->decl_position);
               sym->variant.constant = con;
             }  /* if */
+          } else if ((is_simple_function_symbol(fund_sym) &&
+                      fund_sym->variant.routine.ptr->template_arg_list ==
+                                                                       NULL) ||
+                     symbol_is(fund_sym, sk_field) ||
+                     (symbol_is(fund_sym, sk_static_data_member) &&
+                       !is_template_variable_symbol(fund_sym))) {
+            /* A non-template member cannot be named by a template-id. */
+            sym = NULL;
           }  /* if */
         }  /* if */
         if (sym == NULL) {
