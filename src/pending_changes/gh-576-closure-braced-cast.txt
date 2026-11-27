@@ -1,0 +1,25 @@
+[GH #576]
+C++-generating back end: auto casts
+
+A cast written with "auto" (C++23), as in "auto(x)" or "auto{x}", was put
+out as a cast to the deduced type.  When that was a closure type, the
+generated code was often ill-formed: if no variable of that type had been
+declared, the type was written as "class __Tn", and if the variable was
+const, the cast yielded a const object.  For example, with --c++23:
+
+  int x = auto{[](int a) { return a; }}(2);  // "class __T1{...}(2)"
+  int f() {
+    const auto c = [n = 0]() mutable { return ++n; };
+    return auto{c}();                        // Call of a const object.
+  }
+
+The new is_auto_cast field of a dynamic initialization now records such a
+cast, and it is put out as written, with "auto".
+
+Also, for a variable of closure type declared in the condition of an if,
+switch, or while statement, or in a range-based for statement, a typedef
+was put out inside the declaration, as in
+
+  if (auto m = []{ return 1; } typedef decltype(m) __T2;) ...
+
+No typedef is put out for such a variable now.

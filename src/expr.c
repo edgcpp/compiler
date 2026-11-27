@@ -30741,6 +30741,8 @@ previously-scanned braced initializer.
   an_init_component_ptr icp;
   a_conv_context_set    conv_context = CCO_CAST | CCO_EXPLICIT_CAST;
   a_boolean             error_on_narrowing;
+  a_boolean             is_auto_cast = FALSE;
+  an_expr_node_ptr      auto_cast_operand = NULL;
   an_expr_node_ptr      expr;
 
   check_assertion(list_init_enabled);
@@ -30765,6 +30767,7 @@ previously-scanned braced initializer.
     cast_operand_to_void(result, type_cast_to);
   } else {
     if (is_auto_type(type_cast_to)) {
+      is_auto_cast = TRUE;
       if (!auto_cast_enabled) {
         expr_pos_warning(ec_auto_cast_is_cpp23, &error_position);
       }  /* if */
@@ -30776,6 +30779,7 @@ previously-scanned braced initializer.
         if (!is_template_dependent_type(opnd->type)) {
           type_cast_to = type_after_auto_cast_transformations(opnd->type);
         }  /* if */
+        auto_cast_operand = expr_node_from_operand(opnd);
       } else {
         expr_pos_error(ec_bad_cast, init_component_pos(icp));
         type_cast_to = error_type();
@@ -30798,10 +30802,23 @@ previously-scanned braced initializer.
     /* Record source form information in the associated IL entries if
        needed. */
     expr->is_brace_notation_cast = TRUE;
-    if (expr->kind == (an_expr_node_kind)enk_temp_init) {
+    if (is_auto_cast && auto_cast_operand != NULL &&
+        (expr == auto_cast_operand ||
+         (node_is(expr, enk_temp_init) &&
+          node_is(auto_cast_operand, enk_temp_init) &&
+          expr->variant.init.dynamic_init ==
+                         auto_cast_operand->variant.init.dynamic_init))) {
+      /* The operand is a prvalue of the type cast to, as in "auto{T(x)}",
+         so the result is just the operand, which keeps its own source
+         form. */
+    } else if (node_is(expr, enk_temp_init)) {
       a_dynamic_init_ptr  dip = expr->variant.init.dynamic_init;
       dip->is_explicit_cast = TRUE;
       dip->is_braced_initializer = TRUE;
+      if (is_auto_cast) {
+        dip->is_auto_cast = TRUE;
+        skip_constexpr_init_folding(dip)->is_auto_cast = TRUE;
+      }  /* if */
       if (dip->kind == (a_dynamic_init_kind)dik_constant ||
           dip->kind == (a_dynamic_init_kind)dik_nonconstant_aggregate) {
         dip->variant.constant.ptr->explicit_cast_applied = TRUE;
@@ -30964,7 +30981,8 @@ freed by this routine.
   a_boolean                     err = FALSE;
   a_symbol_ptr                  ctor_sym = NULL;
   a_boolean                     ctor_case = FALSE, force_dependent = FALSE;
-  a_boolean                     could_be_dependent = FALSE, is_auto_cast;
+  a_boolean                     could_be_dependent = FALSE;
+  a_boolean                     is_auto_cast = FALSE;
   a_class_symbol_supplement_ptr cssp = NULL;
   an_operand                    local_bound_function_selector;
   a_boolean                     allow_ms_array = microsoft_bugs && !C_mode();
@@ -31657,6 +31675,11 @@ have_result:
     expr->is_functional_notation_cast = TRUE;
     if (expr->kind == (an_expr_node_kind)enk_temp_init) {
       dip = expr->variant.init.dynamic_init;
+      if (is_auto_cast && dip->is_explicit_cast &&
+          expr != orig_operand_expression) {
+        dip->is_auto_cast = TRUE;
+        skip_constexpr_init_folding(dip)->is_auto_cast = TRUE;
+      }  /* if */
     }  /* if */
   }  /* if */
   set_operand_position(result, start_position, &end_position, start_position);

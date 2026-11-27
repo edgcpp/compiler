@@ -23353,6 +23353,12 @@ when possible.
       use_func_notation_cast = FALSE;
       unnamed_type_case = TRUE;
     }  /* if */
+    if (dip->is_auto_cast) {
+      /* The cast was written "auto(x)" or "auto{x}", so put it out that way
+         (the type might not be nameable, e.g., if it is a closure type). */
+      use_func_notation_cast = TRUE;
+      unnamed_type_case = FALSE;
+    }  /* if */
     /* We've now decided whether or not we want to use a functional-notation
        cast.  Change that decision in some cases to deal with deficiencies
        in some target compilers. */
@@ -23407,9 +23413,13 @@ when possible.
       /* Use a functional-notation cast. */
 output_functional_notation_cast:
       octl.suppress_template_args = suppress_template_args;
-      gen_type_reference(init_entity_type, /*suppress_typename_kwd=*/FALSE,
-                         /*is_declaration=*/FALSE,
-                         /*suppress_elab_type_spec=*/TRUE);
+      if (dip->is_auto_cast) {
+        write_tok_str("auto");
+      } else {
+        gen_type_reference(init_entity_type, /*suppress_typename_kwd=*/FALSE,
+                           /*is_declaration=*/FALSE,
+                           /*suppress_elab_type_spec=*/TRUE);
+      }  /* if */
       octl.suppress_template_args = saved_suppress_template_args;
       /* In a case like "auto x = T{};", braced-init will be FALSE,
          reflecting the use of the "=" in the initializer.  However, if T
@@ -24772,7 +24782,8 @@ this one is such a continuation.
     adjust_current_namespace(orig_scope, common_scope);
   }  /* if */
   var->declaration_has_been_put_out = TRUE;
-  if (var->declared_with_auto_type_specifier && !for_init &&
+  if (var->declared_with_auto_type_specifier &&
+      !for_init && !is_condition && !is_iterator &&
       is_immediate_class_type(unqual_var_type) &&
       unqual_var_type->variant.class_struct_union.extra_info->
                                                      is_lambda_closure_class &&
