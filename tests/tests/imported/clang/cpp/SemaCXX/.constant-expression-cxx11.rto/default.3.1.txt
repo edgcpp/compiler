@@ -35,6 +35,10 @@ fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
       case __builtin_constant_p(true) ? (long unsigned int)&x : 0:;
            ^
 
+"SemaCXX/constant-expression-cxx11.cpp", line 127: error: expression must have a constant value
+  constexpr int &Recurse3 = Recurse2;
+                            ^
+
 "SemaCXX/constant-expression-cxx11.cpp", line 168: error: expression must have a constant value
   static_assert(F(4, k) == 3, "");
                 ^
@@ -1438,14 +1442,6 @@ fe_only -DTEST_NUMBER=3 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
 "SemaCXX/constant-expression-cxx11.cpp", line 2356: error: a constexpr variable must have a literal type or a reference type
       constexpr E e(0);
       ^
-
-"SemaCXX/constant-expression-cxx11.cpp", line 2356: warning: variable "e" was declared but never referenced
-      constexpr E e(0);
-                  ^
-
-"SemaCXX/constant-expression-cxx11.cpp", line 2378: error: reference to local variable of enclosing function is not allowed
-        return c;
-               ^
 
 Error limit reached.
 200 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,34 @@
+[GH #525]
+Reference initialized from a reference whose referent is not known
+
+When the initializer of a reference named another reference whose referent is
+not known at compile time (e.g., a reference parameter), the new reference
+could be bound to the storage of the named reference itself instead of to the
+object that reference refers to.  The generated code then read and wrote the
+wrong object, with no diagnostic.  This happened in C++26 mode for reference
+parameters and for local references that are not initialized with a constant
+expression (the hidden reference of a structured binding declaration such as
+"auto &[a, b] = s;" was affected too).  It also happened in C++11 and later
+modes for a reference with static storage duration whose definition is not
+visible, including when such a reference initialized a reference member of an
+aggregate with static storage duration.  For example:
+
+  struct S { int a; long b; };
+  extern S &ext;
+  long f(const S &s) {
+    const S &r = s;  // In C++26 mode, r was bound to the storage of s.
+    return r.a + r.b;
+  }
+  long g() {
+    S &r = ext;      // In C++11 and later modes, r was bound to the
+                     // storage of ext.
+    return r.a + r.b;
+  }
+
+For the same reason, a constexpr reference initialized that way was accepted
+in some modes.  Such an initializer is not a constant expression, and is now
+diagnosed:
+
+  void h(const S &s) {
+    constexpr const S &r = s;  // Previously accepted in C++26 mode; now an
+  }                            // error.
