@@ -17389,7 +17389,11 @@ constant according to P2686R4 (which is slated for inclusion in C++26).
     if (address_base_is(con, abk_variable)) {
       a_variable  *vp = con->variant.address.variant.variable;
       if (vp->storage_class == sc_auto && !vp->is_this_parameter &&
-          vp->init_kind != initk_binding) {
+          vp->init_kind != initk_binding &&
+          !(vp->is_synthesized_expn_var &&
+            is_any_reference_type(vp->type))) {
+        /* A synthesized expansion reference variable is not an address
+           constant for its referent. */
         result = TRUE;
       }  /* if */
     }  /* if */

@@ -7,3 +7,11 @@ namespace gnu_mode_boundary {
     template for (int i : {1}) { (void)i; }
   }
 }
+
+namespace gnu_mode_destructuring {
+  struct S { int a; short b; };
+
+  void f() {
+    template for (auto x : S{1, 2}) { (void)x; }
+  }
+}

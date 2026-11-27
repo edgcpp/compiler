@@ -3,3 +3,7 @@ fe_only -DTEST_NUMBER=2 --c++23 --gn 160000 Test_name.c
       template for (int i : {1}) { (void)i; }
       ^
 
+"Test_name.c", line 15: warning: expansion statements are a C++26 feature
+      template for (auto x : S{1, 2}) { (void)x; }
+      ^
+

@@ -55,6 +55,18 @@ a_boolean interpret_constexpr_call(an_expr_node_ptr  call_expr,
                                    a_constant_ptr    result_con,
                                    a_diag_list_ptr   diag_list);
 
+a_boolean interpret_expansion_synthesized_variables(
+                                     a_variable_ptr     *synthesized_variables,
+                                     a_source_position  *pos,
+                                     a_diag_list_ptr    diag_list);
+
+a_boolean interpret_expansion_element_binding(
+                                     a_variable_ptr     *synthesized_variables,
+                                     a_variable_ptr     var,
+                                     a_source_position  *pos,
+                                     a_constant_ptr     result_con,
+                                     a_diag_list_ptr    diag_list);
+
 a_boolean interpret_dynamic_init_full(
                                   a_dynamic_init_ptr  dip,
                                   a_source_position   *pos,

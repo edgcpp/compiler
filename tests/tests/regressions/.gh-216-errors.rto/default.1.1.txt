@@ -62,11 +62,102 @@ fe_only -DTEST_NUMBER=1 --c++26 --no_warnings Test_name.c
       template for (auto x : {0}) { struct S : Missing {}; }
                                                ^
 
-"Test_name.c", line 131: error: expression must have a constant value
+"Test_name.c", line 134: error: taking the address of a bit field is not allowed
+      template for (auto&& x : b) { (void)x; }
+                               ^
+
+"Test_name.c", line 146: error: an rvalue reference cannot be bound to an lvalue
+      template for (decltype(auto) x : r) { (void)x; }
+                                       ^
+
+"Test_name.c", line 154: error: expression must have a constant value
       template for (constexpr int x : { n, 2 })
                                   ^
-"Test_name.c", line 131: note: the value of parameter "n" (declared at line 129) cannot be used as a constant
+"Test_name.c", line 154: note: the value of parameter "n" (declared at line 152) cannot be used as a constant
       template for (constexpr int x : { n, 2 })
                                         ^
 
-15 errors detected in the compilation of "Test_name.c".
+"Test_name.c", line 167: error: expression must have a constant value
+      template for (constexpr auto x : S{n}) { (void)x; }
+                                       ^
+"Test_name.c", line 167: note: the value of parameter "n" (declared at line 165) cannot be used as a constant
+      template for (constexpr auto x : S{n}) { (void)x; }
+                                         ^
+
+"Test_name.c", line 194: error: type "tuple_like_union::U" has no components to bind to
+      auto&& [x] = u;
+             ^
+
+"Test_name.c", line 205: error: type "int []" has no components to bind to
+      auto&& [x] = a;
+             ^
+
+"Test_name.c", line 217: error: cannot determine which instance of overloaded function "unresolved_overload_initializer::g" is intended
+      template for (auto x : g) { (void)x; }
+                             ^
+
+"Test_name.c", line 218: error: cannot determine which instance of overloaded function "unresolved_overload_initializer::g" is intended
+      template for (auto x : &g) { (void)x; }
+                             ^
+
+"Test_name.c", line 230: error: incomplete type "incomplete_class::A" (aka "incomplete_class::S") is not allowed
+      template for (auto x : a) { (void)x; }
+                             ^
+
+"Test_name.c", line 235: error: incomplete type "incomplete_class::A" (aka "incomplete_class::S") is not allowed
+      auto&& [x] = a;
+             ^
+
+"Test_name.c", line 244: error: type "void" has no components to bind to
+      template for (auto x : (void)0) { (void)x; }
+                             ^
+
+"Test_name.c", line 254: error: type "int" has no components to bind to
+      template for (auto x : s.value) { (void)x; }
+                              ^
+
+"Test_name.c", line 264: error: expression must have a constant value
+      template for (constexpr auto x : S{1}) {}
+                                       ^
+"Test_name.c", line 264: note: reference or pointer to temporary with limited lifetime
+      template for (constexpr auto x : S{1}) {}
+                                       ^
+
+"Test_name.c", line 265: error: expression must have a constant value
+      template for (constexpr auto&& x : S{1}) {}
+                                         ^
+"Test_name.c", line 265: note: reference or pointer to temporary with limited lifetime
+      template for (constexpr auto&& x : S{1}) {}
+                                         ^
+
+"Test_name.c", line 275: error: expression must have a constant value
+      template for (constexpr auto&& x : E{}) {}
+                                         ^
+"Test_name.c", line 275: note: reference or pointer to temporary with limited lifetime
+      template for (constexpr auto&& x : E{}) {}
+                                         ^
+
+"Test_name.c", line 306: error: expression must have a constant value
+      template for (constexpr auto x : T{1}) {}
+                                       ^
+"Test_name.c", line 306: note: reference or pointer to temporary with limited lifetime
+      template for (constexpr auto x : T{1}) {}
+                                       ^
+
+"Test_name.c", line 338: error: this structured binding requires a suitable "get" function and none was found
+      template for (auto x : t) { result += x; }
+                             ^
+
+"Test_name.c", line 349: error: cannot bind to non-public member "private_member_access::C::a"
+      template for (auto x : c) { (void)x; }
+                             ^
+
+"Test_name.c", line 359: error: cannot bind to non-public member "protected_member_access::B::a"
+      template for (auto x : b) { (void)x; }
+                             ^
+
+"Test_name.c", line 370: error: conversion to inaccessible base class "inaccessible_base_class::B" is not allowed
+      template for (auto x : d) { (void)x; }
+                             ^
+
+34 errors detected in the compilation of "Test_name.c".

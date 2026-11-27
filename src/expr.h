@@ -646,10 +646,33 @@ extern void scan_range_based_for_expression(a_statement_ptr   statement,
                                             a_source_position *expr_position);
 
 extern void scan_expansion_initializer(a_statement_ptr   statement);
+extern a_boolean diagnose_indefinite_expansion_initializer(
+                                                   a_statement_ptr  statement);
 extern void set_expansion_element_binding(
-                                  a_variable_ptr   variable,
-                                  an_expr_node_ptr initializer_expr,
-                                  a_boolean        extend_temporaries = FALSE);
+                                 a_variable_ptr   variable,
+                                 an_expr_node_ptr initializer_expr,
+                                 a_boolean        extend_temporaries = FALSE,
+                                 a_boolean        is_synthesized_cast = FALSE);
+extern an_expr_node_ptr make_destructuring_field_element_expr(
+                                     a_variable_ptr      container,
+                                     a_field_ptr         field,
+                                     a_boolean           materialize_bit_field,
+                                     a_source_position   *pos);
+extern an_expr_node_ptr make_destructuring_array_element_expr(
+                                               a_variable_ptr     container,
+                                               a_type_ptr         element_type,
+                                               a_targ_size_t      elem_idx,
+                                               a_source_position  *pos);
+
+extern an_expr_node_ptr make_destructuring_tuple_element_expr(
+                              a_variable_ptr           container,
+                              a_type_ptr               range_type,
+                              a_targ_size_t            elem_idx,
+                              a_source_position        *pos,
+                              a_token_sequence_number  tsn,
+                              a_boolean                is_constexpr,
+                              a_boolean                *p_erroneous,
+                              a_variable_ptr           *p_binding);
 extern
 a_boolean call_via_reflections(a_reflection_value             *target_rv,
                                Dyn_array<a_reflection_value>  *arg_rvs,
@@ -1015,12 +1038,13 @@ extern an_expr_node_ptr make_builtin_edg_is_deducible_expr(
 #if !STANDALONE_UTILITY_PROGRAM
 
 extern void determine_get_call_for_tuple_like_binding(
-                                           a_variable_ptr     container,
-                                           a_type_ptr         tp,
-                                           a_targ_size_t      elem_idx,
-                                           a_source_position  *diag_pos,
-                                           an_init_component  **p_icp,
-                                           a_boolean          *lvalue_binding);
+                                     a_variable_ptr           container,
+                                     a_type_ptr               tp,
+                                     a_targ_size_t            elem_idx,
+                                     a_source_position        *diag_pos,
+                                     a_token_sequence_number  tsn,
+                                     an_init_component        **p_icp,
+                                     a_boolean                *lvalue_binding);
 
 extern void record_init_for_array_struct_binding(a_decl_parse_state  *dps,
                                                  an_init_component   *icp);

@@ -1,0 +1,25 @@
+//allowed_words: destructuring destructured
+//correction: true
+[GH #216]
+Support C++26 enumerating and destructuring expansion statements (IL CHANGE)
+
+The front end now supports enumerating and destructuring expansion statements
+in C++26 mode.  For example, with --c++26:
+
+  struct S { int a; short b; };
+  constexpr int f() {
+    int n = 0;
+    template for (auto x : S{1, 2}) {
+      n += x;
+    }
+    return n;
+  }
+  static_assert(f() == 3);
+
+Expansion statements are also accepted with a warning in GNU C++11 and later
+modes emulating GCC 16 or later.  Iterating expansion statements are not yet
+implemented.
+
+Additionally, diagnostics for incomplete non-tuple-like class types, tuple-like
+unions, and arrays of unknown bound or run-time length are now consistent for
+structured bindings and destructuring expansion statements.

@@ -3225,6 +3225,9 @@ Display the indicated variable.
   if (ptr->is_expansion_iterator) {
     disp_boolean("is_expansion_iterator", TRUE);
   }  /* if */
+  if (ptr->is_synthesized_expn_var) {
+    disp_boolean("is_synthesized_expn_var", TRUE);
+  }  /* if */
   if (ptr->initializer_in_class) {
     disp_boolean("initializer_in_class", TRUE);
   }  /* if */

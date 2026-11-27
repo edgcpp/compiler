@@ -36819,6 +36819,144 @@ done:
 }  /* interpret_bool_assertion */
 
 
+static a_boolean initialize_expansion_synthesized_variables(
+                                  an_interpreter_state  *ips,
+                                  a_variable_ptr        *synthesized_variables,
+                                  a_source_position     *pos)
+/*
+Allocate and initialize the NULL-terminated synthesized_variables in order.
+These precede the element blocks in the equivalent compound-statement.  pos is
+the default diagnostic position.  Return TRUE on success.
+*/
+{
+  a_boolean  result = TRUE;
+
+  for (a_variable_ptr *vp = synthesized_variables;
+       *vp != NULL && result; ++vp) {
+    a_byte  *storage = do_constexpr_alloc_variable(ips, *vp, &result);
+    if (result) {
+      mark_complete_object_initialized(storage);
+      result = do_constexpr_init_variable(ips, *vp, storage, pos);
+    }  /* if */
+  }  /* for */
+  return result;
+}  /* initialize_expansion_synthesized_variables */
+
+
+a_boolean interpret_expansion_synthesized_variables(
+                                     a_variable_ptr     *synthesized_variables,
+                                     a_source_position  *pos,
+                                     a_diag_list_ptr    diag_list)
+/*
+Evaluate the initialization and destruction of the NULL-terminated
+synthesized_variables in an isolated interpreter state.  Return TRUE if all
+initializations and destructions are constant expressions; otherwise return
+FALSE with diagnostics in *diag_list.  pos is the default diagnostic position.
+*/
+{
+  a_boolean             result = TRUE;
+  an_interpreter_state  ips;
+
+  if (!in_front_end
+#if DO_IL_LOWERING
+      || il_lowering_underway
+#endif /* DO_IL_LOWERING */
+                             ) {
+    result = FALSE;
+    goto done;
+  }  /* if */
+  if (trans_unit_initialization_needed) {
+    initialize_interpreter_data();
+    trans_unit_initialization_needed = FALSE;
+  }  /* if */
+  init_interpreter_state(&ips, /*is_constant_evaluated=*/TRUE);
+  ips.position = *pos;
+  check_assertion(synthesized_variables != NULL &&
+                  synthesized_variables[0] != NULL);
+  result = initialize_expansion_synthesized_variables(
+                                     &ips, synthesized_variables, pos);
+  if (result && ips.storage_stack.destructions != NULL &&
+      !perform_destructions(&ips)) {
+    result = FALSE;
+  }  /* if */
+  if (result && has_leftover_allocations(&ips) &&
+      !ips.permit_leftover_dyn_alloc) {
+    report_leftover_allocations(&ips);
+    do_constexpr_fail(result);
+  }  /* if */
+  *diag_list = ips.diag_list;
+  release_interpreter_state(&ips);
+done:
+  return result;
+}  /* interpret_expansion_synthesized_variables */
+
+
+a_boolean interpret_expansion_element_binding(
+                                     a_variable_ptr     *synthesized_variables,
+                                     a_variable_ptr     var,
+                                     a_source_position  *pos,
+                                     a_constant_ptr     result_con,
+                                     a_diag_list_ptr    diag_list)
+/*
+Evaluate the initialization of per-element variable var, including conversions
+and constructors, with the NULL-terminated synthesized_variables initialized
+first in an isolated interpreter state.  On success, store the resulting value
+in result_con and return TRUE; otherwise return FALSE with diagnostics in
+*diag_list.  pos is the default diagnostic position.
+*/
+{
+  a_boolean             result = TRUE;
+  an_interpreter_state  ips;
+
+  if (!in_front_end
+#if DO_IL_LOWERING
+      || il_lowering_underway
+#endif /* DO_IL_LOWERING */
+                             ) {
+    result = FALSE;
+    goto done;
+  }  /* if */
+  if (trans_unit_initialization_needed) {
+    initialize_interpreter_data();
+    trans_unit_initialization_needed = FALSE;
+  }  /* if */
+  init_interpreter_state(&ips, /*is_constant_evaluated=*/TRUE);
+  ips.position = *pos;
+  check_assertion(synthesized_variables != NULL &&
+                  synthesized_variables[0] != NULL);
+  result = initialize_expansion_synthesized_variables(
+                                     &ips, synthesized_variables, pos);
+  if (result) {
+    if (cost_exceeded(&ips)) {
+      report_excessive_cost(&ips);
+      do_constexpr_fail(result);
+    } else {
+      a_byte  *storage = do_constexpr_alloc_variable(&ips, var, &result);
+      if (result) {
+        result = do_constexpr_init_variable(&ips, var, storage, pos);
+      }  /* if */
+      if (result) {
+        result = copy_interpreter_object_to_constant(
+                              &ips, storage, storage, var->type, result_con);
+      }  /* if */
+      if (result && ips.storage_stack.destructions != NULL &&
+          !perform_destructions(&ips)) {
+        result = FALSE;
+      }  /* if */
+      if (result && has_leftover_allocations(&ips) &&
+          !ips.permit_leftover_dyn_alloc) {
+        report_leftover_allocations(&ips);
+        do_constexpr_fail(result);
+      }  /* if */
+    }  /* if */
+  }  /* if */
+  *diag_list = ips.diag_list;
+  release_interpreter_state(&ips);
+done:
+  return result;
+}  /* interpret_expansion_element_binding */
+
+
 a_boolean interpret_expr(an_expr_node_ptr  expr,
                          a_boolean         is_constant_evaluated,
                          a_boolean         force_prvalue,
