@@ -6655,8 +6655,7 @@ lower_dynamic_init_aggregate_constant; see their description there.
   check_assertion(return_stmt != NULL && return_stmt->kind == stmk_return);
   add_to_return_memo_list(return_stmt);
   entity_var = make_lowered_param_variable(
-                      rp->type->variant.routine.extra_info->param_type_list->
-                                                                        type);
+                            rout_type_supp(rp->type)->param_type_list->type);
   scope->variant.routine.parameters = entity_var;
   if (return_ptr) return_stmt->expr = var_rvalue_expr(entity_var);
   set_block_start_insert_location(scope->assoc_block, &insert_location);
