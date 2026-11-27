@@ -49185,38 +49185,39 @@ suspend point.
     an_operand orig_operand;
     an_operand resume_operand;
     an_operand suspend_operand;
+    a_boolean  ready_call_folded, resume_call_folded;
     copy_operand(operand, &orig_operand);
     /* Call the await_ready, await_suspend, and await_resume member
        functions. */
     call_named_member_function(operand, "await_ready",
                                (a_template_arg_ptr)NULL,
                                (an_arg_list_elem_ptr)NULL,
-                               &orig_operand, &ready_call);
-    if (!is_constant_operand(&ready_call)) {
+                               &orig_operand, &ready_call,
+                               &ready_call_folded);
+    if (!ready_call_folded) {
       /* We can't use the original operand because it's been incorporated
          into the await_ready call, so make a clone for use in the
          await_resume call. */
       clone_operand(&orig_operand, &resume_operand, /*vars_can_change=*/TRUE,
                     &temp_init_used, /*treat_as_potential_prvalue=*/TRUE);
     } else {
-      /* The await_ready call folded to a constant, so the original operand
-         isn't yet in the IL; just use it directly for the await_resume
-         call. */
+      /* The await_ready call was folded, so the original operand isn't yet
+         in the IL; just use it directly for the await_resume call. */
       copy_operand(&orig_operand, &resume_operand);
     }  /* if */
     call_named_member_function(&resume_operand, "await_resume",
                                (a_template_arg_ptr)NULL,
                                (an_arg_list_elem_ptr)NULL,
-                               &orig_operand, &resume_call);
-    if (!is_constant_operand(&ready_call) ||
-        !is_constant_operand(&resume_call)) {
+                               &orig_operand, &resume_call,
+                               &resume_call_folded);
+    if (!ready_call_folded || !resume_call_folded) {
       /* The original operand has been incorporated into one of the
          preceding calls, so clone it for use in the await_suspend call. */
       clone_operand(&orig_operand, &suspend_operand, /*vars_can_change=*/TRUE,
                     &temp_init_used, /*treat_as_potential_prvalue=*/TRUE);
     } else {
-      /* Both preceding calls folded to constants, so the original operand
-         is usable in the await_suspend call. */
+      /* Both preceding calls were folded, so the original operand is
+         usable in the await_suspend call. */
       copy_operand(&orig_operand, &suspend_operand);
     }  /* if */
     /* await_suspend takes an argument that is the handle of the coroutine. */
@@ -49254,7 +49255,25 @@ suspend point.
   }  /* if */
   node->variant.await_info.ready_resume_suspend->next->next =
                                         make_node_from_operand(&suspend_call);
-  make_expression_operand(node, operand);
+  if (is_a_glvalue(&resume_call) || is_a_function_designator(&resume_call)) {
+    /* await_resume returns a reference, so the co_await expression is a
+       glvalue too (an lvalue or xvalue, like the await_resume call; a
+       reference to a function gives an lvalue even if it is an rvalue
+       reference).  As for a call, give the node the reference type and put a
+       reference indirection on top of it. */
+    an_expr_node_ptr call = strip_ref_indirect(
+                         node->variant.await_info.ready_resume_suspend->next,
+                         /*parens_also=*/FALSE);
+    if (is_any_reference_type(call->type)) {
+      node->type = call->type;
+      node = add_ref_indirection_to_node(node);
+      if (is_an_xvalue(&resume_call)) {
+        node->is_lvalue = FALSE;
+        node->is_xvalue = TRUE;
+      }  /* if */
+    }  /* if */
+  }  /* if */
+  make_lvalue_or_rvalue_expression_operand(node, operand);
 done:;
 }  /* add_await_to_operand */
 

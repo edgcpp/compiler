@@ -2022,7 +2022,8 @@ void call_named_member_function(an_operand           *selector_operand,
                                 a_template_arg_ptr   templ_arg_list,
                                 an_arg_list_elem_ptr alep,
                                 an_operand           *orig_operand,
-                                an_operand           *result);
+                                an_operand           *result,
+                                a_boolean            *p_folded = NULL);
 
 extern
 void call_adl_named_function(a_const_char            *func_name,
