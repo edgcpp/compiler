@@ -2748,8 +2748,8 @@ is in fact valid.
          scp->access != corresp_scp->access ||
          scp->name_linkage != corresp_scp->name_linkage)) {
       match = FALSE;
-      if (scp->assoc_info != NULL &&
-          scp->assoc_info != (char*)get_unnamed_field_symbol()) {
+      if (symbol_for(field) != NULL &&
+          !is_unnamed_field_symbol(symbol_for(field))) {
         /* A named field: */
         process_bad_trans_unit_corresp(iek_field, field, corresp_field);
       } else {

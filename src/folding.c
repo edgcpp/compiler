@@ -9058,7 +9058,8 @@ architectures for which these assumptions are not valid.
         } else if (!type_is(type, tk_union) &&
                    field->is_bit_field && field->bit_size != 0 &&
                    unnamed_bit_field_is_padding() &&
-                   symbol_for(field) == get_unnamed_field_symbol()) {
+                   symbol_for(field) != NULL &&
+                   is_unnamed_field_symbol(symbol_for(field))) {
           /* An unnamed bit-field of non-zero width is padding.  (In a
              union, an unnamed bit-field overlaps the other members, so
              it is handled by the size test above instead.) */
