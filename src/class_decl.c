@@ -23444,22 +23444,15 @@ skip the base class portion of the check.
        parent class has no virtual bases, (b) every field has either a constant
        field initializer or the type has a constexpr default constructor, and
        (c) every direct base class has an unambiguous constexpr default
-       constructor.  In Microsoft mode, the generated default constructor of a
-       dllimport class with virtual functions is not "constexpr" either.  Don't
-       attempt to check this for nonreal classes because it is not always
-       meaningful and the downstream code cannot always handle such classes. */
+       constructor.  Don't attempt to check this for nonreal classes because
+       it is not always meaningful and the downstream code cannot always
+       handle such classes. */
     push_class_reactivation_scope(class_type, /*extend_namespace=*/FALSE);
     if (!class_type->variant.class_struct_union.is_nonreal_class &&
         fields_initialized_for_constexpr_constructor(class_type,
                                                      limited_check) &&
         (!check_bases ||
-         bases_initialized_for_constexpr_constructor(class_type))
-#if MICROSOFT_EXTENSIONS_ALLOWED
-        && !((class_type_supp(class_type)->decl_modifiers & DM_DLLIMPORT) &&
-             class_type->variant.class_struct_union
-                           .any_virtual_functions_including_in_base_classes)
-#endif /* MICROSOFT_EXTENSIONS_ALLOWED */
-                                                                            ) {
+         bases_initialized_for_constexpr_constructor(class_type))) {
       result = TRUE;
     }  /* if */
     pop_class_reactivation_scope();
