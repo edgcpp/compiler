@@ -28264,6 +28264,12 @@ will be an lvalue instead of the usual prvalue.
                                            leave_as_object,
                                            conv_context,
                                            ec_bad_initializer_type);
+        if (is_cast && is_rvalue_reference_type(dest_type) &&
+            is_expression_operand(&operand)) {
+          /* The temporary comes back as an lvalue, but a cast to an
+             rvalue reference type, like T{x}, produces an xvalue. */
+          conv_rvalue_reference_result_to_xvalue(&operand);
+        }  /* if */
       }  /* if */
       braced_init = FALSE;
     } else if (list == NULL) {
