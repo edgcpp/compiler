@@ -4284,7 +4284,6 @@ will be equal to init_list_ctor_arg_list->variant.braced.list.
                                         conv_context,
                                         /*do_arg_dep_lookup=*/FALSE,
                                         /*use_pure_arg_dep_lookup=*/FALSE,
-                                        /*use_std_for_arg_dep_lookup=*/FALSE,
                                         oc_constructor,
                                         source_pos,
                                         (a_token_sequence_number)0,
@@ -8960,7 +8959,6 @@ and bound_function_selector are expected to be NULL in that case.
                                           &arg_list,
                                           do_arg_dep_lookup,
                                           /*use_pure_arg_dep_lookup=*/FALSE,
-                                          /*use_std_for_arg_dep_lookup=*/FALSE,
                                           try_surrogate_functions,
                                           /*is_property=*/FALSE,
                                           /*compiler_generated=*/FALSE,
@@ -24877,7 +24875,6 @@ Return the matching operator "new" function symbol, if found.
                                         CCO_DIRECT_INITIALIZATION,
                                         /*do_arg_dep_lookup=*/FALSE,
                                         /*use_pure_arg_dep_lookup=*/FALSE,
-                                        /*use_std_for_arg_dep_lookup=*/FALSE,
                                         oc_new_expression,
                                         &nps->new_position,
                                         (a_token_sequence_number)0,
@@ -24910,7 +24907,6 @@ Return the matching operator "new" function symbol, if found.
                                         CCO_DIRECT_INITIALIZATION,
                                         /*do_arg_dep_lookup=*/FALSE,
                                         /*use_pure_arg_dep_lookup=*/FALSE,
-                                        /*use_std_for_arg_dep_lookup=*/FALSE,
                                         oc_new_expression,
                                         &nps->new_position,
                                         (a_token_sequence_number)0,
@@ -48767,7 +48763,6 @@ for-each (otherwise it's a range-based-for).
                                       &arg_list,
                                       /*do_arg_dep_lookup=*/FALSE,
                                       /*use_pure_arg_dep_lookup=*/FALSE,
-                                      /*use_std_for_arg_dep_lookup=*/FALSE,
                                       /*try_surrogate_functions=*/FALSE,
                                       /*is_property=*/FALSE,
                                       /*compiler_generated=*/TRUE,
@@ -50708,7 +50703,6 @@ This function is largely based on check_range_based_for_default_case.
                                   &arg_list,
                                   /*do_arg_dep_lookup=*/FALSE,
                                   /*use_pure_arg_dep_lookup=*/FALSE,
-                                  /*use_std_for_arg_dep_lookup=*/FALSE,
                                   /*try_surrogate_functions=*/FALSE,
                                   /*is_property=*/FALSE,
                                   /*compiler_generated=*/TRUE,
@@ -51374,8 +51368,7 @@ static a_boolean create_range_based_for_variable_for_function_call(
 This utility is used during processing of a range-based-for to create a
 variable (returned in *variable) whose initializer is a call to the function
 specified by function_name.  range_var is the sole argument in the function
-call, and argument-dependent lookup is used (with namespace std as an
-associated namespace) for the purposes of the lookup.  *expr_position is the
+call, and only argument-dependent lookup is used.  *expr_position is the
 source position for the range expression.  tok_seq_number is the sequence
 number of the range-based-for expression.  Returns TRUE (and creates *variable
 with a proper initializer) if an appropriate function was found; otherwise
@@ -51403,9 +51396,7 @@ initializer of *variable.
     push_expr_stack((an_expression_kind)ek_normal, &expr_stack_entry,
                     /*force_object_lifetime=*/FALSE,
                     /*suppress_object_lifetime=*/FALSE);
-    /* Perform a lookup in the associated namespaces (including std) and call
-       the function found with the given operand.  See core issue 1442 which
-       clarifies that this is "pure ADL" (and not a normal+ADL) lookup. */
+    /* Use only argument-dependent lookup (Core issue 1442). */
     make_enhanced_for_expression_operand(range_var, &range_operand);
     arg_list = alloc_arg_list_elem_for_operand(&range_operand);
     call_adl_named_function(function_name, (a_template_arg_ptr)NULL,
@@ -52345,7 +52336,6 @@ region, in the context push_synthesized_expr_context sets up.
                                   &args,
                                   /*do_arg_dep_lookup=*/FALSE,
                                   /*use_pure_arg_dep_lookup=*/FALSE,
-                                  /*use_std_for_arg_dep_lookup=*/FALSE,
                                   /*try_surrogate_functions=*/FALSE,
                                   /*is_property=*/FALSE,
                                   /*compiler_generated=*/TRUE,

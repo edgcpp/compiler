@@ -11249,7 +11249,6 @@ a_symbol_ptr select_overloaded_function(
                         a_conv_context_set       conv_context,
                         a_boolean                do_arg_dep_lookup,
                         a_boolean                use_pure_arg_dep_lookup,
-                        a_boolean                use_std_for_arg_dep_lookup,
                         an_overload_context      ovl_context,
                         a_source_position        *call_position,
                         a_token_sequence_number  paren_tok_seq_number,
@@ -11278,9 +11277,7 @@ is TRUE, overloaded_function_symbol may be an sk_undefined symbol, indicating
 that nothing was found on a normal id lookup of the function name.  When
 use_pure_arg_dep_lookup is TRUE, only argument-dependent lookup is used (and
 overloaded_function_symbol must be an sk_undefined symbol whose symbol header
-is used to identify the function being looked up).  When using
-argument-dependent lookup, use_std_for_arg_dep_lookup can be set to TRUE to
-add the std namespace as an associated namespace (e.g., for range-based-for).
+is used to identify the function being looked up).
 If init_list_ctor_arg_list is non-NULL, it points to a braced-init-list that
 we should try to match as a single argument for an initializer-list
 constructor (see [over.match.list] in the C++11 standard) in addition to
@@ -11638,8 +11635,7 @@ in_instantiation:
                                                     overloaded_function_symbol;
       symbol_list = argument_dependent_lookup(normal_lookup_function_symbol,
                                               &locator, &type_list,
-                                              &ns_list, &class_list,
-                                              use_std_for_arg_dep_lookup);
+                                              &ns_list, &class_list);
       if (single_function != NULL && symbol_list != NULL) {
         /* If the function is a single non-overloaded function, overload
            resolution is not required. */
@@ -15698,7 +15694,6 @@ a_boolean select_and_prepare_to_call_overloaded_function(
                            an_arg_list_elem_ptr    *arg_list,
                            a_boolean               do_arg_dep_lookup,
                            a_boolean               use_pure_arg_dep_lookup,
-                           a_boolean               use_std_for_arg_dep_lookup,
                            a_boolean               try_surrogate_functions,
                            a_boolean               is_property,
                            a_boolean               compiler_generated,
@@ -15743,17 +15738,15 @@ TRUE, overloaded_function_symbol may be an sk_undefined symbol, indicating that
 nothing was found on a normal id lookup of the function name.  When
 use_pure_arg_dep_lookup is TRUE, only argument-dependent lookup is used (and
 overloaded_function_symbol must be an sk_undefined symbol whose symbol header
-is used to identify the function being looked up).  When using
-argument-dependent lookup, use_std_for_arg_dep_lookup can be set to TRUE to add
-the std namespace as an associated namespace for the lookup (e.g., for
-range-based-for).  try_surrogate_functions is TRUE if surrogate functions
-should be tried; that means looking for conversion functions from the selector
-object to pointers to function type.  overloaded_function_symbol can be NULL in
-that case.  is_property is TRUE if this call results from the expansion of a
-Microsoft property reference.  compiler_generated is TRUE if the function
-reference is compiler-generated.  paren_tok_seq_number is the token sequence
-number of the opening parenthesis of the argument list, but it's required only
-when do_arg_dep_lookup is TRUE; it can be zero otherwise.
+is used to identify the function being looked up).
+try_surrogate_functions is TRUE if surrogate functions should be tried; that
+means looking for conversion functions from the selector object to pointers to
+function type.  overloaded_function_symbol can be NULL in that case.
+is_property is TRUE if this call results from the expansion of a Microsoft
+property reference.  compiler_generated is TRUE if the function reference is
+compiler-generated.  paren_tok_seq_number is the token sequence number of the
+opening parenthesis of the argument list, but it's required only when
+do_arg_dep_lookup is TRUE; it can be zero otherwise.
 closing_paren_position is the position of the closing parenthesis in the call;
 it is used only when orig_function_operand is non-NULL.  If the call is
 dependent, and the function to be called cannot be determined, set
@@ -15799,7 +15792,6 @@ in C++ mode.  arg_list is not freed by this routine.
                                        CCO_DEFAULT,
                                        do_arg_dep_lookup,
                                        use_pure_arg_dep_lookup,
-                                       use_std_for_arg_dep_lookup,
                                        ovl_context,
                                        call_position,
                                        paren_tok_seq_number,
@@ -19902,8 +19894,7 @@ find_more_operator_candidates:
          be considered as candidate functions. */
       symbol_list = argument_dependent_lookup(proj_normal_sym, &locator,
                                               &type_list,
-                                              &ns_list, &class_list,
-                                              /*include_std_namespace=*/FALSE);
+                                              &ns_list, &class_list);
       for (slep = symbol_list; slep != NULL; slep = slep->next) {
         nonmember_functions_symbol = slep->symbol;
         if (is_template_dependent_context() &&
@@ -31111,7 +31102,6 @@ set to TRUE and FALSE is returned.
                                         conv_context,
                                         /*do_arg_dep_lookup=*/FALSE,
                                         /*use_pure_arg_dep_lookup=*/FALSE,
-                                        /*use_std_for_arg_dep_lookup=*/FALSE,
                                         oc_ctad,
                                         source_pos,
                                         (a_token_sequence_number)0,

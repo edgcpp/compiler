@@ -10057,7 +10057,6 @@ or NULL if no appropriate symbol could be found.
                                          CCO_DEFAULT,
                                          /*do_arg_dep_lookup=*/FALSE,
                                          /*use_pure_arg_dep_lookup=*/FALSE,
-                                         /*use_std_for_arg_dep_lookup=*/FALSE,
                                          oc_new_expression,
                                          pos,
                                          NO_TOKEN_SEQUENCE_NUMBER,
