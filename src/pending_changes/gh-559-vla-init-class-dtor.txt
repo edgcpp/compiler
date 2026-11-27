@@ -1,0 +1,7 @@
+[GH #559]
+Zeroing of variable-length arrays of a class with a destructor
+
+With exceptions disabled, "D a[n] = {};" for a class D with a destructor left
+the array uninitialized, and a pointer to data member element of such an array
+was zeroed rather than set to the null member pointer value (which is not
+all-bits-zero in the IA-64 ABI).

@@ -1994,7 +1994,7 @@ the position at which diagnostics should be issued.
   if (type_is(etype, tk_array)) {
     /* The element is a sub-array.  Create a single potentially-repeated
        initializer for all array levels. */
-    if (!etype->variant.array.is_vla) {
+    if (!is_vla_type(etype)) {
       count *= num_array_elements(etype);
     } else {
       /* is->variable_size_array should be TRUE, and therefore we should
@@ -2048,8 +2048,11 @@ the position at which diagnostics should be issued.
            ck_repeat_init on top of it if needed. */
         check_assertion(type_is(skip_typerefs(array_con->type), tk_array) &&
                         constant_is(array_con, ck_aggregate));
-        if (is->variable_size_array && !is->non_top_level_aggregate) {
-          /* Something like "new T[x]{...}" where x is a run-time value.
+        if (is->variable_size_array &&
+            (!is->non_top_level_aggregate ||
+             is_vla_type(array_con->type))) {
+          /* Something like "new T[x]{...}" where x is a run-time value, or
+             a (possibly nested) VLA such as a row of "T a[2][n] = {...}".
              We don't know a priori how many default initializations are
              needed, but we have to represent it in some way so that lowering
              (or a back end) knows which routine to call.  We use a zero count,
