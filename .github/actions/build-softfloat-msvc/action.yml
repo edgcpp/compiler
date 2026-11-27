@@ -1,0 +1,122 @@
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+#
+# Build SoftFloat (at the commit pinned in
+# dev_tools/docker/softfloat/SOFTFLOAT_COMMIT) with MSVC, leaving the headers
+# in softfloat/include and the library in softfloat/lib/softfloat.lib under
+# the workspace.  A cached build is reused when one is available.  The MSVC
+# developer environment must already be set up (e.g., with
+# ilammy/msvc-dev-cmd).
+
+name: Build SoftFloat (MSVC)
+description: Build (or restore from the cache) SoftFloat with MSVC.
+
+runs:
+  using: composite
+  steps:
+    - name: Read SoftFloat commit pin
+      id: softfloat-pin
+      shell: bash
+      run: |
+        echo "commit=$(tr -d '[:space:]' < dev_tools/docker/softfloat/SOFTFLOAT_COMMIT)" \
+          >> "${GITHUB_OUTPUT}"
+
+    - name: Cache SoftFloat
+      id: cache-softfloat
+      uses: actions/cache@v6
+      with:
+        path: softfloat
+        key: softfloat-msvc-win-${{ steps.softfloat-pin.outputs.commit }}
+
+    - name: Build SoftFloat (MSVC)
+      if: steps.cache-softfloat.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        set -euo pipefail
+        commit="${{ steps.softfloat-pin.outputs.commit }}"
+        mkdir softfloat-src
+        git -C softfloat-src init
+        git -C softfloat-src remote add origin \
+          https://github.com/ucb-bar/berkeley-softfloat-3.git
+        git -C softfloat-src fetch --depth 1 origin "${commit}"
+        git -C softfloat-src checkout FETCH_HEAD
+
+        # EDG Windows SoftFloat build: cl + lib (not MinGW). Emit MSVC
+        # platform bits inline; derive sources.rsp from upstream's
+        # Win32-SSE2-MinGW Makefile (8086-SSE / non-FAST_INT64).
+        build_dir=softfloat-src/build/Win-MSVC
+        mkdir -p "${build_dir}"
+
+        cat > "${build_dir}/platform.h" <<'EOF'
+        /*============================================================================
+        MSVC platform header for SoftFloat. Keep free of GCC-only opts
+        (opts-GCC.h, SOFTFLOAT_BUILTIN_CLZ, SOFTFLOAT_INTRINSIC_INT128).
+        =============================================================================*/
+
+        #define LITTLEENDIAN 1
+
+        #ifdef _MSC_VER
+        #define INLINE static __inline
+        #else
+        #define INLINE static inline
+        #endif
+        EOF
+
+        # Strip the leading spaces YAML left in the heredoc body.
+        sed -i 's/^        //' "${build_dir}/platform.h"
+
+        cat > "${build_dir}/build.bat" <<'EOF'
+        REM In place of a Makefile, use this batch file to create softfloat.lib
+        REM Source paths live in sources.rsp to avoid CreateProcess length limits.
+
+        set LIB=softfloat.lib
+        set SOFTFLOAT_OPTS=-DSOFTFLOAT_ROUND_ODD -DINLINE_LEVEL=5 -DSOFTFLOAT_FAST_DIV32TO16 -DSOFTFLOAT_FAST_DIV64TO32
+        set SPECIALIZE_TYPE=8086-SSE
+        set SOURCE=..\..\source
+        set S=%SOURCE%\
+        set P=%SOURCE%\%SPECIALIZE_TYPE%\
+
+        del *.obj %LIB% 2>nul
+        cl -nologo -c -O2 -I. -I%S% -I%P% -I%S%include %SOFTFLOAT_OPTS% @sources.rsp
+        if errorlevel 1 exit /b 1
+        lib -nologo /out:%LIB% *.obj
+        if errorlevel 1 exit /b 1
+        EOF
+        sed -i 's/^        //' "${build_dir}/build.bat"
+
+        python - <<'PY'
+        import re
+        from pathlib import Path
+
+        makefile = Path(
+          'softfloat-src/build/Win32-SSE2-MinGW/Makefile'
+        ).read_text()
+
+        def section(name):
+          match = re.search(
+            rf'{name}\s*=\s*((?:.*\\\n)*.*)', makefile
+          )
+          return re.findall(r'(\w+)\$\(OBJ\)', match.group(1))
+
+        paths = (
+          [fr'..\..\source\{n}.c' for n in section('OBJS_PRIMITIVES')]
+          + [
+            fr'..\..\source\8086-SSE\{n}.c'
+            for n in section('OBJS_SPECIALIZE')
+          ]
+          + [fr'..\..\source\{n}.c' for n in section('OBJS_OTHERS')]
+        )
+        Path('softfloat-src/build/Win-MSVC/sources.rsp').write_text(
+          '\r\n'.join(paths) + '\r\n'
+        )
+        PY
+
+        cmd.exe //C "cd softfloat-src\\build\\Win-MSVC && build.bat"
+
+        mkdir -p softfloat/include softfloat/lib
+        cp softfloat-src/source/include/softfloat.h \
+           softfloat-src/source/include/softfloat_types.h \
+           softfloat/include/
+        cp softfloat-src/build/Win-MSVC/softfloat.lib softfloat/lib/

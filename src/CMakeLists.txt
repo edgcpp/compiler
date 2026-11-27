@@ -266,6 +266,15 @@ add_subdirectory(cmake/cpfe)
 add_subdirectory(cmake/cpfe-cp)
 add_subdirectory(cmake/cdisp)
 
+# Optionally add the cpfe-self target, which builds the front end from the C
+# that cpfe generates for the front end's own sources, and the cpfe-self-check
+# target, which checks the result (see cmake/cpfe-self/CMakeLists.txt).
+set(EDG_SELF_COMPILE FALSE CACHE BOOL
+    "Add targets that build the front end from the C it generates for itself")
+if($CACHE{EDG_SELF_COMPILE})
+  add_subdirectory(cmake/cpfe-self)
+endif()
+
 # GCC otherwise seeds some generated names and the gcov stamps in objects and
 # .gcno files with the time of compilation.  The seed should differ for every
 # file compiled, so derive it from each source's path relative to the
