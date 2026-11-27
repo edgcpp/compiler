@@ -1,7 +1,8 @@
 //type:fp
 //options:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20
 //options_all:--no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\n\n' '/^file-scope (expr-node@|name-qualifier@|class-type-supplement@|variable@|type@.*\nkind: +(tk_class|tk_struct|tk_template_param|template_arg_list|name_qualifier|is_decltype))/' | grep -E -e '^(  name|  type|  explicitly_specified|constant|position[.]seq|is_class|qualifier[.]class_type|expr|operands|variable|field|operation[.]kind|previous_qualifier|qualifier|extra_info|kind|type|declared_type|typeref_type|template_arg_list):' -e '^file-scope ' -e '^$' | edg-enumerate-il-addrs
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 template<typename T = int, typename U = T>
 struct A
@@ -122,3 +123,27 @@ namespace ns
 auto v = ns::A::D{1, 2};
 
 #endif
+
+/* @filter
+file-scope expr-node
+  kind, type, qualifier, constant, operands, variable, field, operation.kind,
+  position.seq
+file-scope name-qualifier
+  qualifier.class_type, previous_qualifier, name, is_class
+file-scope class-type-supplement
+  template_arg_list
+file-scope variable
+  source_corresp/name, type, declared_type, constant
+file-scope type[kind==tk_class]
+  source_corresp/name, kind, extra_info
+file-scope type[kind==template_arg_list]
+  kind, typeref_type, template_arg_list
+file-scope type[kind==name_qualifier]
+  kind, typeref_type, qualifier
+file-scope type[kind==tk_struct]
+  source_corresp/name, kind, extra_info
+file-scope type[kind==tk_template_param]
+  source_corresp/name, kind
+file-scope type[kind==is_decltype]
+  kind, typeref_type, expr
+ */

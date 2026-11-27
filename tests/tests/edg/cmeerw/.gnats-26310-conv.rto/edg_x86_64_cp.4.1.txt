@@ -1,37 +1,48 @@
-fe_only -DTEST_NUMBER=4 --no_il_lower --il_display --c++11 Test_name.c
-func-scope expr-node
-type:                    file-scope type: int B<5>::*
-orig_lvalue_type:        file-scope type: int B<5>::*
+edg-first-stage-il -DTEST_NUMBER=4 --no_il_lower --il_display --c++11 Test_name.c
+func-scope expr-node#1
+type:                    file-scope type#1: int B<5>::*
+orig_lvalue_type:        file-scope type#1: int B<5>::*
 kind:                    enk_variable
-variable:                func-scope variable: p5
-position.seq:            21
-position.column:         65
+variable:                func-scope variable#1: p5
+qualifier:               NULL
+num_template_arguments:  -1
+is_global_qualified_name:
+                         FALSE
+is_template_id:          FALSE
+is_super_qualified:      FALSE
+is_decltype_qualified:   FALSE
+from_prototype_instantiation:
+                         FALSE
+used_in_primary_declarator:
+                         FALSE
+position.seq:            37
+position.column:         56
 
-func-scope expr-node
-type:                    file-scope type: int B<4>::*
+func-scope expr-node#2
+type:                    file-scope type#2: int B<4>::*
 kind:                    enk_operation
 operation.kind:          eok_pm_base_class_cast
 operation.type_kind:     tk_ptr_to_member
 implicit_step_of_explicit_cast:
                          TRUE
-operands:                func-scope expr-node
+operands:                func-scope expr-node#1
 
-func-scope expr-node
-type:                    file-scope type: int B<3>::*
+func-scope expr-node#3
+type:                    file-scope type#3: int B<3>::*
 kind:                    enk_operation
 operation.kind:          eok_pm_base_class_cast
 operation.type_kind:     tk_ptr_to_member
 implicit_step_of_explicit_cast:
                          TRUE
-operands:                func-scope expr-node
+operands:                func-scope expr-node#2
 
-func-scope expr-node
-type:                    file-scope type: const int B<2>::*
+func-scope expr-node#4
+type:                    file-scope type#4: const int B<2>::*
 is_static_cast:          TRUE
 kind:                    enk_operation
 operation.kind:          eok_pm_base_class_cast
 operation.type_kind:     tk_ptr_to_member
-operands:                func-scope expr-node
-position.seq:            21
-position.column:         28
+operands:                func-scope expr-node#3
+position.seq:            37
+position.column:         25
 

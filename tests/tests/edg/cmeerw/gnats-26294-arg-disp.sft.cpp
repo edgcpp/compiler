@@ -1,7 +1,8 @@
 //type:fp
 //options:--c++20:--c++20:--c++20:--c++20
 //options_all:--no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\n\n' '/^file-scope (name-qualifier@|variable@|routine@.*\nis_template_function:|class-type-supplement@|type@.*\nkind: +(tk_struct|template_arg_list|name_qualifier)|expr-node@.*\nkind: +(enk_variable|enk_routine))/' | awk '/^[a-z_]+:$/ { getline n; if (n ~ /^   /) { gsub(/  +/, "", n); print $0 " " n; } else { print $0; print n; } next; }1' | grep -E -e '^(  name|  type|  explicitly_specified|  decl_position[.]seq|is_class|position[.]seq|qualifier|previous_qualifier|qualifier[.]class_type|extra_info|kind|type|declared_type|typeref_type|template_arg_list|orig_template_arg_list):' -e '^file-scope ' -e '^ +(FALSE|TRUE)' -e '^$' | edg-enumerate-il-addrs
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 #if TEST_NUMBER == 1
 
@@ -72,3 +73,27 @@ auto v = C<void>::f() +
          C<>::i;
 
 #endif
+
+/* @filter
+file-scope name-qualifier
+  qualifier.class_type, previous_qualifier, name, is_class
+file-scope variable
+  source_corresp/name, source_corresp/decl_position.seq, type, declared_type
+file-scope routine[is_template_function]
+  source_corresp/name, source_corresp/decl_position.seq, type, declared_type,
+  template_arg_list
+file-scope class-type-supplement
+  template_arg_list
+file-scope type[kind==tk_struct]
+  source_corresp/name, source_corresp/decl_position.seq, kind, extra_info
+file-scope type[kind==template_arg_list]
+  kind, typeref_type, template_arg_list
+file-scope type[kind==name_qualifier]
+  source_corresp/name, source_corresp/decl_position.seq, kind, declared_type,
+  typeref_type, extra_info, template_arg_list, orig_template_arg_list,
+  qualifier, previous_qualifier
+file-scope expr-node[kind==enk_variable]
+  kind, type, orig_template_arg_list, qualifier, position.seq
+file-scope expr-node[kind==enk_routine]
+  kind, type, qualifier, position.seq
+ */

@@ -1,6 +1,7 @@
 //type:fp
 //options:--c++20 --no_il_lower --il_display
-//filter:awk '/^file-scope template@/{f=1}/^$/{if (f) print $0; f=0}f' | grep -E -e '^(kind|template_decl|routine|prototype_template|  name|  decl_position.seq):' -e '^file-scope ' -e '^$' | sed -e 's/@[0-9a-f]*//'
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 template<typename T>
 struct C
@@ -14,3 +15,9 @@ struct C
 };
 
 int i = C<int>::L()(1) + C<int>::N()(1);
+
+/* @filter
+file-scope template
+  source_corresp/name, source_corresp/decl_position.seq, kind,
+  template_decl, routine, prototype_template
+ */

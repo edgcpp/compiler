@@ -1,191 +1,231 @@
-fe_only -DTEST_NUMBER=1 --c++20 --no_il_lower --il_display Test_name.c
-file-scope requires-clause
-constraint:              file-scope expr-node
+edg-first-stage-il -DTEST_NUMBER=1 --c++20 --no_il_lower --il_display Test_name.c
+file-scope requires-clause#1
+constraint:              file-scope expr-node#1
 requires_pos.seq:        11
 
-file-scope routine
-  name:                  file-scope id-name: "f"
+file-scope routine#1
+  name:                  file-scope id-name#1: "f"
   decl_position.seq:     11
-type:                    file-scope type: void (T#(1,1), U#(2,1))
+type:                    file-scope type#1: void (T#(1,1), U#(2,1))
 defined:                 FALSE
 is_prototype_instantiation:
+                         TRUE
 is_template_function:    TRUE
 trailing_requires_clause:
-assoc_template:          file-scope template
+                         file-scope requires-clause#1
+assoc_template:          file-scope template#1
 
-file-scope requires-clause
-constraint:              file-scope expr-node
+file-scope requires-clause#2
+constraint:              file-scope expr-node#2
 requires_pos.seq:        13
 
-file-scope routine
-  name:                  file-scope id-name: "g"
+file-scope routine#2
+  name:                  file-scope id-name#2: "g"
   decl_position.seq:     13
-type:                    file-scope type: void (T#(1,1), int)
+type:                    file-scope type#2: void (T#(1,1), int)
 defined:                 FALSE
 is_prototype_instantiation:
+                         TRUE
 is_template_function:    TRUE
 trailing_requires_clause:
-assoc_template:          file-scope template
+                         file-scope requires-clause#2
+assoc_template:          file-scope template#2
 
-file-scope requires-clause
-constraint:              file-scope expr-node
+file-scope routine#3
+  name:                  file-scope id-name#3: "C"
+type:                    file-scope type#3: void (C<int> &&) noexcept
+defined:                 FALSE
+
+file-scope routine#4
+  name:                  file-scope id-name#3: "C"
+type:                    file-scope type#4: void (const C<int> &) noexcept
+defined:                 FALSE
+
+file-scope routine#5
+  name:                  file-scope id-name#3: "C"
+type:                    file-scope type#5: void () noexcept
+defined:                 FALSE
+
+file-scope requires-clause#3
+constraint:              file-scope expr-node#3
 requires_pos.seq:        27
 
-file-scope routine
-  name:                  file-scope id-name: "f"
+file-scope routine#6
+  name:                  file-scope id-name#1: "f"
   decl_position.seq:     11
-type:                    file-scope type: void (int, U#(2,1))
+type:                    file-scope type#6: void (int, U#(2,1))
 defined:                 FALSE
 is_prototype_instantiation:
+                         TRUE
 is_template_function:    TRUE
 trailing_requires_clause:
-assoc_template:          file-scope template
+                         file-scope requires-clause#3
+assoc_template:          file-scope template#3
 
-file-scope routine
-  name:                  file-scope id-name: "g"
+file-scope routine#7
+  name:                  file-scope id-name#2: "g"
   decl_position.seq:     34
-type:                    file-scope type: void (int, int)
+type:                    file-scope type#7: void (int, int)
 defined:                 FALSE
 is_template_function:    TRUE
 is_specialized:          TRUE
-assoc_template:          file-scope template
+assoc_template:          file-scope template#2
 
-file-scope routine
-  name:                  file-scope id-name: "operator="
+file-scope routine#8
+  name:                  file-scope id-name#4: "operator="
   decl_position.seq:     8
-type:                    file-scope type: C<int> &(const C<int> &)
+type:                    file-scope type#8: C<int> &(const C<int> &)
 defined:                 FALSE
 
-file-scope routine
-  name:                  file-scope id-name: "operator="
+file-scope routine#9
+  name:                  file-scope id-name#4: "operator="
   decl_position.seq:     8
-type:                    file-scope type: C<int> &(C<int> &&)
+type:                    file-scope type#9: C<int> &(C<int> &&)
 defined:                 FALSE
 
-file-scope requires-clause
-constraint:              file-scope expr-node
+file-scope routine#10
+  name:                  file-scope id-name#3: "C"
+type:                    file-scope type#10: void (C<long> &&) noexcept
+defined:                 FALSE
+
+file-scope routine#11
+  name:                  file-scope id-name#3: "C"
+type:                    file-scope type#11: void (const C<long> &) noexcept
+defined:                 FALSE
+
+file-scope routine#12
+  name:                  file-scope id-name#3: "C"
+type:                    file-scope type#12: void () noexcept
+defined:                 FALSE
+
+file-scope requires-clause#4
+constraint:              file-scope expr-node#4
 requires_pos.seq:        30
 
-file-scope routine
-  name:                  file-scope id-name: "f"
+file-scope routine#13
+  name:                  file-scope id-name#1: "f"
   decl_position.seq:     30
-type:                    file-scope type: void (long, U#(2,1))
+type:                    file-scope type#13: void (long, U#(2,1))
 defined:                 TRUE
 is_prototype_instantiation:
+                         TRUE
 is_template_function:    TRUE
 trailing_requires_clause:
-assoc_template:          file-scope template
+                         file-scope requires-clause#4
+assoc_template:          file-scope template#4
 
-file-scope routine
-  name:                  file-scope id-name: "g"
+file-scope routine#14
+  name:                  file-scope id-name#2: "g"
   decl_position.seq:     37
-type:                    file-scope type: void (long, int)
+type:                    file-scope type#14: void (long, int)
 defined:                 TRUE
 is_template_function:    TRUE
 is_specialized:          TRUE
-assoc_template:          file-scope template
+assoc_template:          file-scope template#2
 
-file-scope routine
-  name:                  file-scope id-name: "operator="
+file-scope routine#15
+  name:                  file-scope id-name#4: "operator="
   decl_position.seq:     8
-type:                    file-scope type: C<long> &(const C<long> &)
+type:                    file-scope type#15: C<long> &(const C<long> &)
 defined:                 FALSE
 
-file-scope routine
-  name:                  file-scope id-name: "operator="
+file-scope routine#16
+  name:                  file-scope id-name#4: "operator="
   decl_position.seq:     8
-type:                    file-scope type: C<long> &(C<long> &&)
+type:                    file-scope type#16: C<long> &(C<long> &&)
 defined:                 FALSE
 
-file-scope routine
-  name:                  file-scope id-name: "operator new"
-type:                    file-scope type: void *(unsigned int)
+file-scope routine#17
+  name:                  file-scope id-name#5: "operator new"
+type:                    file-scope type#17: void *(unsigned int)
 defined:                 FALSE
 
-file-scope routine
-  name:                  file-scope id-name: "operator delete"
-type:                    file-scope type: void (void *) noexcept
+file-scope routine#18
+  name:                  file-scope id-name#6: "operator delete"
+type:                    file-scope type#18: void (void *) noexcept
 defined:                 FALSE
 
-file-scope routine
-  name:                  file-scope id-name: "operator delete"
-type:                    file-scope type: void (void *, unsigned int) noexcept
+file-scope routine#19
+  name:                  file-scope id-name#6: "operator delete"
+type:                    file-scope type#19: void (void *, unsigned int) noexcept
 defined:                 FALSE
 
-file-scope routine
-  name:                  file-scope id-name: "operator new"
-type:                    file-scope type: void *(unsigned int, std::align_val_t)
+file-scope routine#20
+  name:                  file-scope id-name#5: "operator new"
+type:                    file-scope type#20: void *(unsigned int, std::align_val_t)
 defined:                 FALSE
 
-file-scope routine
-  name:                  file-scope id-name: "operator delete"
-type:                    file-scope type: void (void *, unsigned int, std::align_val_t) noexcept
+file-scope routine#21
+  name:                  file-scope id-name#6: "operator delete"
+type:                    file-scope type#21: void (void *, unsigned int, std::align_val_t) noexcept
 defined:                 FALSE
 
-file-scope routine
-  name:                  file-scope id-name: "operator delete"
-type:                    file-scope type: void (void *, std::align_val_t) noexcept
+file-scope routine#22
+  name:                  file-scope id-name#6: "operator delete"
+type:                    file-scope type#22: void (void *, std::align_val_t) noexcept
 defined:                 FALSE
 
-file-scope routine
-  name:                  file-scope id-name: "operator new[]"
-type:                    file-scope type: void *(unsigned int)
+file-scope routine#23
+  name:                  file-scope id-name#7: "operator new[]"
+type:                    file-scope type#23: void *(unsigned int)
 defined:                 FALSE
 
-file-scope routine
-  name:                  file-scope id-name: "operator delete[]"
-type:                    file-scope type: void (void *) noexcept
+file-scope routine#24
+  name:                  file-scope id-name#8: "operator delete[]"
+type:                    file-scope type#24: void (void *) noexcept
 defined:                 FALSE
 
-file-scope routine
-  name:                  file-scope id-name: "operator delete[]"
-type:                    file-scope type: void (void *, unsigned int) noexcept
+file-scope routine#25
+  name:                  file-scope id-name#8: "operator delete[]"
+type:                    file-scope type#25: void (void *, unsigned int) noexcept
 defined:                 FALSE
 
-file-scope routine
-  name:                  file-scope id-name: "operator new[]"
-type:                    file-scope type: void *(unsigned int, std::align_val_t)
+file-scope routine#26
+  name:                  file-scope id-name#7: "operator new[]"
+type:                    file-scope type#26: void *(unsigned int, std::align_val_t)
 defined:                 FALSE
 
-file-scope routine
-  name:                  file-scope id-name: "operator delete[]"
-type:                    file-scope type: void (void *, unsigned int, std::align_val_t) noexcept
+file-scope routine#27
+  name:                  file-scope id-name#8: "operator delete[]"
+type:                    file-scope type#27: void (void *, unsigned int, std::align_val_t) noexcept
 defined:                 FALSE
 
-file-scope routine
-  name:                  file-scope id-name: "operator delete[]"
-type:                    file-scope type: void (void *, std::align_val_t) noexcept
+file-scope routine#28
+  name:                  file-scope id-name#8: "operator delete[]"
+type:                    file-scope type#28: void (void *, std::align_val_t) noexcept
 defined:                 FALSE
 
-file-scope requires-clause
-constraint:              file-scope expr-node
+file-scope requires-clause#5
+constraint:              file-scope expr-node#5
 requires_pos.seq:        17
 
-file-scope routine
-  name:                  file-scope id-name: "h"
+file-scope routine#29
+  name:                  file-scope id-name#9: "h"
   decl_position.seq:     17
-type:                    file-scope type: void (U#(1,1))
+type:                    file-scope type#29: void (U#(1,1))
 defined:                 FALSE
 is_prototype_instantiation:
+                         TRUE
 is_template_function:    TRUE
 trailing_requires_clause:
-assoc_template:          file-scope template
+                         file-scope requires-clause#5
+assoc_template:          file-scope template#5
 
-file-scope routine
-  name:                  file-scope id-name: "h"
+file-scope routine#30
+  name:                  file-scope id-name#9: "h"
   decl_position.seq:     20
-type:                    file-scope type: void (int)
+type:                    file-scope type#30: void (int)
 defined:                 FALSE
 is_template_function:    TRUE
 is_specialized:          TRUE
-assoc_template:          file-scope template
+assoc_template:          file-scope template#5
 
-file-scope routine
-  name:                  file-scope id-name: "h"
+file-scope routine#31
+  name:                  file-scope id-name#9: "h"
   decl_position.seq:     23
-type:                    file-scope type: void (long)
+type:                    file-scope type#31: void (long)
 defined:                 TRUE
 is_template_function:    TRUE
 is_specialized:          TRUE
-assoc_template:          file-scope template
+assoc_template:          file-scope template#5
 

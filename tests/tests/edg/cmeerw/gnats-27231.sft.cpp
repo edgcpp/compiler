@@ -1,6 +1,7 @@
 //type:fp
 //options:--c++11 --no_il_lower --il_display
-//filter:awk '/^file-scope (param-type)@/{f=1}/^$/{if (f) print $0; f=0}f' | grep -E -e '^(param_num|is_parameter_pack|is_pack_element|name|type):' -e '^file-scope ' -e '^$' | sed -e 's/@[0-9a-f]*//'
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 struct C {
   int f(int);
@@ -11,3 +12,8 @@ struct D {
   static int f(Ts ... ts);
 };
 int i = D<int>::f<C, &C::f>(1);
+
+/* @filter
+file-scope param-type
+  type, name, param_num, is_parameter_pack, is_pack_element
+ */

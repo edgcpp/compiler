@@ -1,25 +1,32 @@
-fe_only -DTEST_NUMBER=1 --c++11 --no_il_lower --il_display Test_name.c
+edg-first-stage-il -DTEST_NUMBER=1 --c++11 --no_il_lower --il_display Test_name.c
+file-scope name-qualifier#1
+is_class:                TRUE
+qualifier.class_type:    file-scope type#1: A
+name:                    file-scope id-name#1: "A"
+previous_qualifier:      NULL
+
 file-scope expr-node#1
-type:                    file-scope type#1: bool
+type:                    file-scope type#2: bool
 kind:                    enk_variable
 variable:                file-scope variable#1: v
+qualifier:               file-scope name-qualifier#1
 position.seq:            13
 
 file-scope expr-node#2
-type:                    file-scope type#1: bool
+type:                    file-scope type#2: bool
 kind:                    enk_variable
 variable:                file-scope variable#1: v
+qualifier:               file-scope name-qualifier#1
 position.seq:            13
 
-func-scope expr-node#3
-type:                    file-scope type#2: void (*)(int)
+func-scope expr-node#1
+type:                    file-scope type#3: void (*)(int)
 kind:                    enk_routine
 routine:                 file-scope routine#1: g
 position.seq:            20
 
-func-scope expr-node#4
-type:                    file-scope type#3: D *
+func-scope expr-node#2
+type:                    file-scope type#4: D *
 kind:                    enk_variable
-variable:                func-scope variable#2
-position.seq:            20
+variable:                func-scope variable#1
 

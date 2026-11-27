@@ -1,7 +1,8 @@
 //type:fp
 //options:--c++20
 //options_all:--no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\n\n' '/^file-scope (name-qualifier@|using-decl@|class-type-supplement@|type@.*\nkind: +(tk_class|tk_struct|is_alias|template_arg_list|name_qualifier))/' | awk '/^[a-z_]+:$/ { getline n; if (n ~ /^   /) { gsub(/  +/, "", n); print $0 " " n; } else { print $0; print n; } next; }1' | grep -E -e '^(  type|  explicitly_specified|  decl_position[.]seq|entity|is_class_member|is_using_enum|is_enumerator|qualifier|qualifier[.]class_type|extra_info|kind|type|declared_type|typeref_type|template_arg_list|orig_template_arg_list|is_global_qualified_name):' -e '^file-scope ' -e '^$' | edg-enumerate-il-addrs
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 template<typename T, typename U = T>
 struct A
@@ -32,3 +33,24 @@ struct D : A<T>::template B<T>
 
   using T::h;
 };
+
+/* @filter
+file-scope name-reference[is_global_qualified_name==TRUE]
+  num_template_arguments, qualifier, is_template_id, is_global_qualified_name
+file-scope name-qualifier
+  qualifier.class_type
+file-scope using-decl
+  entity, qualifier.class_type, is_using_enum, is_class_member, is_enumerator
+file-scope class-type-supplement
+  template_arg_list
+file-scope type[kind==tk_class]
+  source_corresp/decl_position.seq, kind, extra_info
+file-scope type[kind==template_arg_list]
+  kind, typeref_type, template_arg_list
+file-scope type[kind==name_qualifier]
+  kind, typeref_type, qualifier
+file-scope type[kind==tk_struct]
+  source_corresp/decl_position.seq, kind, extra_info
+file-scope type[kind==is_alias]
+  source_corresp/decl_position.seq, kind, typeref_type
+ */

@@ -1,36 +1,35 @@
-fe_only -DTEST_NUMBER=1 -w --no_il_lower --il_display --c++20 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=1 -w --no_il_lower --il_display --c++20 Test_name.c
 file-scope type#1
   name:                  file-scope id-name#1: "B"
-  decl_position.seq:     21
+  decl_position.seq:     22
 kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#1
 
 file-scope type#2
   name:                  file-scope id-name#1: "B"
-  decl_position.seq:     10
+  decl_position.seq:     11
 kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#2
 
 file-scope type#3
   name:                  file-scope id-name#2: "A"
-  decl_position.seq:     8
+  decl_position.seq:     9
 kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#3
 
 file-scope type#4
   name:                  file-scope id-name#2: "A"
-  decl_position.seq:     19
-                         TRUE
+  decl_position.seq:     20
 kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#4
 
 func-scope constant#1
-  decl_position.seq:     39
+  decl_position.seq:     40
 type:                    file-scope type#5: int A::B::*
 kind:                    ck_ptr_to_member
 
 func-scope constant#2
-  decl_position.seq:     45
+  decl_position.seq:     46
 type:                    file-scope type#6: int A::B::*
 kind:                    ck_ptr_to_member
 
@@ -38,30 +37,30 @@ func-scope expr-node#1
 type:                    file-scope type#7: void (*)()
 kind:                    enk_routine
 routine:                 file-scope routine#1: f
-position.seq:            38
+position.seq:            39
 
 func-scope expr-node#2
 type:                    file-scope type#8: void
 kind:                    enk_operation
 operation.kind:          eok_call
 operands:                func-scope expr-node#1
-position.seq:            38
+position.seq:            39
 
 func-scope expr-node#3
 type:                    file-scope type#9: void (*)()
 kind:                    enk_routine
 routine:                 file-scope routine#2: g
-position.seq:            44
+position.seq:            45
 
 func-scope expr-node#4
 type:                    file-scope type#8: void
 kind:                    enk_operation
 operation.kind:          eok_call
 operands:                func-scope expr-node#3
-position.seq:            44
+position.seq:            45
 
 func-scope constant#3
-  decl_position.seq:     32
+  decl_position.seq:     33
 type:                    file-scope type#5: int A::B::*
 kind:                    ck_ptr_to_member
 
@@ -69,12 +68,12 @@ func-scope expr-node#5
 type:                    file-scope type#7: void (*)()
 kind:                    enk_routine
 routine:                 file-scope routine#1: f
-position.seq:            31
+position.seq:            32
 
 func-scope expr-node#6
 type:                    file-scope type#8: void
 kind:                    enk_operation
 operation.kind:          eok_call
 operands:                func-scope expr-node#5
-position.seq:            31
+position.seq:            32
 

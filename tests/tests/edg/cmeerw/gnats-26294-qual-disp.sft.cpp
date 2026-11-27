@@ -1,7 +1,8 @@
 //type:fp
 //options:--c++20
 //options_all:--no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\n\n' '/^file-scope (name-qualifier@|variable@|type@.*\nkind: +(tk_pointer|typedef|name_qualifier|is_alias)|expr-node@.*\nkind: +enk_variable)/' | awk '/^[a-z_]+:$/ { getline n; if (n ~ /^   /) { gsub(/  +/, "", n); print $0 " " n; } else { print $0; print n; } next; }1' | grep -E -e '^(  name|  type|  explicitly_specified|  decl_position[.]seq|  reference|  pointer|based_types|position[.]seq|qualifier[.]namespace_ptr|name|qualifier|kind|type|declared_type|variable|orig_template_arg_list|type_pointed_to|typeref_type|is_class|is_reference|is_global_qualified_name):' -e '^ +(FALSE|TRUE)$' -e '^file-scope ' -e '^$' | edg-enumerate-il-addrs
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 using INT = int;
 
@@ -37,3 +38,25 @@ namespace ns
   D::type t2;
   DD::type t3;
 }
+
+/* @filter
+file-scope name-reference[is_global_qualified_name==TRUE]
+  num_template_arguments, qualifier, is_template_id, is_global_qualified_name
+file-scope name-qualifier
+  qualifier.class_type, qualifier.namespace_ptr, previous_qualifier, name,
+  is_class
+file-scope variable
+  source_corresp/name, source_corresp/decl_position.seq, type, declared_type
+file-scope type[kind==tk_pointer]
+  kind, type_pointed_to, based_types, is_reference
+file-scope type[kind==name_qualifier]
+  kind, typeref_type, based_types, qualifier, is_global_qualified_name
+file-scope type[kind==typedef]
+  kind, declared_type, typeref_type, type_pointed_to, based_types,
+  orig_template_arg_list, qualifier, previous_qualifier, is_reference
+file-scope type[kind==is_alias]
+  source_corresp/name, source_corresp/decl_position.seq, kind, typeref_type,
+  based_types
+file-scope expr-node[kind==enk_variable]
+  kind, type, qualifier, variable, position.seq, is_global_qualified_name
+ */

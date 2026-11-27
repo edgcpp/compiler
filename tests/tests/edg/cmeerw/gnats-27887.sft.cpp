@@ -1,7 +1,8 @@
 //type:fp
 //options:--c++17:--c++20 --gn 140200:--c++20 --clang_version 190100:--ms_c++20 --microsoft_version 1942
 //options_all:--no_il_lower --il_display
-//filter:awk '/^file-scope variable@/{f=1}/^$/{if (f) print $0; f=0}f' | grep -E -e '^(type|  name|  [a-z]*_position.seq|  [a-z]*_position.column|    start.seq|    start.column|    end.seq|    end.column):' -e '^  [a-z]*_range$' -e '^file-scope ' -e '^$' | sed -e 's/@[0-9a-f]*//g'
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 namespace minimal
 {
@@ -54,3 +55,10 @@ int i = dpdt_var<int> + dpdt_var<short> +
         C::ooc_dpdt_var<int> + C::ooc_dpdt_var<short> +
         D<int>::ic_dpdt_var + D<short>::ic_dpdt_var +
         D<int>::ooc_dpdt_var + D<short>::ooc_dpdt_var;
+
+/* @filter
+file-scope variable
+  source_corresp/name, source_corresp/decl_position.seq,
+  source_corresp/decl_position.column, source_corresp/identifier_range,
+  source_corresp/specifiers_range, source_corresp/declarator_range, type
+ */

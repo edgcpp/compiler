@@ -1,35 +1,7 @@
-fe_only -DTEST_NUMBER=1 --c++20 --no_exceptions --no_il_lower --il_display Test_name.c
-func-scope expr-node
+edg-first-stage-il -DTEST_NUMBER=1 --c++20 --no_exceptions --no_il_lower --il_display Test_name.c
+func-scope expr-node#1
 kind:                    enk_variable
-variable:                file-scope variable: a
-  start.seq:             22
-  start.column:          9
-  end.seq:               22
-  end.column:            9
-position.seq:            22
-position.column:         9
-
-func-scope dynamic-init
-kind:                    dik_expression
-
-func-scope expr-node
-kind:                    enk_new_delete
-is_new:                  TRUE
-has_new_initializer:     TRUE
-new_initializer_is_brace_enclosed:
-                         FALSE
-new_initializer_is_paren_aggr_init:
-                         FALSE
-  start.seq:             22
-  start.column:          3
-  end.seq:               22
-  end.column:            10
-position.seq:            22
-position.column:         3
-
-func-scope expr-node
-kind:                    enk_variable
-variable:                file-scope variable: a
+variable:                file-scope variable#1: a
   start.seq:             23
   start.column:          9
   end.seq:               23
@@ -37,16 +9,15 @@ variable:                file-scope variable: a
 position.seq:            23
 position.column:         9
 
-func-scope dynamic-init
-                         TRUE
+func-scope dynamic-init#1
 kind:                    dik_expression
 
-func-scope expr-node
+func-scope expr-node#2
 kind:                    enk_new_delete
 is_new:                  TRUE
 has_new_initializer:     TRUE
 new_initializer_is_brace_enclosed:
-                         TRUE
+                         FALSE
 new_initializer_is_paren_aggr_init:
                          FALSE
   start.seq:             23
@@ -56,44 +27,37 @@ new_initializer_is_paren_aggr_init:
 position.seq:            23
 position.column:         3
 
-func-scope expr-node
+func-scope expr-node#3
 kind:                    enk_variable
-variable:                file-scope variable: i
+variable:                file-scope variable#1: a
   start.seq:             24
-  start.column:          12
+  start.column:          9
   end.seq:               24
-  end.column:            12
+  end.column:            9
 position.seq:            24
-position.column:         12
+position.column:         9
 
-func-scope dynamic-init
-                         TRUE
+func-scope dynamic-init#2
 kind:                    dik_expression
 
-func-scope dynamic-init
-                         TRUE
-kind:                    dik_nonconstant_aggregate
-non_constant:            TRUE
-constant:                func-scope constant: {1, dynamic-init: i}
-
-func-scope expr-node
+func-scope expr-node#4
 kind:                    enk_new_delete
 is_new:                  TRUE
 has_new_initializer:     TRUE
 new_initializer_is_brace_enclosed:
-                         FALSE
-new_initializer_is_paren_aggr_init:
                          TRUE
+new_initializer_is_paren_aggr_init:
+                         FALSE
   start.seq:             24
   start.column:          3
   end.seq:               24
-  end.column:            13
+  end.column:            10
 position.seq:            24
 position.column:         3
 
-func-scope expr-node
+func-scope expr-node#5
 kind:                    enk_variable
-variable:                file-scope variable: i
+variable:                file-scope variable#2: i
   start.seq:             25
   start.column:          12
   end.seq:               25
@@ -101,18 +65,49 @@ variable:                file-scope variable: i
 position.seq:            25
 position.column:         12
 
-func-scope dynamic-init
-                         TRUE
+func-scope dynamic-init#3
 kind:                    dik_expression
 
-func-scope dynamic-init
+func-scope dynamic-init#4
+kind:                    dik_nonconstant_aggregate
+non_constant:            TRUE
+constant:                func-scope constant#1: {1, dynamic-init: i}
+
+func-scope expr-node#6
+kind:                    enk_new_delete
+is_new:                  TRUE
+has_new_initializer:     TRUE
+new_initializer_is_brace_enclosed:
+                         FALSE
+new_initializer_is_paren_aggr_init:
                          TRUE
+  start.seq:             25
+  start.column:          3
+  end.seq:               25
+  end.column:            13
+position.seq:            25
+position.column:         3
+
+func-scope expr-node#7
+kind:                    enk_variable
+variable:                file-scope variable#2: i
+  start.seq:             26
+  start.column:          12
+  end.seq:               26
+  end.column:            12
+position.seq:            26
+position.column:         12
+
+func-scope dynamic-init#5
+kind:                    dik_expression
+
+func-scope dynamic-init#6
 is_braced_initializer:   TRUE
 kind:                    dik_nonconstant_aggregate
 non_constant:            TRUE
-constant:                func-scope constant: {2, dynamic-init: i}
+constant:                func-scope constant#2: {2, dynamic-init: i}
 
-func-scope expr-node
+func-scope expr-node#8
 kind:                    enk_new_delete
 is_new:                  TRUE
 has_new_initializer:     TRUE
@@ -120,45 +115,16 @@ new_initializer_is_brace_enclosed:
                          TRUE
 new_initializer_is_paren_aggr_init:
                          FALSE
-  start.seq:             25
+  start.seq:             26
   start.column:          3
-  end.seq:               25
+  end.seq:               26
   end.column:            13
-position.seq:            25
+position.seq:            26
 position.column:         3
 
-func-scope expr-node
+func-scope expr-node#9
 kind:                    enk_variable
-variable:                file-scope variable: c
-  start.seq:             27
-  start.column:          9
-  end.seq:               27
-  end.column:            9
-position.seq:            27
-position.column:         9
-
-func-scope dynamic-init
-                         TRUE
-kind:                    dik_expression
-
-func-scope expr-node
-kind:                    enk_new_delete
-is_new:                  TRUE
-has_new_initializer:     TRUE
-new_initializer_is_brace_enclosed:
-                         FALSE
-new_initializer_is_paren_aggr_init:
-                         FALSE
-  start.seq:             27
-  start.column:          3
-  end.seq:               27
-  end.column:            10
-position.seq:            27
-position.column:         3
-
-func-scope expr-node
-kind:                    enk_variable
-variable:                file-scope variable: c
+variable:                file-scope variable#3: c
   start.seq:             28
   start.column:          9
   end.seq:               28
@@ -166,16 +132,15 @@ variable:                file-scope variable: c
 position.seq:            28
 position.column:         9
 
-func-scope dynamic-init
-                         TRUE
+func-scope dynamic-init#7
 kind:                    dik_expression
 
-func-scope expr-node
+func-scope expr-node#10
 kind:                    enk_new_delete
 is_new:                  TRUE
 has_new_initializer:     TRUE
 new_initializer_is_brace_enclosed:
-                         TRUE
+                         FALSE
 new_initializer_is_paren_aggr_init:
                          FALSE
   start.seq:             28
@@ -185,9 +150,9 @@ new_initializer_is_paren_aggr_init:
 position.seq:            28
 position.column:         3
 
-func-scope expr-node
-kind:                    enk_constant
-constant:                func-scope constant: 3
+func-scope expr-node#11
+kind:                    enk_variable
+variable:                file-scope variable#3: c
   start.seq:             29
   start.column:          9
   end.seq:               29
@@ -195,25 +160,52 @@ constant:                func-scope constant: 3
 position.seq:            29
 position.column:         9
 
-func-scope expr-node
-kind:                    enk_variable
-variable:                file-scope variable: i
+func-scope dynamic-init#8
+kind:                    dik_expression
+
+func-scope expr-node#12
+kind:                    enk_new_delete
+is_new:                  TRUE
+has_new_initializer:     TRUE
+new_initializer_is_brace_enclosed:
+                         TRUE
+new_initializer_is_paren_aggr_init:
+                         FALSE
   start.seq:             29
-  start.column:          12
+  start.column:          3
   end.seq:               29
-  end.column:            12
+  end.column:            10
 position.seq:            29
+position.column:         3
+
+func-scope expr-node#13
+kind:                    enk_constant
+constant:                func-scope constant#3: 3
+  start.seq:             30
+  start.column:          9
+  end.seq:               30
+  end.column:            9
+position.seq:            30
+position.column:         9
+
+func-scope expr-node#14
+kind:                    enk_variable
+variable:                file-scope variable#2: i
+  start.seq:             30
+  start.column:          12
+  end.seq:               30
+  end.column:            12
+position.seq:            30
 position.column:         12
 
-func-scope dynamic-init
-                         TRUE
+func-scope dynamic-init#9
 kind:                    dik_constructor
 is_copy_constructor_with_implied_source:
                          FALSE
 is_implicit_copy_for_copy_initialization:
                          FALSE
 
-func-scope expr-node
+func-scope expr-node#15
 kind:                    enk_new_delete
 is_new:                  TRUE
 has_new_initializer:     TRUE
@@ -221,35 +213,34 @@ new_initializer_is_brace_enclosed:
                          FALSE
 new_initializer_is_paren_aggr_init:
                          FALSE
-  start.seq:             29
+  start.seq:             30
   start.column:          3
-  end.seq:               29
+  end.seq:               30
   end.column:            13
-position.seq:            29
+position.seq:            30
 position.column:         3
 
-func-scope expr-node
+func-scope expr-node#16
 kind:                    enk_constant
-constant:                func-scope constant: 4
-  start.seq:             30
+constant:                func-scope constant#4: 4
+  start.seq:             31
   start.column:          9
-  end.seq:               30
+  end.seq:               31
   end.column:            9
-position.seq:            30
+position.seq:            31
 position.column:         9
 
-func-scope expr-node
+func-scope expr-node#17
 kind:                    enk_variable
-variable:                file-scope variable: i
-  start.seq:             30
+variable:                file-scope variable#2: i
+  start.seq:             31
   start.column:          12
-  end.seq:               30
+  end.seq:               31
   end.column:            12
-position.seq:            30
+position.seq:            31
 position.column:         12
 
-func-scope dynamic-init
-                         TRUE
+func-scope dynamic-init#10
 is_braced_initializer:   TRUE
 kind:                    dik_constructor
 is_copy_constructor_with_implied_source:
@@ -257,7 +248,7 @@ is_copy_constructor_with_implied_source:
 is_implicit_copy_for_copy_initialization:
                          FALSE
 
-func-scope expr-node
+func-scope expr-node#18
 kind:                    enk_new_delete
 is_new:                  TRUE
 has_new_initializer:     TRUE
@@ -265,10 +256,10 @@ new_initializer_is_brace_enclosed:
                          TRUE
 new_initializer_is_paren_aggr_init:
                          FALSE
-  start.seq:             30
+  start.seq:             31
   start.column:          3
-  end.seq:               30
+  end.seq:               31
   end.column:            13
-position.seq:            30
+position.seq:            31
 position.column:         3
 

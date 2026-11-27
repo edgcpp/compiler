@@ -1,4 +1,4 @@
-fe_only -DTEST_NUMBER=2 --no_il_lower --il_display --c++20 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=2 --no_il_lower --il_display --c++20 Test_name.c
 file-scope class-type-supplement#1
 
 file-scope type#1
@@ -82,38 +82,136 @@ file-scope type#15
 kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#7
 
+file-scope name-qualifier#1
+is_class:                TRUE
+qualifier.class_type:    file-scope type#15: A<int, int>
+name:                    file-scope id-name#7: "A"
+
+file-scope type#16
+kind:                    tk_typeref
+typeref_type:            file-scope type#12: A<int, int>::B
+qualifier:               file-scope name-qualifier#1
+kind:                    name_qualifier
+
 file-scope variable#1
-  name:                  file-scope id-name#7: "b"
-  decl_position.seq:     30
-type:                    file-scope type#12: A<int, int>::B
+  name:                  file-scope id-name#8: "b"
+  decl_position.seq:     44
+type:                    file-scope type#16: A<int, int>::B
+declared_type:           file-scope type#16: A<int, int>::B
+
+file-scope type#17
+kind:                    tk_typeref
+typeref_type:            file-scope type#15: A<int, int>
+template_arg_list:       
+  type:                  file-scope type#9: INT1
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
+
+file-scope name-qualifier#2
+is_class:                TRUE
+qualifier.class_type:    file-scope type#17: A<int, int>
+name:                    file-scope id-name#9: "A"
+
+file-scope type#18
+kind:                    tk_typeref
+typeref_type:            file-scope type#12: A<int, int>::B
+qualifier:               file-scope name-qualifier#2
+kind:                    name_qualifier
 
 file-scope variable#2
-  name:                  file-scope id-name#8: "b1"
-  decl_position.seq:     32
-type:                    file-scope type#12: A<int, int>::B
+  name:                  file-scope id-name#10: "b1"
+  decl_position.seq:     46
+type:                    file-scope type#18: A<int, int>::B
+declared_type:           file-scope type#18: A<int, int>::B
+
+file-scope type#19
+kind:                    tk_typeref
+typeref_type:            file-scope type#15: A<int, int>
+template_arg_list:       
+  type:                  file-scope type#9: INT1
+  explicitly_specified:  TRUE
+  type:                  file-scope type#9: INT1
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
+
+file-scope name-qualifier#3
+is_class:                TRUE
+qualifier.class_type:    file-scope type#19: A<int, int>
+name:                    file-scope id-name#11: "A"
+
+file-scope type#20
+kind:                    tk_typeref
+typeref_type:            file-scope type#12: A<int, int>::B
+qualifier:               file-scope name-qualifier#3
+kind:                    name_qualifier
 
 file-scope variable#3
-  name:                  file-scope id-name#9: "b11"
-  decl_position.seq:     33
-type:                    file-scope type#12: A<int, int>::B
+  name:                  file-scope id-name#12: "b11"
+  decl_position.seq:     47
+type:                    file-scope type#20: A<int, int>::B
+declared_type:           file-scope type#20: A<int, int>::B
+
+file-scope type#21
+kind:                    tk_typeref
+typeref_type:            file-scope type#15: A<int, int>
+template_arg_list:       
+  type:                  file-scope type#11: INT2
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
+
+file-scope name-qualifier#4
+is_class:                TRUE
+qualifier.class_type:    file-scope type#21: A<int, int>
+name:                    file-scope id-name#13: "A"
+
+file-scope type#22
+kind:                    tk_typeref
+typeref_type:            file-scope type#12: A<int, int>::B
+qualifier:               file-scope name-qualifier#4
+kind:                    name_qualifier
 
 file-scope variable#4
-  name:                  file-scope id-name#10: "b2"
-  decl_position.seq:     34
-type:                    file-scope type#12: A<int, int>::B
+  name:                  file-scope id-name#14: "b2"
+  decl_position.seq:     48
+type:                    file-scope type#22: A<int, int>::B
+declared_type:           file-scope type#22: A<int, int>::B
+
+file-scope type#23
+kind:                    tk_typeref
+typeref_type:            file-scope type#15: A<int, int>
+template_arg_list:       
+  type:                  file-scope type#11: INT2
+  explicitly_specified:  TRUE
+  type:                  file-scope type#11: INT2
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
+
+file-scope name-qualifier#5
+is_class:                TRUE
+qualifier.class_type:    file-scope type#23: A<int, int>
+name:                    file-scope id-name#15: "A"
+
+file-scope type#24
+kind:                    tk_typeref
+typeref_type:            file-scope type#12: A<int, int>::B
+qualifier:               file-scope name-qualifier#5
+kind:                    name_qualifier
 
 file-scope variable#5
-  name:                  file-scope id-name#11: "b22"
-  decl_position.seq:     35
-type:                    file-scope type#12: A<int, int>::B
+  name:                  file-scope id-name#16: "b22"
+  decl_position.seq:     49
+type:                    file-scope type#24: A<int, int>::B
+declared_type:           file-scope type#24: A<int, int>::B
 
 file-scope variable#6
-  name:                  file-scope id-name#12: "bb1"
-  decl_position.seq:     37
-type:                    file-scope type#12: A<int, int>::B
+  name:                  file-scope id-name#17: "bb1"
+  decl_position.seq:     51
+type:                    file-scope type#18: A<int, int>::B
+declared_type:           file-scope type#18: A<int, int>::B
 
 file-scope variable#7
-  name:                  file-scope id-name#13: "bb2"
-  decl_position.seq:     38
-type:                    file-scope type#12: A<int, int>::B
+  name:                  file-scope id-name#18: "bb2"
+  decl_position.seq:     52
+type:                    file-scope type#22: A<int, int>::B
+declared_type:           file-scope type#22: A<int, int>::B
 

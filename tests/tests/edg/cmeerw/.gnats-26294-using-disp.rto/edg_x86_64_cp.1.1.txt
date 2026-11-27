@@ -1,4 +1,4 @@
-fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
 file-scope class-type-supplement#1
 template_arg_list:       
   type:                  file-scope type#1: V#(2,1)
@@ -51,16 +51,57 @@ file-scope class-type-supplement#5
 template_arg_list:       
   type:                  file-scope type#10: T#(1,1)
   explicitly_specified:  TRUE
+  type:                  file-scope type#10: T#(1,1)
 
 file-scope type#12
-  decl_position.seq:     27
-kind:                    tk_class
+  decl_position.seq:     8
+kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#5
 
+file-scope name-qualifier#1
+qualifier.class_type:    file-scope type#12: A<T#(1,1), T#(1,1)>
+
 file-scope type#13
+kind:                    tk_typeref
+typeref_type:            file-scope type#11: A<T#(1,1), T#(1,1)>::B<T#(1,1)>
+qualifier:               file-scope name-qualifier#1
+kind:                    name_qualifier
+
+file-scope class-type-supplement#6
+template_arg_list:       
+  type:                  file-scope type#10: T#(1,1)
+  explicitly_specified:  TRUE
+
+file-scope type#14
+  decl_position.seq:     27
+kind:                    tk_class
+extra_info:              file-scope class-type-supplement#6
+
+file-scope class-type-supplement#7
+template_arg_list:       
+  type:                  file-scope type#10: T#(1,1)
+  explicitly_specified:  TRUE
+  type:                  file-scope type#6: INT1
+  explicitly_specified:  TRUE
+
+file-scope type#15
+  decl_position.seq:     8
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#7
+
+file-scope name-qualifier#2
+qualifier.class_type:    file-scope type#15: A<T#(1,1), INT1>
+
+file-scope type#16
+kind:                    tk_typeref
+typeref_type:            file-scope type#14: A<T#(1,1), INT1>::B<T#(1,1)>
+qualifier:               file-scope name-qualifier#2
+kind:                    name_qualifier
+
+file-scope type#17
   decl_position.seq:     27
 kind:                    tk_typeref
-typeref_type:            file-scope type#12: A<T#(1,1), INT1>::B<T#(1,1)>
+typeref_type:            file-scope type#16: A<T#(1,1), INT1>::B<T#(1,1)>
 kind:                    is_alias
 
 file-scope using-decl#1
@@ -68,28 +109,53 @@ entity:                  file-scope constant#1: f
 is_class_member:         TRUE
 is_using_enum:           FALSE
 is_enumerator:           FALSE
-qualifier.class_type:    file-scope type#13: D<T#(1,1)>::base
+qualifier.class_type:    file-scope type#17: D<T#(1,1)>::base
+
+file-scope type#18
+kind:                    tk_typeref
+typeref_type:            file-scope type#15: A<T#(1,1), INT1>
+template_arg_list:       
+  type:                  file-scope type#10: T#(1,1)
+  explicitly_specified:  TRUE
+  type:                  file-scope type#8: INT2
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
+
+file-scope name-qualifier#3
+qualifier.class_type:    file-scope type#18: A<T#(1,1), INT1>
+
+file-scope type#19
+kind:                    tk_typeref
+typeref_type:            file-scope type#14: A<T#(1,1), INT1>::B<T#(1,1)>
+qualifier:               file-scope name-qualifier#3
+kind:                    name_qualifier
 
 file-scope using-decl#2
 entity:                  file-scope constant#2: g
 is_class_member:         TRUE
 is_using_enum:           FALSE
 is_enumerator:           FALSE
-qualifier.class_type:    file-scope type#12: A<T#(1,1), INT1>::B<T#(1,1)>
+qualifier.class_type:    file-scope type#19: A<T#(1,1), INT1>::B<T#(1,1)>
 
-file-scope class-type-supplement#6
+file-scope class-type-supplement#8
 
-file-scope type#14
+file-scope type#20
   decl_position.seq:     32
 kind:                    tk_class
-extra_info:              file-scope class-type-supplement#6
+extra_info:              file-scope class-type-supplement#8
+
+file-scope type#21
+kind:                    tk_typeref
+typeref_type:            file-scope type#20: A<T#(1,1), INT1>::E
+qualifier:               file-scope name-qualifier#3
+kind:                    name_qualifier
 
 file-scope using-decl#3
 entity:                  file-scope constant#3: E1
 is_class_member:         TRUE
 is_using_enum:           FALSE
 is_enumerator:           FALSE
-qualifier.class_type:    file-scope type#14: A<T#(1,1), INT1>::E
+qualifier.class_type:    file-scope type#21: A<T#(1,1), INT1>::E
 
 file-scope using-decl#4
 entity:                  file-scope constant#4: h
@@ -98,35 +164,12 @@ is_using_enum:           FALSE
 is_enumerator:           FALSE
 qualifier.class_type:    file-scope type#9: T
 
-file-scope class-type-supplement#7
-template_arg_list:       
-  type:                  file-scope type#10: T#(1,1)
-
-file-scope type#15
-  decl_position.seq:     25
-kind:                    tk_struct
-extra_info:              file-scope class-type-supplement#7
-
-file-scope class-type-supplement#8
-template_arg_list:       
-  type:                  file-scope type#10: T#(1,1)
-  explicitly_specified:  TRUE
-  type:                  file-scope type#10: T#(1,1)
-
-file-scope type#16
-  decl_position.seq:     8
-kind:                    tk_struct
-extra_info:              file-scope class-type-supplement#8
-
 file-scope class-type-supplement#9
 template_arg_list:       
   type:                  file-scope type#10: T#(1,1)
-  explicitly_specified:  TRUE
-  type:                  file-scope type#6: INT1
-  explicitly_specified:  TRUE
 
-file-scope type#17
-  decl_position.seq:     8
+file-scope type#22
+  decl_position.seq:     25
 kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#9
 

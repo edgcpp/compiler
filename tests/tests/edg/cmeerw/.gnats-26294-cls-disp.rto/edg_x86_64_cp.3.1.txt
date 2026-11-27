@@ -1,4 +1,4 @@
-fe_only -DTEST_NUMBER=3 --no_il_lower --il_display --c++20 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=3 --no_il_lower --il_display --c++20 Test_name.c
 file-scope class-type-supplement#1
 
 file-scope type#1
@@ -82,28 +82,82 @@ file-scope type#15
 kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#7
 
+file-scope name-qualifier#1
+is_class:                TRUE
+qualifier.class_type:    file-scope type#15: A<int, int>
+name:                    file-scope id-name#7: "A"
+
+file-scope type#16
+kind:                    tk_typeref
+typeref_type:            file-scope type#17: A<int, int>::E
+qualifier:               file-scope name-qualifier#1
+kind:                    name_qualifier
+
 file-scope variable#1
-  name:                  file-scope id-name#7: "e"
-  decl_position.seq:     30
+  name:                  file-scope id-name#8: "e"
+  decl_position.seq:     56
 type:                    file-scope type#16: A<int, int>::E
+declared_type:           file-scope type#16: A<int, int>::E
+
+file-scope type#18
+kind:                    tk_typeref
+typeref_type:            file-scope type#15: A<int, int>
+template_arg_list:       
+  type:                  file-scope type#9: INT1
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
+
+file-scope name-qualifier#2
+is_class:                TRUE
+qualifier.class_type:    file-scope type#18: A<int, int>
+name:                    file-scope id-name#9: "A"
+
+file-scope type#19
+kind:                    tk_typeref
+typeref_type:            file-scope type#17: A<int, int>::E
+qualifier:               file-scope name-qualifier#2
+kind:                    name_qualifier
 
 file-scope variable#2
-  name:                  file-scope id-name#8: "e1"
-  decl_position.seq:     32
-type:                    file-scope type#16: A<int, int>::E
+  name:                  file-scope id-name#10: "e1"
+  decl_position.seq:     58
+type:                    file-scope type#19: A<int, int>::E
+declared_type:           file-scope type#19: A<int, int>::E
+
+file-scope type#20
+kind:                    tk_typeref
+typeref_type:            file-scope type#15: A<int, int>
+template_arg_list:       
+  type:                  file-scope type#11: INT2
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
+
+file-scope name-qualifier#3
+is_class:                TRUE
+qualifier.class_type:    file-scope type#20: A<int, int>
+name:                    file-scope id-name#11: "A"
+
+file-scope type#21
+kind:                    tk_typeref
+typeref_type:            file-scope type#17: A<int, int>::E
+qualifier:               file-scope name-qualifier#3
+kind:                    name_qualifier
 
 file-scope variable#3
-  name:                  file-scope id-name#9: "e2"
-  decl_position.seq:     33
-type:                    file-scope type#16: A<int, int>::E
+  name:                  file-scope id-name#12: "e2"
+  decl_position.seq:     59
+type:                    file-scope type#21: A<int, int>::E
+declared_type:           file-scope type#21: A<int, int>::E
 
 file-scope variable#4
-  name:                  file-scope id-name#10: "ee1"
-  decl_position.seq:     35
-type:                    file-scope type#16: A<int, int>::E
+  name:                  file-scope id-name#13: "ee1"
+  decl_position.seq:     61
+type:                    file-scope type#19: A<int, int>::E
+declared_type:           file-scope type#19: A<int, int>::E
 
 file-scope variable#5
-  name:                  file-scope id-name#11: "ee2"
-  decl_position.seq:     36
-type:                    file-scope type#16: A<int, int>::E
+  name:                  file-scope id-name#14: "ee2"
+  decl_position.seq:     62
+type:                    file-scope type#21: A<int, int>::E
+declared_type:           file-scope type#21: A<int, int>::E
 

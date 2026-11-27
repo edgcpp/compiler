@@ -1,3 +1,68 @@
-fe_only -DTEST_NUMBER=1 --c++17 --no_il_lowering --il_display Test_name.c
-next:                    file-scope type: E<((bool)(V<U#(3,1)>::B<T#(3,2)>)), void>
-assoc_type:              file-scope type: E<((bool)(V<U#(3,1)>::B<T#(3,2)>)), void>
+edg-first-stage-il -DTEST_NUMBER=1 --c++17 --no_il_lowering --il_display Test_name.c
+file-scope scope#1
+assoc_type:              file-scope type#1: E<<unnamed#1>, T#(1,2)>
+
+file-scope type#1
+  name:                  file-scope id-name#1: "E"
+next:                    file-scope type#2: V<U#(1,1)>
+
+file-scope scope#2
+assoc_type:              file-scope type#3: E<((bool)V<U#(1,1)>::B<T#(2,1)>), void>
+
+file-scope scope#3
+assoc_type:              file-scope type#2: V<U#(1,1)>
+
+file-scope type#2
+  name:                  file-scope id-name#2: "V"
+next:                    file-scope type#3: E<((bool)V<U#(1,1)>::B<T#(2,1)>), void>
+
+file-scope type#3
+  name:                  file-scope id-name#1: "E"
+next:                    file-scope type#4: V<U#(3,1)>
+
+file-scope type#4
+  name:                  file-scope id-name#2: "V"
+next:                    file-scope type#5: V<U#(3,1)>
+
+file-scope scope#4
+assoc_type:              file-scope type#5: V<U#(3,1)>
+
+file-scope type#5
+  name:                  file-scope id-name#2: "V"
+next:                    file-scope type#6: E<((bool)V<U#(1,1)>::B<T#(3,2)>), void>
+
+file-scope scope#5
+assoc_type:              file-scope type#6: E<((bool)V<U#(1,1)>::B<T#(3,2)>), void>
+
+file-scope type#6
+  name:                  file-scope id-name#1: "E"
+next:                    file-scope type#7: E<((bool)(V<U#(3,1)>::B<T#(3,2)>)), void>
+
+file-scope scope#6
+assoc_type:              file-scope type#7: E<((bool)(V<U#(3,1)>::B<T#(3,2)>)), void>
+
+file-scope type#7
+  name:                  file-scope id-name#1: "E"
+next:                    file-scope type#8: E<((bool)V<int>::B<T#(2,1)>), void>
+
+file-scope scope#7
+assoc_type:              file-scope type#8: E<((bool)V<int>::B<T#(2,1)>), void>
+
+file-scope type#8
+  name:                  file-scope id-name#1: "E"
+next:                    file-scope type#9: V<int>
+
+file-scope scope#8
+assoc_type:              file-scope type#9: V<int>
+
+file-scope type#9
+  name:                  file-scope id-name#2: "V"
+next:                    file-scope type#10: E<true, void>
+
+file-scope scope#9
+assoc_type:              file-scope type#10: E<true, void>
+
+file-scope type#10
+  name:                  file-scope id-name#1: "E"
+next:                    NULL
+

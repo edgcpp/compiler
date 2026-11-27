@@ -1,4 +1,4 @@
-fe_only -DTEST_NUMBER=9 --no_il_lower --il_display --c++20 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=9 --no_il_lower --il_display --c++20 Test_name.c
 file-scope class-type-supplement#1
 
 file-scope type#1
@@ -66,7 +66,7 @@ extra_info:              file-scope class-type-supplement#5
 
 file-scope type#14
   name:                  file-scope id-name#7: "L"
-  decl_position.seq:     31
+  decl_position.seq:     129
 kind:                    tk_typeref
 typeref_type:            file-scope type#13: A<T#(1,1), T#(1,1)>
 template_arg_list:       
@@ -107,7 +107,7 @@ extra_info:              file-scope class-type-supplement#8
 
 file-scope type#19
   name:                  file-scope id-name#7: "L"
-  decl_position.seq:     31
+  decl_position.seq:     129
 kind:                    tk_typeref
 typeref_type:            file-scope type#18: A<int, int>
 template_arg_list:       
@@ -125,8 +125,11 @@ kind:                    is_decltype
 
 file-scope type#21
 kind:                    tk_typeref
-typeref_type:            file-scope type#10: int
-kind:                    is_decltype
+typeref_type:            file-scope type#18: A<int, int>
+template_arg_list:       
+  type:                  file-scope type#20: int
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
 
 file-scope type#22
 kind:                    tk_typeref
@@ -135,31 +138,65 @@ kind:                    is_decltype
 
 file-scope type#23
 kind:                    tk_typeref
+typeref_type:            file-scope type#18: A<int, int>
+template_arg_list:       
+  type:                  file-scope type#22: int
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
+
+file-scope type#24
+kind:                    tk_typeref
 typeref_type:            file-scope type#10: int
 kind:                    is_decltype
 
+file-scope type#25
+kind:                    tk_typeref
+typeref_type:            file-scope type#19: L<int>
+template_arg_list:       
+  type:                  file-scope type#24: int
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
+
+file-scope type#26
+kind:                    tk_typeref
+typeref_type:            file-scope type#10: int
+kind:                    is_decltype
+
+file-scope type#27
+kind:                    tk_typeref
+typeref_type:            file-scope type#19: L<int>
+template_arg_list:       
+  type:                  file-scope type#26: int
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
+
 func-scope variable#1
-  name:                  func-scope id-name#8: "i"
-  decl_position.seq:     35
+  name:                  func-scope id-name#1: "i"
+  decl_position.seq:     133
 type:                    file-scope type#10: int
+declared_type:           file-scope type#10: int
 
 func-scope variable#2
-  name:                  func-scope id-name#9: "a1"
-  decl_position.seq:     37
-type:                    file-scope type#18: A<int, int>
+  name:                  func-scope id-name#2: "a1"
+  decl_position.seq:     135
+type:                    file-scope type#21: A<int, int>
+declared_type:           file-scope type#21: A<int, int>
 
 func-scope variable#3
-  name:                  func-scope id-name#10: "a2"
-  decl_position.seq:     38
-type:                    file-scope type#18: A<int, int>
+  name:                  func-scope id-name#3: "a2"
+  decl_position.seq:     136
+type:                    file-scope type#23: A<int, int>
+declared_type:           file-scope type#23: A<int, int>
 
 func-scope variable#4
-  name:                  func-scope id-name#11: "l1"
-  decl_position.seq:     40
-type:                    file-scope type#19: L<int>
+  name:                  func-scope id-name#4: "l1"
+  decl_position.seq:     138
+type:                    file-scope type#25: L<int>
+declared_type:           file-scope type#25: L<int>
 
 func-scope variable#5
-  name:                  func-scope id-name#12: "l2"
-  decl_position.seq:     41
-type:                    file-scope type#19: L<int>
+  name:                  func-scope id-name#5: "l2"
+  decl_position.seq:     139
+type:                    file-scope type#27: L<int>
+declared_type:           file-scope type#27: L<int>
 

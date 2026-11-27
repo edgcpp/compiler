@@ -1,183 +1,183 @@
-fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++11 Test_name.c
-file-scope base-class
-type:                    file-scope type: VB
-derived_class:           file-scope type: indirect_public_direct_protected::B
+edg-first-stage-il -DTEST_NUMBER=1 --no_il_lower --il_display --c++11 Test_name.c
+file-scope base-class#1
+type:                    file-scope type#1: VB
+derived_class:           file-scope type#2: indirect_public_direct_protected::B
 direct:                  TRUE
 is_virtual:              TRUE
 ambiguous:               FALSE
 has_public_derivation:   TRUE
 
-file-scope base-class
-type:                    file-scope type: VB
-derived_class:           file-scope type: indirect_public_direct_protected::D
+file-scope base-class#2
+type:                    file-scope type#1: VB
+derived_class:           file-scope type#3: indirect_public_direct_protected::D
 direct:                  TRUE
 is_virtual:              TRUE
 ambiguous:               FALSE
 has_public_derivation:   TRUE
 
-file-scope base-class
-type:                    file-scope type: indirect_public_direct_protected::B
-derived_class:           file-scope type: indirect_public_direct_protected::D
+file-scope base-class#3
+type:                    file-scope type#2: indirect_public_direct_protected::B
+derived_class:           file-scope type#3: indirect_public_direct_protected::D
 direct:                  TRUE
 is_virtual:              FALSE
 ambiguous:               FALSE
 has_public_derivation:   TRUE
 
-file-scope base-class
-type:                    file-scope type: VB
-derived_class:           file-scope type: indirect_protected_direct_public::B
+file-scope base-class#4
+type:                    file-scope type#1: VB
+derived_class:           file-scope type#4: indirect_protected_direct_public::B
 direct:                  TRUE
 is_virtual:              TRUE
 ambiguous:               FALSE
 has_public_derivation:   FALSE
 
-file-scope base-class
-type:                    file-scope type: VB
-derived_class:           file-scope type: indirect_protected_direct_public::D
+file-scope base-class#5
+type:                    file-scope type#1: VB
+derived_class:           file-scope type#5: indirect_protected_direct_public::D
 direct:                  TRUE
 is_virtual:              TRUE
 ambiguous:               FALSE
 has_public_derivation:   TRUE
 
-file-scope base-class
-type:                    file-scope type: indirect_protected_direct_public::B
-derived_class:           file-scope type: indirect_protected_direct_public::D
+file-scope base-class#6
+type:                    file-scope type#4: indirect_protected_direct_public::B
+derived_class:           file-scope type#5: indirect_protected_direct_public::D
 direct:                  TRUE
 is_virtual:              FALSE
 ambiguous:               FALSE
 has_public_derivation:   TRUE
 
-file-scope base-class
-type:                    file-scope type: VB
-derived_class:           file-scope type: direct_protected_indirect_public::B
+file-scope base-class#7
+type:                    file-scope type#1: VB
+derived_class:           file-scope type#6: direct_protected_indirect_public::B
 direct:                  TRUE
 is_virtual:              TRUE
 ambiguous:               FALSE
 has_public_derivation:   TRUE
 
-file-scope base-class
-type:                    file-scope type: VB
-derived_class:           file-scope type: direct_protected_indirect_public::D
+file-scope base-class#8
+type:                    file-scope type#1: VB
+derived_class:           file-scope type#7: direct_protected_indirect_public::D
 direct:                  TRUE
 is_virtual:              TRUE
 ambiguous:               FALSE
 has_public_derivation:   TRUE
 
-file-scope base-class
-type:                    file-scope type: direct_protected_indirect_public::B
-derived_class:           file-scope type: direct_protected_indirect_public::D
+file-scope base-class#9
+type:                    file-scope type#6: direct_protected_indirect_public::B
+derived_class:           file-scope type#7: direct_protected_indirect_public::D
 direct:                  TRUE
 is_virtual:              FALSE
 ambiguous:               FALSE
 has_public_derivation:   TRUE
 
-file-scope base-class
-type:                    file-scope type: VB
-derived_class:           file-scope type: direct_public_indirect_protected::B
+file-scope base-class#10
+type:                    file-scope type#1: VB
+derived_class:           file-scope type#8: direct_public_indirect_protected::B
 direct:                  TRUE
 is_virtual:              TRUE
 ambiguous:               FALSE
 has_public_derivation:   FALSE
 
-file-scope base-class
-type:                    file-scope type: VB
-derived_class:           file-scope type: direct_public_indirect_protected::D
+file-scope base-class#11
+type:                    file-scope type#1: VB
+derived_class:           file-scope type#9: direct_public_indirect_protected::D
 direct:                  TRUE
 is_virtual:              TRUE
 ambiguous:               FALSE
 has_public_derivation:   TRUE
 
-file-scope base-class
-type:                    file-scope type: direct_public_indirect_protected::B
-derived_class:           file-scope type: direct_public_indirect_protected::D
+file-scope base-class#12
+type:                    file-scope type#8: direct_public_indirect_protected::B
+derived_class:           file-scope type#9: direct_public_indirect_protected::D
 direct:                  TRUE
 is_virtual:              FALSE
 ambiguous:               FALSE
 has_public_derivation:   TRUE
 
-file-scope base-class
-type:                    file-scope type: VB
-derived_class:           file-scope type: direct_protected_indirect_protected::B
+file-scope base-class#13
+type:                    file-scope type#1: VB
+derived_class:           file-scope type#10: direct_protected_indirect_protected::B
 direct:                  TRUE
 is_virtual:              TRUE
 ambiguous:               FALSE
 has_public_derivation:   FALSE
 
-file-scope base-class
-type:                    file-scope type: VB
-derived_class:           file-scope type: direct_protected_indirect_protected::D
+file-scope base-class#14
+type:                    file-scope type#1: VB
+derived_class:           file-scope type#11: direct_protected_indirect_protected::D
 direct:                  TRUE
 is_virtual:              TRUE
 ambiguous:               FALSE
 has_public_derivation:   FALSE
 
-file-scope base-class
-type:                    file-scope type: direct_protected_indirect_protected::B
-derived_class:           file-scope type: direct_protected_indirect_protected::D
+file-scope base-class#15
+type:                    file-scope type#10: direct_protected_indirect_protected::B
+derived_class:           file-scope type#11: direct_protected_indirect_protected::D
 direct:                  TRUE
 is_virtual:              FALSE
 ambiguous:               FALSE
 has_public_derivation:   TRUE
 
-file-scope base-class
-type:                    file-scope type: VB
-derived_class:           file-scope type: indirect_protected_direct_protected::B
+file-scope base-class#16
+type:                    file-scope type#1: VB
+derived_class:           file-scope type#12: indirect_protected_direct_protected::B
 direct:                  TRUE
 is_virtual:              TRUE
 ambiguous:               FALSE
 has_public_derivation:   FALSE
 
-file-scope base-class
-type:                    file-scope type: VB
-derived_class:           file-scope type: indirect_protected_direct_protected::D
+file-scope base-class#17
+type:                    file-scope type#1: VB
+derived_class:           file-scope type#13: indirect_protected_direct_protected::D
 direct:                  TRUE
 is_virtual:              TRUE
 ambiguous:               FALSE
 has_public_derivation:   FALSE
 
-file-scope base-class
-type:                    file-scope type: indirect_protected_direct_protected::B
-derived_class:           file-scope type: indirect_protected_direct_protected::D
+file-scope base-class#18
+type:                    file-scope type#12: indirect_protected_direct_protected::B
+derived_class:           file-scope type#13: indirect_protected_direct_protected::D
 direct:                  TRUE
 is_virtual:              FALSE
 ambiguous:               FALSE
 has_public_derivation:   TRUE
 
-file-scope base-class
-type:                    file-scope type: protected_diamond::VB
-derived_class:           file-scope type: protected_diamond::B1
+file-scope base-class#19
+type:                    file-scope type#14: protected_diamond::VB
+derived_class:           file-scope type#15: protected_diamond::B1
 direct:                  TRUE
 is_virtual:              TRUE
 ambiguous:               FALSE
 has_public_derivation:   FALSE
 
-file-scope base-class
-type:                    file-scope type: protected_diamond::VB
-derived_class:           file-scope type: protected_diamond::B2
+file-scope base-class#20
+type:                    file-scope type#14: protected_diamond::VB
+derived_class:           file-scope type#16: protected_diamond::B2
 direct:                  TRUE
 is_virtual:              TRUE
 ambiguous:               FALSE
 has_public_derivation:   TRUE
 
-file-scope base-class
-type:                    file-scope type: protected_diamond::VB
-derived_class:           file-scope type: protected_diamond::D
+file-scope base-class#21
+type:                    file-scope type#14: protected_diamond::VB
+derived_class:           file-scope type#17: protected_diamond::D
 direct:                  FALSE
 is_virtual:              TRUE
 ambiguous:               FALSE
 has_public_derivation:   FALSE
 
-file-scope base-class
-type:                    file-scope type: protected_diamond::B1
-derived_class:           file-scope type: protected_diamond::D
+file-scope base-class#22
+type:                    file-scope type#15: protected_diamond::B1
+derived_class:           file-scope type#17: protected_diamond::D
 direct:                  TRUE
 is_virtual:              FALSE
 ambiguous:               FALSE
 has_public_derivation:   TRUE
 
-file-scope base-class
-type:                    file-scope type: protected_diamond::B2
-derived_class:           file-scope type: protected_diamond::D
+file-scope base-class#23
+type:                    file-scope type#16: protected_diamond::B2
+derived_class:           file-scope type#17: protected_diamond::D
 direct:                  TRUE
 is_virtual:              FALSE
 ambiguous:               FALSE

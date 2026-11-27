@@ -1,7 +1,8 @@
 //type:fp
 //options:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20:--c++20
 //options_all:--no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\n\n' '/^(file|func)-scope (constant@|expr-node@.*\nkind: +enk_(routine|constant)|type@.*\nkind: +(is_alias|is_decltype|template_arg_list)|routine@.*\nis_template_function:|name-qualifier@)/' | awk '/^[a-z_]+:$/ { getline n; if (n ~ /^   /) { gsub(/  +/, "", n); print $0 " " n; } else { print $0; print n; } next; }1' | grep -E -e '^(is_class|qualifier.class_type|position[.]seq|name|kind|routine|constant|con|qualifier|num_template_arguments|arg_list|template_arg_list|orig_template_arg_list|typeref_type|  name|  type|  constant|  explicitly_specified|  decl_position[.]seq|is_template_id|is_global_qualified_name):' -e '^ +(FALSE|TRUE)' -e '^(file|func)-scope ' -e '^$' | edg-enumerate-il-addrs
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 template<typename T, typename U = T>
 int fn();
@@ -98,3 +99,49 @@ void g()
 }
 
 #endif
+
+/* @filter
+file-scope name-reference[is_global_qualified_name==TRUE]
+  num_template_arguments, qualifier, is_template_id, is_global_qualified_name
+file-scope constant
+  source_corresp/name, source_corresp/decl_position.seq, kind
+func-scope constant
+  kind, arg_list, con
+file-scope expr-node[kind==enk_routine]
+  kind, orig_template_arg_list, num_template_arguments, qualifier, routine,
+  position.seq, is_global_qualified_name, is_template_id
+func-scope expr-node[kind==enk_routine]
+  kind, orig_template_arg_list, num_template_arguments, qualifier, routine,
+  position.seq, is_global_qualified_name, is_template_id
+file-scope expr-node[kind==enk_constant]
+  kind, arg_list, num_template_arguments, qualifier, qualifier.class_type,
+  name, constant, routine, position.seq, is_global_qualified_name,
+  is_template_id
+func-scope expr-node[kind==enk_constant]
+  kind, orig_template_arg_list, num_template_arguments, qualifier, constant,
+  position.seq, is_global_qualified_name, is_template_id
+file-scope routine[is_template_function]
+  source_corresp/name, source_corresp/decl_position.seq, template_arg_list
+func-scope routine[is_template_function]
+  source_corresp/name, source_corresp/decl_position.seq, template_arg_list,
+  orig_template_arg_list
+file-scope name-qualifier
+  qualifier.class_type, name, is_class
+func-scope name-qualifier
+  qualifier.class_type, name, is_global_qualified_name, is_class
+file-scope type[kind==is_alias]
+  source_corresp/name, source_corresp/decl_position.seq, kind, typeref_type
+file-scope type[kind==template_arg_list]
+  kind, typeref_type, template_arg_list
+func-scope type[kind==template_arg_list]
+  source_corresp/name, source_corresp/decl_position.seq, kind, typeref_type,
+  template_arg_list, orig_template_arg_list, qualifier
+func-scope type[kind==is_alias]
+  source_corresp/name, source_corresp/decl_position.seq, kind, typeref_type,
+  template_arg_list, orig_template_arg_list, qualifier
+file-scope type[kind==is_decltype]
+  kind, typeref_type
+func-scope type[kind==is_decltype]
+  source_corresp/name, source_corresp/decl_position.seq, kind, typeref_type,
+  template_arg_list, orig_template_arg_list, qualifier
+ */

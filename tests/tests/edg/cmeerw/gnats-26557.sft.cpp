@@ -1,7 +1,8 @@
 //type:fp
 //options:--c++20:--ms_c++20 --microsoft_version 1938
-//options_all:--no_il_lower --il_display
-//filter:awk '/^func-scope statement@/{f=1; next}/^$/{if (f) print "|"; f=0}f{print $0 " "}' | grep -E -e '^(position.seq|kind|body_generated|final_suspend_label|label|lifetime|get_return_object_call):' -e '^[|]$' | sed -e 's/@[0-9a-f]*[ :]/@ /' -e 's/^  *//' -e 's/:  */: /' -e 's/ func-scope / /' | tr -d '\n' | tr '|' '\n' | grep -E 'kind: stmk_(coroutine|coroutine_return|label|goto) '
+//options_all:--no_il_lower --il_display --sys_include=$EDG_BASE/include
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 // just make sure that we always create a final_suspend_label and that the
 // implicitly added goto statement only sets the object lifetime for
@@ -59,3 +60,15 @@ std::task<int> non_tmpl()
   C c;
   co_return 1;
 }
+
+/* @filter
+func-scope statement[kind==stmk_coroutine]
+  kind, position.seq, body_generated, final_suspend_label,
+  get_return_object_call
+func-scope statement[kind==stmk_coroutine_return]
+  kind, position.seq
+func-scope statement[kind==stmk_label]
+  kind, position.seq, lifetime, label
+func-scope statement[kind==stmk_goto]
+  kind, position.seq, lifetime, label
+ */

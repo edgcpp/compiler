@@ -1,200 +1,199 @@
-fe_only -DTEST_NUMBER=1 --c++20 --no_il_lower --il_display Test_name.c
-
-func-scope variable
-  name:                  func-scope id-name: "p"
-  decl_position.seq:     203
-  parent_scope:          func-scope scope
-  enclosing_routine:     file-scope routine: nontmpl
+edg-first-stage-il -DTEST_NUMBER=1 --c++20 --no_il_lower --il_display --sys_include=$EDG_BASE/include Test_name.c
+func-scope variable#1
+  name:                  func-scope id-name#1: "p"
+  decl_position.seq:     204
+  parent_scope:          func-scope scope#1
+  enclosing_routine:     file-scope routine#1: nontmpl
   referenced:            FALSE
   needed:                TRUE
   is_local_to_function:  TRUE
-type:                    file-scope type: int
+type:                    file-scope type#1: int
 storage_class:           sc_auto
 is_parameter:            TRUE
 init_kind:               initk_none
 
-func-scope variable
-  name:                  func-scope id-name: "i"
-  decl_position.seq:     205
-  parent_scope:          func-scope scope
-  enclosing_routine:     file-scope routine: nontmpl
+func-scope variable#2
+  name:                  func-scope id-name#2: "i"
+  decl_position.seq:     206
+  parent_scope:          func-scope scope#1
+  enclosing_routine:     file-scope routine#1: nontmpl
   referenced:            FALSE
   needed:                FALSE
   is_local_to_function:  TRUE
-type:                    file-scope type: int
+type:                    file-scope type#1: int
 storage_class:           sc_auto
 init_kind:               initk_none
 
-func-scope variable
-  name:                  func-scope id-name: "p"
-  parent_scope:          func-scope scope
-  enclosing_routine:     file-scope routine: nontmpl
+func-scope variable#3
+  name:                  func-scope id-name#1: "p"
+  parent_scope:          func-scope scope#1
+  enclosing_routine:     file-scope routine#1: nontmpl
   referenced:            TRUE
   needed:                TRUE
   is_local_to_function:  TRUE
-type:                    file-scope type: int
+type:                    file-scope type#1: int
 storage_class:           sc_auto
 is_parameter:            TRUE
 init_kind:               initk_dynamic
 
-func-scope variable
-  decl_position.seq:     203
-  parent_scope:          func-scope scope
-  enclosing_routine:     file-scope routine: nontmpl
+func-scope variable#4
+  decl_position.seq:     204
+  parent_scope:          func-scope scope#1
+  enclosing_routine:     file-scope routine#1: nontmpl
   referenced:            TRUE
   needed:                TRUE
   is_local_to_function:  TRUE
-type:                    file-scope type: std::coroutine_traits<R, int>::promise_type
+type:                    file-scope type#2: std::coroutine_traits<R, int>::promise_type
 storage_class:           sc_auto
 init_kind:               initk_dynamic
 
-func-scope variable
-  decl_position.seq:     203
-  parent_scope:          func-scope scope
-  enclosing_routine:     file-scope routine: nontmpl
+func-scope variable#5
+  decl_position.seq:     204
+  parent_scope:          func-scope scope#1
+  enclosing_routine:     file-scope routine#1: nontmpl
   referenced:            TRUE
   needed:                TRUE
   is_local_to_function:  TRUE
-type:                    file-scope type: std::coroutine_handle<std::coroutine_traits<R, int>::promise_type>
+type:                    file-scope type#3: std::coroutine_handle<std::coroutine_traits<R, int>::promise_type>
 storage_class:           sc_auto
 init_kind:               initk_none
 
-func-scope variable
-  decl_position.seq:     203
-  parent_scope:          func-scope scope
-  enclosing_routine:     file-scope routine: nontmpl
+func-scope variable#6
+  decl_position.seq:     204
+  parent_scope:          func-scope scope#1
+  enclosing_routine:     file-scope routine#1: nontmpl
   referenced:            TRUE
   needed:                TRUE
   is_local_to_function:  TRUE
-type:                    file-scope type: bool
+type:                    file-scope type#4: bool
 storage_class:           sc_auto
 init_kind:               initk_zero
 
-func-scope variable
-  name:                  func-scope id-name: "q"
-  decl_position.seq:     210
-  parent_scope:          func-scope scope
-  enclosing_routine:     file-scope routine: tmpl
+func-scope variable#7
+  name:                  func-scope id-name#3: "q"
+  decl_position.seq:     211
+  parent_scope:          func-scope scope#2
+  enclosing_routine:     file-scope routine#2: tmpl
   referenced:            FALSE
   needed:                FALSE
   is_local_to_function:  TRUE
-type:                    file-scope type: T#(1,1)
+type:                    file-scope type#5: T#(1,1)
 storage_class:           sc_auto
 is_parameter:            TRUE
 init_kind:               initk_none
 
-func-scope variable
-  name:                  func-scope id-name: "j"
-  decl_position.seq:     212
-  parent_scope:          func-scope scope
-  enclosing_routine:     file-scope routine: tmpl
+func-scope variable#8
+  name:                  func-scope id-name#4: "j"
+  decl_position.seq:     213
+  parent_scope:          func-scope scope#2
+  enclosing_routine:     file-scope routine#2: tmpl
   referenced:            FALSE
   needed:                FALSE
   is_local_to_function:  TRUE
-type:                    file-scope type: T#(1,1)
+type:                    file-scope type#5: T#(1,1)
 storage_class:           sc_auto
 init_kind:               initk_none
 
-func-scope variable
-  decl_position.seq:     210
-  parent_scope:          func-scope scope
-  enclosing_routine:     file-scope routine: tmpl
+func-scope variable#9
+  decl_position.seq:     211
+  parent_scope:          func-scope scope#2
+  enclosing_routine:     file-scope routine#2: tmpl
   referenced:            TRUE
   needed:                FALSE
   is_local_to_function:  TRUE
-type:                    file-scope type: std::coroutine_handle<std::coroutine_traits<R, T#(1,1)>::promise_type>
+type:                    file-scope type#6: std::coroutine_handle<std::coroutine_traits<R, T#(1,1)>::promise_type>
 storage_class:           sc_auto
 init_kind:               initk_none
 
-func-scope variable
-  decl_position.seq:     210
-  parent_scope:          func-scope scope
-  enclosing_routine:     file-scope routine: tmpl
+func-scope variable#10
+  decl_position.seq:     211
+  parent_scope:          func-scope scope#2
+  enclosing_routine:     file-scope routine#2: tmpl
   referenced:            TRUE
   needed:                FALSE
   is_local_to_function:  TRUE
-type:                    file-scope type: std::coroutine_traits<R, T#(1,1)>::promise_type
+type:                    file-scope type#7: std::coroutine_traits<R, T#(1,1)>::promise_type
 storage_class:           sc_auto
 init_kind:               initk_none
 
-func-scope variable
-  decl_position.seq:     210
-  parent_scope:          func-scope scope
-  enclosing_routine:     file-scope routine: tmpl
+func-scope variable#11
+  decl_position.seq:     211
+  parent_scope:          func-scope scope#2
+  enclosing_routine:     file-scope routine#2: tmpl
   referenced:            TRUE
   needed:                FALSE
   is_local_to_function:  TRUE
-type:                    file-scope type: bool
+type:                    file-scope type#4: bool
 storage_class:           sc_auto
 init_kind:               initk_zero
 
-func-scope variable
-  name:                  func-scope id-name: "q"
-  decl_position.seq:     210
-  parent_scope:          func-scope scope
-  enclosing_routine:     file-scope routine: tmpl
+func-scope variable#12
+  name:                  func-scope id-name#3: "q"
+  decl_position.seq:     211
+  parent_scope:          func-scope scope#3
+  enclosing_routine:     file-scope routine#3: tmpl
   referenced:            FALSE
   needed:                TRUE
   is_local_to_function:  TRUE
-type:                    file-scope type: int
+type:                    file-scope type#1: int
 storage_class:           sc_auto
 is_parameter:            TRUE
 init_kind:               initk_none
 
-func-scope variable
-  name:                  func-scope id-name: "j"
-  decl_position.seq:     212
-  parent_scope:          func-scope scope
-  enclosing_routine:     file-scope routine: tmpl
+func-scope variable#13
+  name:                  func-scope id-name#4: "j"
+  decl_position.seq:     213
+  parent_scope:          func-scope scope#3
+  enclosing_routine:     file-scope routine#3: tmpl
   referenced:            FALSE
   needed:                FALSE
   is_local_to_function:  TRUE
-type:                    file-scope type: int
+type:                    file-scope type#1: int
 storage_class:           sc_auto
 init_kind:               initk_none
 
-func-scope variable
-  name:                  func-scope id-name: "q"
-  parent_scope:          func-scope scope
-  enclosing_routine:     file-scope routine: tmpl
+func-scope variable#14
+  name:                  func-scope id-name#3: "q"
+  parent_scope:          func-scope scope#3
+  enclosing_routine:     file-scope routine#3: tmpl
   referenced:            TRUE
   needed:                TRUE
   is_local_to_function:  TRUE
-type:                    file-scope type: int
+type:                    file-scope type#1: int
 storage_class:           sc_auto
 is_parameter:            TRUE
 init_kind:               initk_dynamic
 
-func-scope variable
-  decl_position.seq:     210
-  parent_scope:          func-scope scope
-  enclosing_routine:     file-scope routine: tmpl
+func-scope variable#15
+  decl_position.seq:     211
+  parent_scope:          func-scope scope#3
+  enclosing_routine:     file-scope routine#3: tmpl
   referenced:            TRUE
   needed:                TRUE
   is_local_to_function:  TRUE
-type:                    file-scope type: std::coroutine_traits<R, int>::promise_type
+type:                    file-scope type#2: std::coroutine_traits<R, int>::promise_type
 storage_class:           sc_auto
 init_kind:               initk_dynamic
 
-func-scope variable
-  decl_position.seq:     210
-  parent_scope:          func-scope scope
-  enclosing_routine:     file-scope routine: tmpl
+func-scope variable#16
+  decl_position.seq:     211
+  parent_scope:          func-scope scope#3
+  enclosing_routine:     file-scope routine#3: tmpl
   referenced:            TRUE
   needed:                TRUE
   is_local_to_function:  TRUE
-type:                    file-scope type: std::coroutine_handle<std::coroutine_traits<R, int>::promise_type>
+type:                    file-scope type#3: std::coroutine_handle<std::coroutine_traits<R, int>::promise_type>
 storage_class:           sc_auto
 init_kind:               initk_none
 
-func-scope variable
-  decl_position.seq:     210
-  parent_scope:          func-scope scope
-  enclosing_routine:     file-scope routine: tmpl
+func-scope variable#17
+  decl_position.seq:     211
+  parent_scope:          func-scope scope#3
+  enclosing_routine:     file-scope routine#3: tmpl
   referenced:            TRUE
   needed:                TRUE
   is_local_to_function:  TRUE
-type:                    file-scope type: bool
+type:                    file-scope type#4: bool
 storage_class:           sc_auto
 init_kind:               initk_zero
 

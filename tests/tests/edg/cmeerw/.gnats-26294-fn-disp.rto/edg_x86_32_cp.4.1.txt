@@ -1,4 +1,4 @@
-fe_only -DTEST_NUMBER=4 --no_il_lower --il_display --c++20 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=4 --no_il_lower --il_display --c++20 Test_name.c
 file-scope type#1
   name:                  file-scope id-name#1: "INT1"
   decl_position.seq:     13
@@ -15,19 +15,50 @@ kind:                    is_alias
 
 file-scope routine#1
   name:                  file-scope id-name#3: "fn"
-  decl_position.seq:     20
+  decl_position.seq:     56
 template_arg_list:       
   type:                  file-scope type#4: T#(2,1)
 
 file-scope routine#2
   name:                  file-scope id-name#3: "fn"
-  decl_position.seq:     20
+  decl_position.seq:     56
 template_arg_list:       
   type:                  file-scope type#5: T#(2,1)
 
+file-scope type#6
+kind:                    tk_typeref
+typeref_type:            file-scope type#7: C<int>
+template_arg_list:       
+  type:                  file-scope type#3: INT2
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
+
+file-scope name-qualifier#1
+is_class:                TRUE
+qualifier.class_type:    file-scope type#6: C<int>
+name:                    file-scope id-name#4: "C"
+
+file-scope type#8
+kind:                    tk_typeref
+typeref_type:            file-scope type#7: C<int>
+template_arg_list:       
+  type:                  file-scope type#1: INT1
+  explicitly_specified:  TRUE
+kind:                    template_arg_list
+
+file-scope name-qualifier#2
+is_class:                TRUE
+qualifier.class_type:    file-scope type#8: C<int>
+name:                    file-scope id-name#5: "C"
+
+file-scope name-qualifier#3
+is_class:                TRUE
+qualifier.class_type:    file-scope type#7: C<int>
+name:                    file-scope id-name#6: "C"
+
 file-scope routine#3
   name:                  file-scope id-name#3: "fn"
-  decl_position.seq:     20
+  decl_position.seq:     56
 template_arg_list:       
   type:                  file-scope type#2: int
   explicitly_specified:  TRUE
@@ -35,56 +66,93 @@ template_arg_list:
 file-scope expr-node#1
 kind:                    enk_routine
 routine:                 file-scope routine#3: fn
-position.seq:            23
+qualifier:               file-scope name-qualifier#3
+num_template_arguments:  1
+is_global_qualified_name:
+                         FALSE
+is_template_id:          TRUE
+position.seq:            60
 
 file-scope expr-node#2
 kind:                    enk_routine
 routine:                 file-scope routine#3: fn
-position.seq:            23
+qualifier:               file-scope name-qualifier#2
+num_template_arguments:  1
+orig_template_arg_list:  
+  type:                  file-scope type#1: INT1
+  explicitly_specified:  TRUE
+is_global_qualified_name:
+                         FALSE
+is_template_id:          TRUE
+position.seq:            61
 
 file-scope expr-node#3
 kind:                    enk_routine
 routine:                 file-scope routine#3: fn
-position.seq:            23
+qualifier:               file-scope name-qualifier#1
+num_template_arguments:  1
+orig_template_arg_list:  
+  type:                  file-scope type#3: INT2
+  explicitly_specified:  TRUE
+is_global_qualified_name:
+                         FALSE
+is_template_id:          TRUE
+position.seq:            62
 
 file-scope expr-node#4
 kind:                    enk_routine
 routine:                 file-scope routine#3: fn
-position.seq:            23
+qualifier:               file-scope name-qualifier#2
+num_template_arguments:  1
+orig_template_arg_list:  
+  type:                  file-scope type#1: INT1
+  explicitly_specified:  TRUE
+is_global_qualified_name:
+                         FALSE
+is_template_id:          TRUE
+position.seq:            63
 
 file-scope expr-node#5
 kind:                    enk_routine
 routine:                 file-scope routine#3: fn
-position.seq:            23
+qualifier:               file-scope name-qualifier#1
+num_template_arguments:  1
+orig_template_arg_list:  
+  type:                  file-scope type#3: INT2
+  explicitly_specified:  TRUE
+is_global_qualified_name:
+                         FALSE
+is_template_id:          TRUE
+position.seq:            64
 
 file-scope routine#4
   name:                  file-scope id-name#3: "fn"
   decl_position.seq:     8
 template_arg_list:       
-  type:                  file-scope type#6: T#(1,1)
-  type:                  file-scope type#7: U#(1,2)
+  type:                  file-scope type#9: T#(1,1)
+  type:                  file-scope type#10: U#(1,2)
 
 file-scope constant#1
-  name:                  file-scope id-name#4: "J"
+  name:                  file-scope id-name#7: "J"
   decl_position.seq:     10
 kind:                    ck_template_param
 kind:                    tpck_param
 
 file-scope constant#2
-  name:                  file-scope id-name#5: "I"
+  name:                  file-scope id-name#8: "I"
   decl_position.seq:     10
 kind:                    ck_template_param
 kind:                    tpck_param
 
 file-scope routine#5
-  name:                  file-scope id-name#6: "gn"
+  name:                  file-scope id-name#9: "gn"
   decl_position.seq:     11
 template_arg_list:       
   constant:              file-scope constant#2: I
   constant:              file-scope constant#1: J
 
 file-scope constant#3
-  name:                  file-scope id-name#5: "I"
+  name:                  file-scope id-name#8: "I"
   decl_position.seq:     10
 kind:                    ck_template_param
 kind:                    tpck_param

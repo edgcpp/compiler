@@ -1,7 +1,7 @@
 //type:fp
 //options:--gn 130200 --target linux_aarch64:--gn 130200 --target linux_armv7:--clang_version 180100 --target linux_aarch64:--clang_version 180100 --target linux_armv7
 //options_all:-w --c++17 --il_display
-//filter:awk '/^func-scope variable@/{print $0; f=1; next}/^$/{if (f) print $0; f=0}f' | grep -E -e '^(  name|  enclosing_routine|type):' -e '^func-scope ' -e '^$' | sed -e 's/@[0-9a-f]*//'
+//filter:edg-il-filter
 
 namespace arm_neon_types
 {
@@ -251,3 +251,8 @@ namespace arm_neon_types
   { }
 #endif
 }
+
+/* @filter
+func-scope variable
+  source_corresp/name, source_corresp/enclosing_routine, type
+ */

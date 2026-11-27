@@ -1,6 +1,7 @@
 //type:fp
 //options:--c++26 --no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\n\n' '/^(file|func)-scope variable@/' | grep -E -e '^(next|type|dynamic|container|is_pack|is_pack_element|init_kind|bindings|storage_class|  name|  enclosing_routine):' -e '^ +(file|func)-scope variable@' -e '^(file|func)-scope ' -e '^$' | edg-enumerate-il-addrs
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 struct C
 {
@@ -17,3 +18,14 @@ void f(T t, C c)
 }
 
 template void f(C, C);
+
+/* @filter
+file-scope variable
+  source_corresp/name, source_corresp/enclosing_routine, next, type,
+  container, bindings, storage_class, is_pack, is_pack_element,
+  init_kind, dynamic
+func-scope variable
+  source_corresp/name, source_corresp/enclosing_routine, next, type,
+  container, bindings, storage_class, is_pack, is_pack_element,
+  init_kind, dynamic
+ */

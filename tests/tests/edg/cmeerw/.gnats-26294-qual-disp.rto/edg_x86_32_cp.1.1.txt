@@ -1,67 +1,59 @@
-fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
 file-scope type#1
+  name:                  file-scope id-name#1: "INT"
+  decl_position.seq:     7
 based_types:             NULL
-kind:                    tk_pointer
-type_pointed_to:         file-scope type#2: INT
-is_reference:            FALSE
+kind:                    tk_typeref
+typeref_type:            file-scope type#2: int
+kind:                    is_alias
 
 file-scope type#3
 based_types:             NULL
 kind:                    tk_pointer
-type_pointed_to:         file-scope type#2: INT
+type_pointed_to:         file-scope type#4: C
 is_reference:            TRUE
-
-file-scope type#2
-  name:                  file-scope id-name#1: "INT"
-  decl_position.seq:     7
-based_types:             
-  pointer:               file-scope type#1: INT *
-  reference:             file-scope type#3: INT &
-kind:                    tk_typeref
-typeref_type:            file-scope type#4: int
-kind:                    is_alias
 
 file-scope type#5
 based_types:             NULL
 kind:                    tk_pointer
-type_pointed_to:         file-scope type#6: C
-is_reference:            FALSE
+type_pointed_to:         file-scope type#6: const C
+is_reference:            TRUE
 
 file-scope type#7
 based_types:             NULL
 kind:                    tk_pointer
-type_pointed_to:         file-scope type#6: C
-is_reference:            TRUE
+type_pointed_to:         file-scope type#4: C
+is_reference:            FALSE
 
 file-scope type#8
 based_types:             NULL
 kind:                    tk_pointer
-type_pointed_to:         file-scope type#9: const C
+type_pointed_to:         file-scope type#4: C
 is_reference:            TRUE
 
-file-scope type#10
+file-scope type#9
 based_types:             NULL
 kind:                    tk_pointer
-type_pointed_to:         file-scope type#6: C
+type_pointed_to:         file-scope type#10: C::type
 is_reference:            TRUE
 
 file-scope type#11
 based_types:             NULL
 kind:                    tk_pointer
-type_pointed_to:         file-scope type#12: C::type
+type_pointed_to:         file-scope type#12: const C::type
 is_reference:            TRUE
 
 file-scope type#13
 based_types:             NULL
 kind:                    tk_pointer
-type_pointed_to:         file-scope type#12: C::type
+type_pointed_to:         file-scope type#10: C::type
 is_reference:            TRUE
 
 file-scope type#14
 based_types:             NULL
 kind:                    tk_pointer
-type_pointed_to:         file-scope type#15: const C::type
-is_reference:            TRUE
+type_pointed_to:         file-scope type#15: void
+is_reference:            FALSE
 
 file-scope type#16
 based_types:             NULL
@@ -72,44 +64,38 @@ is_reference:            TRUE
 file-scope type#18
 based_types:             NULL
 kind:                    tk_pointer
-type_pointed_to:         file-scope type#17: D
+type_pointed_to:         file-scope type#19: const D
 is_reference:            TRUE
 
-file-scope type#19
+file-scope type#20
 based_types:             NULL
 kind:                    tk_pointer
-type_pointed_to:         file-scope type#20: const D
+type_pointed_to:         file-scope type#17: D
 is_reference:            TRUE
 
 file-scope type#21
 based_types:             NULL
 kind:                    tk_pointer
-type_pointed_to:         file-scope type#22: void
-is_reference:            FALSE
+type_pointed_to:         file-scope type#22: ns::INT
+is_reference:            TRUE
 
 file-scope type#23
 based_types:             NULL
 kind:                    tk_pointer
-type_pointed_to:         file-scope type#24: ns::INT
-is_reference:            TRUE
-
-file-scope type#25
-based_types:             NULL
-kind:                    tk_pointer
-type_pointed_to:         file-scope type#24: ns::INT
+type_pointed_to:         file-scope type#22: ns::INT
 is_reference:            FALSE
 
-file-scope type#24
+file-scope type#22
   name:                  file-scope id-name#1: "INT"
   decl_position.seq:     20
 based_types:             
-  reference:             file-scope type#23: ns::INT &
-  pointer:               file-scope type#25: ns::INT *
+  reference:             file-scope type#21: ns::INT &
+  pointer:               file-scope type#23: ns::INT *
 kind:                    tk_typeref
-typeref_type:            file-scope type#4: int
+typeref_type:            file-scope type#2: int
 kind:                    is_alias
 
-file-scope type#26
+file-scope type#24
   name:                  file-scope id-name#2: "DD"
   decl_position.seq:     35
 based_types:             NULL
@@ -117,87 +103,253 @@ kind:                    tk_typeref
 typeref_type:            file-scope type#17: D
 kind:                    is_alias
 
+file-scope name-qualifier#1
+is_class:                FALSE
+qualifier.namespace_ptr: file-scope namespace#1: ns
+name:                    file-scope id-name#3: "ns"
+previous_qualifier:      NULL
+
+file-scope name-reference#1
+qualifier:               file-scope name-qualifier#1
+num_template_arguments:  -1
+is_global_qualified_name:
+                         TRUE
+is_template_id:          FALSE
+
 file-scope variable#1
-  name:                  file-scope id-name#3: "i"
+  name:                  file-scope id-name#4: "i"
   decl_position.seq:     23
-type:                    file-scope type#24: ns::INT
+type:                    file-scope type#22: ns::INT
+declared_type:           file-scope type#22: ns::INT
 
 file-scope expr-node#1
-type:                    file-scope type#24: ns::INT
+type:                    file-scope type#22: ns::INT
 kind:                    enk_variable
 variable:                file-scope variable#1: i
+qualifier:               NULL
+is_global_qualified_name:
+                         FALSE
 position.seq:            25
 
 file-scope variable#2
-  name:                  file-scope id-name#4: "ir1"
+  name:                  file-scope id-name#5: "ir1"
   decl_position.seq:     25
-type:                    file-scope type#23: ns::INT &
+type:                    file-scope type#21: ns::INT &
+declared_type:           file-scope type#21: ns::INT &
+
+file-scope type#25
+based_types:             NULL
+kind:                    tk_pointer
+type_pointed_to:         file-scope type#26: INT
+is_reference:            FALSE
+
+file-scope type#26
+based_types:             
+  pointer:               file-scope type#25: INT *
+  reference:             file-scope type#27: INT &
+kind:                    tk_typeref
+typeref_type:            file-scope type#1: INT
+kind:                    name_qualifier
+is_global_qualified_name:
+                         TRUE
+
+file-scope type#27
+based_types:             NULL
+kind:                    tk_pointer
+type_pointed_to:         file-scope type#26: INT
+is_reference:            TRUE
 
 file-scope expr-node#2
-type:                    file-scope type#24: ns::INT
+type:                    file-scope type#22: ns::INT
 kind:                    enk_variable
 variable:                file-scope variable#1: i
+qualifier:               NULL
+is_global_qualified_name:
+                         FALSE
 position.seq:            26
 
 file-scope variable#3
-  name:                  file-scope id-name#5: "gir1"
+  name:                  file-scope id-name#6: "gir1"
   decl_position.seq:     26
-type:                    file-scope type#3: INT &
+type:                    file-scope type#27: INT &
+declared_type:           file-scope type#27: INT &
+
+file-scope type#28
+based_types:             NULL
+kind:                    tk_pointer
+type_pointed_to:         file-scope type#29: ns::INT
+is_reference:            FALSE
+
+file-scope type#29
+based_types:             
+  pointer:               file-scope type#28: ns::INT *
+  reference:             file-scope type#30: ns::INT &
+kind:                    tk_typeref
+typeref_type:            file-scope type#22: ns::INT
+qualifier:               file-scope name-qualifier#1
+kind:                    name_qualifier
+
+file-scope type#30
+based_types:             NULL
+kind:                    tk_pointer
+type_pointed_to:         file-scope type#29: ns::INT
+is_reference:            TRUE
 
 file-scope expr-node#3
-type:                    file-scope type#24: ns::INT
+type:                    file-scope type#22: ns::INT
 kind:                    enk_variable
 variable:                file-scope variable#1: i
+qualifier:               file-scope name-qualifier#1
+is_global_qualified_name:
+                         FALSE
 position.seq:            27
 
 file-scope variable#4
-  name:                  file-scope id-name#6: "ir2"
+  name:                  file-scope id-name#7: "ir2"
   decl_position.seq:     27
-type:                    file-scope type#23: ns::INT &
+type:                    file-scope type#30: ns::INT &
+declared_type:           file-scope type#30: ns::INT &
+
+file-scope type#31
+based_types:             NULL
+kind:                    tk_pointer
+type_pointed_to:         file-scope type#32: ns::INT
+is_reference:            FALSE
+
+file-scope type#32
+based_types:             
+  pointer:               file-scope type#31: ns::INT *
+  reference:             file-scope type#33: ns::INT &
+kind:                    tk_typeref
+typeref_type:            file-scope type#22: ns::INT
+qualifier:               file-scope name-qualifier#1
+kind:                    name_qualifier
+is_global_qualified_name:
+                         TRUE
+
+file-scope type#33
+based_types:             NULL
+kind:                    tk_pointer
+type_pointed_to:         file-scope type#32: ns::INT
+is_reference:            TRUE
 
 file-scope expr-node#4
-type:                    file-scope type#24: ns::INT
+type:                    file-scope type#22: ns::INT
 kind:                    enk_variable
 variable:                file-scope variable#1: i
+qualifier:               file-scope name-qualifier#1
+is_global_qualified_name:
+                         TRUE
 position.seq:            28
 
 file-scope variable#5
-  name:                  file-scope id-name#7: "gir2"
+  name:                  file-scope id-name#8: "gir2"
   decl_position.seq:     28
-type:                    file-scope type#23: ns::INT &
+type:                    file-scope type#33: ns::INT &
+declared_type:           file-scope type#33: ns::INT &
 
 file-scope variable#6
-  name:                  file-scope id-name#8: "c1"
+  name:                  file-scope id-name#9: "c1"
   decl_position.seq:     30
-type:                    file-scope type#6: C
+type:                    file-scope type#4: C
+declared_type:           file-scope type#4: C
+
+file-scope type#34
+based_types:             NULL
+kind:                    tk_typeref
+typeref_type:            file-scope type#4: C
+kind:                    name_qualifier
+is_global_qualified_name:
+                         TRUE
 
 file-scope variable#7
-  name:                  file-scope id-name#9: "c2"
+  name:                  file-scope id-name#10: "c2"
   decl_position.seq:     31
-type:                    file-scope type#6: C
+type:                    file-scope type#34: C
+declared_type:           file-scope type#34: C
+
+file-scope type#35
+based_types:             NULL
+kind:                    tk_typeref
+typeref_type:            file-scope type#4: C
+qualifier:               file-scope name-qualifier#1
+kind:                    name_qualifier
 
 file-scope variable#8
-  name:                  file-scope id-name#10: "c3"
+  name:                  file-scope id-name#11: "c3"
   decl_position.seq:     32
-type:                    file-scope type#6: C
+type:                    file-scope type#35: C
+declared_type:           file-scope type#35: C
+
+file-scope type#36
+based_types:             NULL
+kind:                    tk_typeref
+typeref_type:            file-scope type#4: C
+qualifier:               file-scope name-qualifier#1
+kind:                    name_qualifier
+is_global_qualified_name:
+                         TRUE
 
 file-scope variable#9
-  name:                  file-scope id-name#11: "c4"
+  name:                  file-scope id-name#12: "c4"
   decl_position.seq:     33
-type:                    file-scope type#6: C
+type:                    file-scope type#36: C
+declared_type:           file-scope type#36: C
+
+file-scope name-qualifier#2
+is_class:                TRUE
+qualifier.class_type:    file-scope type#4: C
+name:                    file-scope id-name#13: "C"
+previous_qualifier:      NULL
+
+file-scope type#37
+based_types:             NULL
+kind:                    tk_typeref
+typeref_type:            file-scope type#10: C::type
+qualifier:               file-scope name-qualifier#2
+kind:                    name_qualifier
 
 file-scope variable#10
-  name:                  file-scope id-name#12: "t1"
+  name:                  file-scope id-name#14: "t1"
   decl_position.seq:     37
-type:                    file-scope type#12: C::type
+type:                    file-scope type#37: C::type
+declared_type:           file-scope type#37: C::type
+
+file-scope name-qualifier#3
+is_class:                TRUE
+qualifier.class_type:    file-scope type#17: D
+name:                    file-scope id-name#15: "D"
+previous_qualifier:      NULL
+
+file-scope type#38
+based_types:             NULL
+kind:                    tk_typeref
+typeref_type:            file-scope type#10: C::type
+qualifier:               file-scope name-qualifier#3
+kind:                    name_qualifier
 
 file-scope variable#11
-  name:                  file-scope id-name#13: "t2"
+  name:                  file-scope id-name#16: "t2"
   decl_position.seq:     38
-type:                    file-scope type#12: C::type
+type:                    file-scope type#38: C::type
+declared_type:           file-scope type#38: C::type
+
+file-scope name-qualifier#4
+is_class:                TRUE
+qualifier.class_type:    file-scope type#24: ns::DD
+name:                    file-scope id-name#17: "DD"
+previous_qualifier:      NULL
+
+file-scope type#39
+based_types:             NULL
+kind:                    tk_typeref
+typeref_type:            file-scope type#10: C::type
+qualifier:               file-scope name-qualifier#4
+kind:                    name_qualifier
 
 file-scope variable#12
-  name:                  file-scope id-name#14: "t3"
+  name:                  file-scope id-name#18: "t3"
   decl_position.seq:     39
-type:                    file-scope type#12: C::type
+type:                    file-scope type#39: C::type
+declared_type:           file-scope type#39: C::type
 

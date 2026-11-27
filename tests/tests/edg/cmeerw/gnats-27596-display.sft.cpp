@@ -1,6 +1,7 @@
 //type:fp
 //options:--c++20 --no_il_lower --il_display
-//filter:awk '/^file-scope (requires-clause|routine)@/{f=1}/^$/{if (f) print $0; f=0}f' | grep -E -e '^(  name|  decl_position[.]seq|constraint|requires_pos[.]seq|type|is_prototype_instantiation|is_template_function|is_specialized|defined|trailing_requires_clause|assoc_template):' -e '^file-scope ' -e '^$' | sed -e 's/@[0-9a-f]*//'
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 template<typename> concept X = true;
 
@@ -35,3 +36,12 @@ void C<int>::g(int, int);
 template<>
 void C<long>::g(long, int)
 { }
+
+/* @filter
+file-scope requires-clause
+  constraint, requires_pos.seq
+file-scope routine
+  source_corresp/name, source_corresp/decl_position.seq, type, defined,
+  is_prototype_instantiation, is_template_function, is_specialized,
+  trailing_requires_clause, assoc_template
+ */

@@ -1,3 +1,21 @@
-fe_only -DTEST_NUMBER=4 --il_display --c++17 --clang -DATOMIC -DARRAY Test_name.c
-constant:                file-scope constant: 4
-constant:                file-scope constant: 16
+edg-first-stage-il -DTEST_NUMBER=4 --il_display --c++17 --clang -DATOMIC -DARRAY Test_name.c
+file-scope expr-node#1
+type:                    file-scope type#1: int
+constant:                file-scope constant#1: 5
+
+file-scope expr-node#2
+type:                    file-scope type#1: int
+constant:                file-scope constant#2: 0
+
+file-scope expr-node#3
+type:                    file-scope type#2: unsigned long
+constant:                file-scope constant#3: 4UL
+
+func-scope expr-node#1
+type:                    file-scope type#2: unsigned long
+constant:                file-scope constant#4: 16UL
+
+func-scope expr-node#2
+type:                    file-scope type#3: const nothrow_t &
+constant:                func-scope constant#1: nothrow
+

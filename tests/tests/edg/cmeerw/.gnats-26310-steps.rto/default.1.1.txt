@@ -1,33 +1,33 @@
-fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++11 Test_name.c
-file-scope base-class-derivation
+edg-first-stage-il -DTEST_NUMBER=1 --no_il_lower --il_display --c++11 Test_name.c
+file-scope base-class-derivation#1
 path:                    
-  base_class:            file-scope base-class: C<(N - 1)> (in C<N>)
+  base_class:            file-scope base-class#1: C<(N - 1)> (in C<N>)
 
-file-scope base-class-derivation
+file-scope base-class-derivation#2
 path:                    
-  base_class:            file-scope base-class: C<0> (in C<1>)
+  base_class:            file-scope base-class#2: C<0> (in C<1>)
 
-file-scope base-class-derivation
+file-scope base-class-derivation#3
 path:                    
-  base_class:            file-scope base-class: C<1> (in C<2>)
-  base_class:            file-scope base-class: C<0> (in C<2>)
+  base_class:            file-scope base-class#3: C<1> (in C<2>)
+  base_class:            file-scope base-class#4: C<0> (in C<2>)
 
-file-scope base-class-derivation
+file-scope base-class-derivation#4
 path:                    
-  base_class:            file-scope base-class: C<1> (in C<2>)
+  base_class:            file-scope base-class#3: C<1> (in C<2>)
 
-file-scope base-class-derivation
+file-scope base-class-derivation#5
 path:                    
-  base_class:            file-scope base-class: C<2> (in C<3>)
-  base_class:            file-scope base-class: C<1> (in C<3>)
-  base_class:            file-scope base-class: C<0> (in C<3>)
+  base_class:            file-scope base-class#5: C<2> (in C<3>)
+  base_class:            file-scope base-class#6: C<1> (in C<3>)
+  base_class:            file-scope base-class#7: C<0> (in C<3>)
 
-file-scope base-class-derivation
+file-scope base-class-derivation#6
 path:                    
-  base_class:            file-scope base-class: C<2> (in C<3>)
-  base_class:            file-scope base-class: C<1> (in C<3>)
+  base_class:            file-scope base-class#5: C<2> (in C<3>)
+  base_class:            file-scope base-class#6: C<1> (in C<3>)
 
-file-scope base-class-derivation
+file-scope base-class-derivation#7
 path:                    
-  base_class:            file-scope base-class: C<2> (in C<3>)
+  base_class:            file-scope base-class#5: C<2> (in C<3>)
 

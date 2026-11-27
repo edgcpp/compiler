@@ -1,7 +1,8 @@
 //type:fp
 //options:--c++20
 //options_all:--no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\n\n' '/^file-scope (expr-node@.*\nkind: +enk_constant|name-qualifier@)/' | grep -E -e '^(is_class|is_global_qualified_name|from_prototype_instantiation|used_in_primary_declarator|qualifier|qualifier.class_type|name|kind|constant|previous_qualifier|position[.]seq):' -e '^ +(FALSE|TRUE)$' -e '^file-scope ' -e '^$' | edg-enumerate-il-addrs
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 struct A
 {
@@ -22,3 +23,14 @@ int i =
   ::AA::E0 +
   AA::E::E0 +
   ::AA::E::E0;
+
+/* @filter
+file-scope name-reference[is_global_qualified_name==TRUE]
+  num_template_arguments, qualifier, is_global_qualified_name,
+  from_prototype_instantiation, used_in_primary_declarator, is_template_id
+file-scope expr-node[kind==enk_constant]
+  kind, qualifier, constant, position.seq, is_global_qualified_name,
+  from_prototype_instantiation, used_in_primary_declarator
+file-scope name-qualifier
+  qualifier.class_type, previous_qualifier, name, is_class
+ */

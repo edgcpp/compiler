@@ -1,4 +1,4 @@
-fe_only -DTEST_NUMBER=2 --no_il_lower --il_display --c++20 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=2 --no_il_lower --il_display --c++20 Test_name.c
 file-scope variable-template-info#1
 template_arg_list:       
   type:                  file-scope type#1: T#(1,1)
@@ -12,36 +12,87 @@ template_info:           file-scope variable-template-info#1
 file-scope expr-node#1
 kind:                    enk_variable
 variable:                file-scope variable#2: var
-position.seq:            13
+qualifier:               NULL
+num_template_arguments:  1
+is_global_qualified_name:
+                         FALSE
+is_template_id:          TRUE
+position.seq:            25
 
 file-scope expr-node#2
 kind:                    enk_variable
 variable:                file-scope variable#2: var
-position.seq:            13
+qualifier:               NULL
+num_template_arguments:  2
+orig_template_arg_list:  
+  type:                  file-scope type#3: int
+  explicitly_specified:  TRUE
+  type:                  file-scope type#3: int
+  explicitly_specified:  TRUE
+is_global_qualified_name:
+                         FALSE
+is_template_id:          TRUE
+position.seq:            26
 
 file-scope expr-node#3
 kind:                    enk_variable
 variable:                file-scope variable#2: var
-position.seq:            13
+qualifier:               NULL
+num_template_arguments:  1
+orig_template_arg_list:  
+  type:                  file-scope type#4: INT1
+  explicitly_specified:  TRUE
+is_global_qualified_name:
+                         FALSE
+is_template_id:          TRUE
+position.seq:            27
 
 file-scope expr-node#4
 kind:                    enk_variable
 variable:                file-scope variable#2: var
-position.seq:            13
+qualifier:               NULL
+num_template_arguments:  1
+orig_template_arg_list:  
+  type:                  file-scope type#5: INT2
+  explicitly_specified:  TRUE
+is_global_qualified_name:
+                         FALSE
+is_template_id:          TRUE
+position.seq:            28
 
 file-scope expr-node#5
 kind:                    enk_variable
 variable:                file-scope variable#2: var
-position.seq:            13
+qualifier:               NULL
+num_template_arguments:  2
+orig_template_arg_list:  
+  type:                  file-scope type#4: INT1
+  explicitly_specified:  TRUE
+  type:                  file-scope type#4: INT1
+  explicitly_specified:  TRUE
+is_global_qualified_name:
+                         FALSE
+is_template_id:          TRUE
+position.seq:            29
 
 file-scope expr-node#6
 kind:                    enk_variable
 variable:                file-scope variable#2: var
-position.seq:            13
+qualifier:               NULL
+num_template_arguments:  2
+orig_template_arg_list:  
+  type:                  file-scope type#5: INT2
+  explicitly_specified:  TRUE
+  type:                  file-scope type#5: INT2
+  explicitly_specified:  TRUE
+is_global_qualified_name:
+                         FALSE
+is_template_id:          TRUE
+position.seq:            30
 
 file-scope variable#3
   name:                  file-scope id-name#2: "i"
-  decl_position.seq:     13
+  decl_position.seq:     24
 
 file-scope variable-template-info#2
 template_arg_list:       

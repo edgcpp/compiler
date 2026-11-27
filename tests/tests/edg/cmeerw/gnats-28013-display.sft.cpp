@@ -1,7 +1,8 @@
 //type:fp
 //options:--target linux_x86_64:--target linux_i686:--target linux_aarch64:--target linux_armv7
 //options_all:-w --c++11 --clang_version 200100 --no_il_lower --il_display
-//filter:awk '/^file-scope routine@/{f=1}/^$/{if (f) print $0; f=0}f' | grep -E -e '^(  name|type):' -e '^file-scope ' -e '^$' | grep -F -C1 '__builtin_' | sed -e 's/@[0-9a-f]*//g'
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 namespace check_types
 {
@@ -206,3 +207,8 @@ namespace check_types
     }
   }
 }
+
+/* @filter
+file-scope routine[builtin_function_kind]
+  source_corresp/name, type
+ */

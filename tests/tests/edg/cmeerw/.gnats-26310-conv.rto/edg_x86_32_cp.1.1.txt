@@ -1,52 +1,63 @@
-fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++11 Test_name.c
-func-scope expr-node
-type:                    file-scope type: B<5>
+edg-first-stage-il -DTEST_NUMBER=1 --no_il_lower --il_display --c++11 Test_name.c
+func-scope expr-node#1
+type:                    file-scope type#1: B<5>
 is_lvalue:               TRUE
 kind:                    enk_variable
-variable:                func-scope variable: b5
+variable:                func-scope variable#1: b5
+qualifier:               NULL
+num_template_arguments:  -1
+is_global_qualified_name:
+                         FALSE
+is_template_id:          FALSE
+is_super_qualified:      FALSE
+is_decltype_qualified:   FALSE
+from_prototype_instantiation:
+                         FALSE
+used_in_primary_declarator:
+                         FALSE
 position.seq:            22
 position.column:         20
 
-func-scope expr-node
-type:                    file-scope type: const B<4>
+func-scope expr-node#2
+type:                    file-scope type#2: const B<4>
 is_lvalue:               TRUE
 compiler_generated:      TRUE
 kind:                    enk_operation
 operation.kind:          eok_base_class_cast
 operation.type_kind:     tk_struct
-operands:                func-scope expr-node
+operands:                func-scope expr-node#1
 position.seq:            22
 position.column:         20
 
-func-scope expr-node
-type:                    file-scope type: const B<3>
+func-scope expr-node#3
+type:                    file-scope type#3: const B<3>
 is_lvalue:               TRUE
 compiler_generated:      TRUE
 kind:                    enk_operation
 operation.kind:          eok_base_class_cast
 operation.type_kind:     tk_struct
-operands:                func-scope expr-node
+operands:                func-scope expr-node#2
 position.seq:            22
 position.column:         20
 
-func-scope expr-node
-type:                    file-scope type: const B<2>
+func-scope expr-node#4
+type:                    file-scope type#4: const B<2>
 is_lvalue:               TRUE
 compiler_generated:      TRUE
 kind:                    enk_operation
 operation.kind:          eok_base_class_cast
 operation.type_kind:     tk_struct
-operands:                func-scope expr-node
+operands:                func-scope expr-node#3
 position.seq:            22
 position.column:         20
 
-func-scope expr-node
-type:                    file-scope type: const B<2> &
+func-scope expr-node#5
+type:                    file-scope type#5: const B<2> &
 compiler_generated:      TRUE
 kind:                    enk_operation
 operation.kind:          eok_reference_to
 operation.type_kind:     tk_pointer
-operands:                func-scope expr-node
+operands:                func-scope expr-node#4
 position.seq:            22
 position.column:         20
 

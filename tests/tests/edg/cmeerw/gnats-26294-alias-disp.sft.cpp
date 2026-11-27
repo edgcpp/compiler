@@ -1,7 +1,8 @@
 //type:fp
 //options:--c++20
 //options_all:--no_il_lower --il_display
-//filter:awk -v RS='' -v ORS='\n\n' '/^file-scope (name-qualifier@|variable@|class-type-supplement@|type@.*\nkind: +(tk_struct|is_template_alias|template_arg_list|name_qualifier))/' | grep -E -e '^(  name|  type|  explicitly_specified|  decl_position[.]seq|is_class|qualifier|qualifier[.]class_type|extra_info|kind|name|type|declared_type|typeref_type|orig_template_arg_list|template_arg_list):' -e '^file-scope ' -e '^$' | edg-enumerate-il-addrs
+//filter:edg-il-filter
+//script:edg-first-stage-il
 
 template<typename T>
 struct A
@@ -36,3 +37,21 @@ AA<INT2>::B b2;
 
 AA<INT1>::B bb1;
 AA<INT2>::B bb2;
+
+/* @filter
+file-scope name-qualifier
+  qualifier.class_type, name, is_class
+file-scope variable
+  source_corresp/name, source_corresp/decl_position.seq, type, declared_type
+file-scope class-type-supplement
+  template_arg_list
+file-scope type[kind==tk_struct]
+  source_corresp/name, source_corresp/decl_position.seq, kind, extra_info
+file-scope type[kind==template_arg_list]
+  kind, typeref_type, template_arg_list
+file-scope type[kind==name_qualifier]
+  kind, typeref_type, qualifier
+file-scope type[kind==is_template_alias]
+  source_corresp/name, source_corresp/decl_position.seq, kind, typeref_type,
+  template_arg_list, orig_template_arg_list
+ */

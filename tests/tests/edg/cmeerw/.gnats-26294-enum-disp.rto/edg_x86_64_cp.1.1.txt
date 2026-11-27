@@ -1,111 +1,247 @@
-fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
+file-scope name-qualifier#1
+is_class:                TRUE
+qualifier.class_type:    file-scope type#1: AA
+name:                    file-scope id-name#1: "AA"
+previous_qualifier:      NULL
+
+file-scope name-qualifier#2
+is_class:                TRUE
+qualifier.class_type:    file-scope type#2: A::E
+name:                    file-scope id-name#2: "E"
+previous_qualifier:      file-scope name-qualifier#1
+
+file-scope name-reference#1
+qualifier:               file-scope name-qualifier#2
+num_template_arguments:  -1
+is_global_qualified_name:
+                         TRUE
+is_template_id:          FALSE
+from_prototype_instantiation:
+                         FALSE
+used_in_primary_declarator:
+                         FALSE
+
+file-scope name-qualifier#3
+is_class:                TRUE
+qualifier.class_type:    file-scope type#2: A::E
+name:                    file-scope id-name#3: "E"
+previous_qualifier:      file-scope name-qualifier#1
+
+file-scope name-reference#2
+qualifier:               file-scope name-qualifier#1
+num_template_arguments:  -1
+is_global_qualified_name:
+                         TRUE
+is_template_id:          FALSE
+from_prototype_instantiation:
+                         FALSE
+used_in_primary_declarator:
+                         FALSE
+
+file-scope name-qualifier#4
+is_class:                TRUE
+qualifier.class_type:    file-scope type#3: A
+name:                    file-scope id-name#4: "A"
+previous_qualifier:      NULL
+
+file-scope name-qualifier#5
+is_class:                TRUE
+qualifier.class_type:    file-scope type#2: A::E
+name:                    file-scope id-name#5: "E"
+previous_qualifier:      file-scope name-qualifier#4
+
+file-scope name-reference#3
+qualifier:               file-scope name-qualifier#5
+num_template_arguments:  -1
+is_global_qualified_name:
+                         TRUE
+is_template_id:          FALSE
+from_prototype_instantiation:
+                         FALSE
+used_in_primary_declarator:
+                         FALSE
+
+file-scope name-qualifier#6
+is_class:                TRUE
+qualifier.class_type:    file-scope type#2: A::E
+name:                    file-scope id-name#6: "E"
+previous_qualifier:      file-scope name-qualifier#4
+
+file-scope name-reference#4
+qualifier:               file-scope name-qualifier#4
+num_template_arguments:  -1
+is_global_qualified_name:
+                         TRUE
+is_template_id:          FALSE
+from_prototype_instantiation:
+                         FALSE
+used_in_primary_declarator:
+                         FALSE
+
 file-scope expr-node#1
 kind:                    enk_constant
 constant:                file-scope constant#1: E0
-position.seq:            17
+qualifier:               file-scope name-qualifier#4
+is_global_qualified_name:
+                         FALSE
+from_prototype_instantiation:
+                         FALSE
+used_in_primary_declarator:
+                         FALSE
+position.seq:            18
 
 file-scope expr-node#2
 kind:                    enk_constant
 constant:                file-scope constant#2: 0
-position.seq:            17
+position.seq:            18
 
 file-scope expr-node#3
 kind:                    enk_constant
 constant:                file-scope constant#1: E0
-position.seq:            17
+qualifier:               file-scope name-qualifier#4
+is_global_qualified_name:
+                         TRUE
+from_prototype_instantiation:
+                         FALSE
+used_in_primary_declarator:
+                         FALSE
+position.seq:            19
 
 file-scope expr-node#4
 kind:                    enk_constant
 constant:                file-scope constant#3: 0
-position.seq:            17
+position.seq:            19
 
 file-scope expr-node#5
 kind:                    enk_constant
 constant:                file-scope constant#4: 0
-position.seq:            17
+position.seq:            18
 
 file-scope expr-node#6
 kind:                    enk_constant
 constant:                file-scope constant#1: E0
-position.seq:            17
+qualifier:               file-scope name-qualifier#6
+is_global_qualified_name:
+                         FALSE
+from_prototype_instantiation:
+                         FALSE
+used_in_primary_declarator:
+                         FALSE
+position.seq:            20
 
 file-scope expr-node#7
 kind:                    enk_constant
 constant:                file-scope constant#5: 0
-position.seq:            17
+position.seq:            20
 
 file-scope expr-node#8
 kind:                    enk_constant
 constant:                file-scope constant#6: 0
-position.seq:            17
+position.seq:            18
 
 file-scope expr-node#9
 kind:                    enk_constant
 constant:                file-scope constant#1: E0
-position.seq:            17
+qualifier:               file-scope name-qualifier#5
+is_global_qualified_name:
+                         TRUE
+from_prototype_instantiation:
+                         FALSE
+used_in_primary_declarator:
+                         FALSE
+position.seq:            21
 
 file-scope expr-node#10
 kind:                    enk_constant
 constant:                file-scope constant#7: 0
-position.seq:            17
+position.seq:            21
 
 file-scope expr-node#11
 kind:                    enk_constant
 constant:                file-scope constant#8: 0
-position.seq:            17
+position.seq:            18
 
 file-scope expr-node#12
 kind:                    enk_constant
 constant:                file-scope constant#1: E0
-position.seq:            17
+qualifier:               file-scope name-qualifier#1
+is_global_qualified_name:
+                         FALSE
+from_prototype_instantiation:
+                         FALSE
+used_in_primary_declarator:
+                         FALSE
+position.seq:            22
 
 file-scope expr-node#13
 kind:                    enk_constant
 constant:                file-scope constant#9: 0
-position.seq:            17
+position.seq:            22
 
 file-scope expr-node#14
 kind:                    enk_constant
 constant:                file-scope constant#10: 0
-position.seq:            17
+position.seq:            18
 
 file-scope expr-node#15
 kind:                    enk_constant
 constant:                file-scope constant#1: E0
-position.seq:            17
+qualifier:               file-scope name-qualifier#1
+is_global_qualified_name:
+                         TRUE
+from_prototype_instantiation:
+                         FALSE
+used_in_primary_declarator:
+                         FALSE
+position.seq:            23
 
 file-scope expr-node#16
 kind:                    enk_constant
 constant:                file-scope constant#11: 0
-position.seq:            17
+position.seq:            23
 
 file-scope expr-node#17
 kind:                    enk_constant
 constant:                file-scope constant#12: 0
-position.seq:            17
+position.seq:            18
 
 file-scope expr-node#18
 kind:                    enk_constant
 constant:                file-scope constant#1: E0
-position.seq:            17
+qualifier:               file-scope name-qualifier#3
+is_global_qualified_name:
+                         FALSE
+from_prototype_instantiation:
+                         FALSE
+used_in_primary_declarator:
+                         FALSE
+position.seq:            24
 
 file-scope expr-node#19
 kind:                    enk_constant
 constant:                file-scope constant#13: 0
-position.seq:            17
+position.seq:            24
 
 file-scope expr-node#20
 kind:                    enk_constant
 constant:                file-scope constant#14: 0
-position.seq:            17
+position.seq:            18
 
 file-scope expr-node#21
 kind:                    enk_constant
 constant:                file-scope constant#1: E0
-position.seq:            17
+qualifier:               file-scope name-qualifier#2
+is_global_qualified_name:
+                         TRUE
+from_prototype_instantiation:
+                         FALSE
+used_in_primary_declarator:
+                         FALSE
+position.seq:            25
 
 file-scope expr-node#22
 kind:                    enk_constant
 constant:                file-scope constant#15: 0
-position.seq:            17
+position.seq:            25
 

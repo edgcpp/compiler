@@ -1,52 +1,52 @@
-fe_only -DTEST_NUMBER=3 --no_il_lower --il_display --c++20 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=3 --no_il_lower --il_display --c++20 Test_name.c
 file-scope expr-node#1
-type:                    file-scope type#1: int (*)()
-kind:                    enk_routine
-position.seq:            51
-
-file-scope expr-node#2
 type:                    file-scope type#1: int (*)()
 kind:                    enk_routine
 position.seq:            52
 
-file-scope expr-node#3
+file-scope expr-node#2
 type:                    file-scope type#1: int (*)()
 kind:                    enk_routine
 position.seq:            53
 
-file-scope expr-node#4
+file-scope expr-node#3
 type:                    file-scope type#1: int (*)()
 kind:                    enk_routine
 position.seq:            54
 
+file-scope expr-node#4
+type:                    file-scope type#1: int (*)()
+kind:                    enk_routine
+position.seq:            55
+
 file-scope expr-node#5
 type:                    file-scope type#2: int (*)()
 kind:                    enk_routine
-position.seq:            55
+position.seq:            56
 
 file-scope expr-node#6
 type:                    file-scope type#3: int (*)()
 kind:                    enk_routine
-position.seq:            56
+position.seq:            57
 
 file-scope expr-node#7
 type:                    file-scope type#4: int (*)()
 kind:                    enk_routine
-position.seq:            57
+position.seq:            58
 
 file-scope expr-node#8
 type:                    file-scope type#5: int (*)()
 kind:                    enk_routine
-position.seq:            58
+position.seq:            59
 
 file-scope variable#1
   name:                  file-scope id-name#1: "v"
-  decl_position.seq:     51
+  decl_position.seq:     52
 type:                    file-scope type#6: int
 
 file-scope routine#1
   name:                  file-scope id-name#2: "a"
-  decl_position.seq:     46
+  decl_position.seq:     47
 type:                    file-scope type#7: int ()
 template_arg_list:       
   type:                  file-scope type#8: T1#(1,1)
@@ -55,14 +55,17 @@ template_arg_list:
 
 file-scope routine#2
   name:                  file-scope id-name#3: "b"
-  decl_position.seq:     49
+  decl_position.seq:     50
 type:                    file-scope type#11: int ()
 template_arg_list:       
+  pack exp placeholder:  
   type:                  file-scope type#12: T#(1,1)
+  is_pack_element:       TRUE
+  is_pack:               TRUE
 
 file-scope routine#3
   name:                  file-scope id-name#2: "a"
-  decl_position.seq:     46
+  decl_position.seq:     47
 type:                    file-scope type#13: int ()
 template_arg_list:       
   type:                  file-scope type#6: int
@@ -74,37 +77,47 @@ template_arg_list:
 
 file-scope routine#4
   name:                  file-scope id-name#3: "b"
-  decl_position.seq:     49
+  decl_position.seq:     50
 type:                    file-scope type#14: int ()
 template_arg_list:       
+  pack exp placeholder:  
 
 file-scope routine#5
   name:                  file-scope id-name#3: "b"
-  decl_position.seq:     49
+  decl_position.seq:     50
 type:                    file-scope type#15: int ()
 template_arg_list:       
+  pack exp placeholder:  
   type:                  file-scope type#6: int
   explicitly_specified:  TRUE
+  is_pack_element:       TRUE
 
 file-scope routine#6
   name:                  file-scope id-name#3: "b"
-  decl_position.seq:     49
+  decl_position.seq:     50
 type:                    file-scope type#16: int ()
 template_arg_list:       
+  pack exp placeholder:  
   type:                  file-scope type#6: int
   explicitly_specified:  TRUE
+  is_pack_element:       TRUE
   type:                  file-scope type#6: int
   explicitly_specified:  TRUE
+  is_pack_element:       TRUE
 
 file-scope routine#7
   name:                  file-scope id-name#3: "b"
-  decl_position.seq:     49
+  decl_position.seq:     50
 type:                    file-scope type#17: int ()
 template_arg_list:       
+  pack exp placeholder:  
   type:                  file-scope type#6: int
   explicitly_specified:  TRUE
+  is_pack_element:       TRUE
   type:                  file-scope type#6: int
   explicitly_specified:  TRUE
+  is_pack_element:       TRUE
   type:                  file-scope type#6: int
   explicitly_specified:  TRUE
+  is_pack_element:       TRUE
 

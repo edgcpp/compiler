@@ -1,4 +1,4 @@
-fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
 func-scope expr-node#1
 type:                    file-scope type#1: int
 next:                    func-scope expr-node#2
@@ -10,7 +10,7 @@ func-scope expr-node#2
 type:                    file-scope type#1: int
 next:                    NULL
 kind:                    enk_constant
-constant:                func-scope constant#2: 0
+constant:                func-scope constant#1: 0
 position.seq:            20
 
 func-scope expr-node#3
@@ -25,21 +25,21 @@ func-scope expr-node#4
 type:                    file-scope type#2: bool
 next:                    NULL
 kind:                    enk_constant
-constant:                func-scope constant#3: (I == 0)
+constant:                func-scope constant#2: (I == 0)
 position.seq:            20
 
 func-scope expr-node#5
 type:                    file-scope type#3: INT1
 next:                    func-scope expr-node#6
 kind:                    enk_constant
-constant:                file-scope constant#4: I1
+constant:                file-scope constant#2: I1
 position.seq:            21
 
 func-scope expr-node#6
 type:                    file-scope type#1: int
 next:                    NULL
 kind:                    enk_constant
-constant:                func-scope constant#5: 0
+constant:                func-scope constant#3: 0
 position.seq:            21
 
 func-scope expr-node#7
@@ -54,21 +54,21 @@ func-scope expr-node#8
 type:                    file-scope type#2: bool
 next:                    NULL
 kind:                    enk_constant
-constant:                func-scope constant#6: (I1 == 0)
+constant:                func-scope constant#4: (I1 == 0)
 position.seq:            21
 
 func-scope expr-node#9
 type:                    file-scope type#4: INT2
 next:                    func-scope expr-node#10
 kind:                    enk_constant
-constant:                file-scope constant#7: I2
+constant:                file-scope constant#3: I2
 position.seq:            22
 
 func-scope expr-node#10
 type:                    file-scope type#1: int
 next:                    NULL
 kind:                    enk_constant
-constant:                func-scope constant#8: 0
+constant:                func-scope constant#5: 0
 position.seq:            22
 
 func-scope expr-node#11
@@ -83,21 +83,21 @@ func-scope expr-node#12
 type:                    file-scope type#2: bool
 next:                    NULL
 kind:                    enk_constant
-constant:                func-scope constant#9: (I2 == 0)
+constant:                func-scope constant#6: (I2 == 0)
 position.seq:            22
 
 func-scope expr-node#13
 type:                    file-scope type#3: INT1
 next:                    func-scope expr-node#14
 kind:                    enk_constant
-constant:                file-scope constant#4: I1
+constant:                file-scope constant#2: I1
 position.seq:            23
 
 func-scope expr-node#14
 type:                    file-scope type#4: INT2
 next:                    NULL
 kind:                    enk_constant
-constant:                file-scope constant#7: I2
+constant:                file-scope constant#3: I2
 position.seq:            23
 
 func-scope expr-node#15
@@ -112,33 +112,35 @@ func-scope expr-node#16
 type:                    file-scope type#2: bool
 next:                    NULL
 kind:                    enk_constant
-constant:                func-scope constant#10: (I1 == I2)
+constant:                func-scope constant#7: (I1 == I2)
 position.seq:            23
 
 func-scope expr-node#17
 type:                    file-scope type#3: INT1
 next:                    NULL
 kind:                    enk_variable
+next:                    file-scope name-reference#1
 position.seq:            25
 
 func-scope expr-node#18
 type:                    file-scope type#3: INT1
 next:                    func-scope expr-node#19
 kind:                    enk_constant
-constant:                func-scope constant#11: 0
+constant:                func-scope constant#8: 0
 position.seq:            25
 
 func-scope expr-node#20
 type:                    file-scope type#4: INT2
 next:                    NULL
 kind:                    enk_variable
+next:                    file-scope name-reference#2
 position.seq:            25
 
 func-scope expr-node#19
 type:                    file-scope type#4: INT2
 next:                    NULL
 kind:                    enk_constant
-constant:                func-scope constant#12: 0
+constant:                func-scope constant#9: 0
 position.seq:            25
 
 func-scope expr-node#21
@@ -153,19 +155,21 @@ func-scope expr-node#22
 type:                    file-scope type#2: bool
 next:                    NULL
 kind:                    enk_constant
-constant:                func-scope constant#13: true
+constant:                func-scope constant#10: true
 position.seq:            25
 
 func-scope expr-node#23
 type:                    file-scope type#3: INT1
 next:                    func-scope expr-node#24
 kind:                    enk_variable
+next:                    file-scope name-reference#3
 position.seq:            26
 
 func-scope expr-node#24
 type:                    file-scope type#4: INT2
 next:                    NULL
 kind:                    enk_variable
+next:                    file-scope name-reference#4
 position.seq:            26
 
 func-scope expr-node#25
@@ -195,14 +199,14 @@ func-scope expr-node#28
 type:                    file-scope type#1: int
 next:                    NULL
 kind:                    enk_constant
-constant:                func-scope constant#14: (+ I)
+constant:                func-scope constant#11: (+ I)
 position.seq:            28
 
 func-scope expr-node#29
 type:                    file-scope type#3: INT1
 next:                    NULL
 kind:                    enk_constant
-constant:                file-scope constant#4: I1
+constant:                file-scope constant#2: I1
 position.seq:            29
 
 func-scope expr-node#30
@@ -217,14 +221,14 @@ func-scope expr-node#31
 type:                    file-scope type#3: INT1
 next:                    NULL
 kind:                    enk_constant
-constant:                func-scope constant#15: (+ I1)
+constant:                func-scope constant#12: (+ I1)
 position.seq:            29
 
 func-scope expr-node#32
 type:                    file-scope type#4: INT2
 next:                    NULL
 kind:                    enk_constant
-constant:                file-scope constant#7: I2
+constant:                file-scope constant#3: I2
 position.seq:            30
 
 func-scope expr-node#33
@@ -239,20 +243,21 @@ func-scope expr-node#34
 type:                    file-scope type#4: INT2
 next:                    NULL
 kind:                    enk_constant
-constant:                func-scope constant#16: (+ I2)
+constant:                func-scope constant#13: (+ I2)
 position.seq:            30
 
 func-scope expr-node#35
 type:                    file-scope type#3: INT1
 next:                    NULL
 kind:                    enk_variable
+next:                    file-scope name-reference#1
 position.seq:            32
 
 func-scope expr-node#36
 type:                    file-scope type#3: INT1
 next:                    NULL
 kind:                    enk_constant
-constant:                func-scope constant#17: 0
+constant:                func-scope constant#14: 0
 position.seq:            32
 
 func-scope expr-node#37
@@ -267,20 +272,21 @@ func-scope expr-node#38
 type:                    file-scope type#3: INT1
 next:                    NULL
 kind:                    enk_constant
-constant:                func-scope constant#18: 0
+constant:                func-scope constant#15: 0
 position.seq:            32
 
 func-scope expr-node#39
 type:                    file-scope type#4: INT2
 next:                    NULL
 kind:                    enk_variable
+next:                    file-scope name-reference#2
 position.seq:            33
 
 func-scope expr-node#40
 type:                    file-scope type#4: INT2
 next:                    NULL
 kind:                    enk_constant
-constant:                func-scope constant#19: 0
+constant:                func-scope constant#16: 0
 position.seq:            33
 
 func-scope expr-node#41
@@ -295,13 +301,14 @@ func-scope expr-node#42
 type:                    file-scope type#4: INT2
 next:                    NULL
 kind:                    enk_constant
-constant:                func-scope constant#20: 0
+constant:                func-scope constant#17: 0
 position.seq:            33
 
 func-scope expr-node#43
 type:                    file-scope type#3: INT1
 next:                    NULL
 kind:                    enk_variable
+next:                    file-scope name-reference#3
 position.seq:            35
 
 func-scope expr-node#44
@@ -316,6 +323,7 @@ func-scope expr-node#45
 type:                    file-scope type#4: INT2
 next:                    NULL
 kind:                    enk_variable
+next:                    file-scope name-reference#4
 position.seq:            36
 
 func-scope expr-node#46

@@ -1,4 +1,4 @@
-fe_only -DTEST_NUMBER=3 --no_il_lower --il_display --c++20 Test_name.c
+edg-first-stage-il -DTEST_NUMBER=3 --no_il_lower --il_display --c++20 Test_name.c
 file-scope class-type-supplement#1
 
 file-scope type#1
@@ -33,140 +33,190 @@ proxy_of_type:           file-scope type#7: A<T#(1,1), T#(1,1)>::N
 
 file-scope type#8
   name:                  file-scope id-name#1: "N"
-  decl_position.seq:     22
+  decl_position.seq:     58
 kind:                    tk_class
 extra_info:              file-scope class-type-supplement#4
 
-file-scope base-class#1
-type:                    file-scope type#8: A<T#(1,1), T#(1,1)>::N
-orig_type:               file-scope type#7: A<T#(1,1), T#(1,1)>::N
-
 file-scope class-type-supplement#5
-template_arg_list:       
-  type:                  file-scope type#9: T#(1,1)
-
-file-scope type#10
-  name:                  file-scope id-name#4: "D1"
-  decl_position.seq:     22
-kind:                    tk_struct
-extra_info:              file-scope class-type-supplement#5
-
-file-scope class-type-supplement#6
 template_arg_list:       
   type:                  file-scope type#9: T#(1,1)
   explicitly_specified:  TRUE
   type:                  file-scope type#9: T#(1,1)
 
-file-scope type#11
+file-scope type#10
   name:                  file-scope id-name#3: "A"
   decl_position.seq:     8
+kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#5
+
+file-scope name-qualifier#1
+is_class:                TRUE
+qualifier.class_type:    file-scope type#10: A<T#(1,1), T#(1,1)>
+name:                    file-scope id-name#4: "A"
+previous_qualifier:      NULL
+
+file-scope type#11
+kind:                    tk_typeref
+typeref_type:            file-scope type#7: A<T#(1,1), T#(1,1)>::N
+qualifier:               file-scope name-qualifier#1
+kind:                    name_qualifier
+
+file-scope base-class#1
+type:                    file-scope type#8: A<T#(1,1), T#(1,1)>::N
+orig_type:               file-scope type#11: A<T#(1,1), T#(1,1)>::N
+
+file-scope class-type-supplement#6
+template_arg_list:       
+  type:                  file-scope type#9: T#(1,1)
+
+file-scope type#12
+  name:                  file-scope id-name#5: "D1"
+  decl_position.seq:     58
 kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#6
 
 file-scope class-type-supplement#7
 template_arg_list:       
-  type:                  file-scope type#12: T#(1,1)
+  type:                  file-scope type#13: T#(1,1)
   explicitly_specified:  TRUE
 
-file-scope type#13
+file-scope type#14
   name:                  file-scope id-name#2: "M"
-  decl_position.seq:     26
+  decl_position.seq:     62
 kind:                    tk_class
 extra_info:              file-scope class-type-supplement#7
 
-file-scope base-class#2
-type:                    file-scope type#13: A<T#(1,1), T#(1,1)>::M<T#(1,1)>
-
 file-scope class-type-supplement#8
 template_arg_list:       
-  type:                  file-scope type#12: T#(1,1)
-
-file-scope type#14
-  name:                  file-scope id-name#5: "D2"
-  decl_position.seq:     26
-kind:                    tk_struct
-extra_info:              file-scope class-type-supplement#8
-
-file-scope class-type-supplement#9
-template_arg_list:       
-  type:                  file-scope type#12: T#(1,1)
+  type:                  file-scope type#13: T#(1,1)
   explicitly_specified:  TRUE
-  type:                  file-scope type#12: T#(1,1)
+  type:                  file-scope type#13: T#(1,1)
 
 file-scope type#15
   name:                  file-scope id-name#3: "A"
   decl_position.seq:     8
 kind:                    tk_struct
+extra_info:              file-scope class-type-supplement#8
+
+file-scope name-qualifier#2
+is_class:                TRUE
+qualifier.class_type:    file-scope type#15: A<T#(1,1), T#(1,1)>
+name:                    file-scope id-name#6: "A"
+previous_qualifier:      NULL
+
+file-scope type#16
+kind:                    tk_typeref
+typeref_type:            file-scope type#14: A<T#(1,1), T#(1,1)>::M<T#(1,1)>
+qualifier:               file-scope name-qualifier#2
+kind:                    name_qualifier
+
+file-scope base-class#2
+type:                    file-scope type#14: A<T#(1,1), T#(1,1)>::M<T#(1,1)>
+orig_type:               file-scope type#16: A<T#(1,1), T#(1,1)>::M<T#(1,1)>
+
+file-scope class-type-supplement#9
+template_arg_list:       
+  type:                  file-scope type#13: T#(1,1)
+
+file-scope type#17
+  name:                  file-scope id-name#7: "D2"
+  decl_position.seq:     62
+kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#9
 
 file-scope class-type-supplement#10
-proxy_of_type:           file-scope type#16: A<T#(1,1), T#(1,1)>::N
+proxy_of_type:           file-scope type#18: A<T#(1,1), T#(1,1)>::N
 
-file-scope type#17
+file-scope type#19
   name:                  file-scope id-name#1: "N"
-  decl_position.seq:     30
+  decl_position.seq:     66
 kind:                    tk_class
 extra_info:              file-scope class-type-supplement#10
 
-file-scope base-class#3
-type:                    file-scope type#17: A<T#(1,1), T#(1,1)>::N
-orig_type:               file-scope type#16: A<T#(1,1), T#(1,1)>::N
-
 file-scope class-type-supplement#11
 template_arg_list:       
-  type:                  file-scope type#18: T#(1,1)
+  type:                  file-scope type#20: T#(1,1)
+  explicitly_specified:  TRUE
+  type:                  file-scope type#20: T#(1,1)
 
-file-scope type#19
-  name:                  file-scope id-name#6: "GD1"
-  decl_position.seq:     30
+file-scope type#21
+  name:                  file-scope id-name#3: "A"
+  decl_position.seq:     8
 kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#11
 
+file-scope name-qualifier#3
+is_class:                TRUE
+qualifier.class_type:    file-scope type#21: A<T#(1,1), T#(1,1)>
+name:                    file-scope id-name#8: "A"
+previous_qualifier:      NULL
+
+file-scope type#22
+kind:                    tk_typeref
+typeref_type:            file-scope type#18: A<T#(1,1), T#(1,1)>::N
+qualifier:               file-scope name-qualifier#3
+kind:                    name_qualifier
+
+file-scope base-class#3
+type:                    file-scope type#19: A<T#(1,1), T#(1,1)>::N
+orig_type:               file-scope type#22: A<T#(1,1), T#(1,1)>::N
+
 file-scope class-type-supplement#12
 template_arg_list:       
-  type:                  file-scope type#18: T#(1,1)
-  explicitly_specified:  TRUE
-  type:                  file-scope type#18: T#(1,1)
+  type:                  file-scope type#20: T#(1,1)
 
-file-scope type#20
-  name:                  file-scope id-name#3: "A"
-  decl_position.seq:     8
+file-scope type#23
+  name:                  file-scope id-name#9: "GD1"
+  decl_position.seq:     66
 kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#12
 
 file-scope class-type-supplement#13
 template_arg_list:       
-  type:                  file-scope type#21: T#(1,1)
+  type:                  file-scope type#24: T#(1,1)
   explicitly_specified:  TRUE
 
-file-scope type#22
+file-scope type#25
   name:                  file-scope id-name#2: "M"
-  decl_position.seq:     34
+  decl_position.seq:     70
 kind:                    tk_class
 extra_info:              file-scope class-type-supplement#13
 
-file-scope base-class#4
-type:                    file-scope type#22: A<T#(1,1), T#(1,1)>::M<T#(1,1)>
-
 file-scope class-type-supplement#14
 template_arg_list:       
-  type:                  file-scope type#21: T#(1,1)
+  type:                  file-scope type#24: T#(1,1)
+  explicitly_specified:  TRUE
+  type:                  file-scope type#24: T#(1,1)
 
-file-scope type#23
-  name:                  file-scope id-name#7: "GD2"
-  decl_position.seq:     34
+file-scope type#26
+  name:                  file-scope id-name#3: "A"
+  decl_position.seq:     8
 kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#14
 
+file-scope name-qualifier#4
+is_class:                TRUE
+qualifier.class_type:    file-scope type#26: A<T#(1,1), T#(1,1)>
+name:                    file-scope id-name#10: "A"
+previous_qualifier:      NULL
+
+file-scope type#27
+kind:                    tk_typeref
+typeref_type:            file-scope type#25: A<T#(1,1), T#(1,1)>::M<T#(1,1)>
+qualifier:               file-scope name-qualifier#4
+kind:                    name_qualifier
+
+file-scope base-class#4
+type:                    file-scope type#25: A<T#(1,1), T#(1,1)>::M<T#(1,1)>
+orig_type:               file-scope type#27: A<T#(1,1), T#(1,1)>::M<T#(1,1)>
+
 file-scope class-type-supplement#15
 template_arg_list:       
-  type:                  file-scope type#21: T#(1,1)
-  explicitly_specified:  TRUE
-  type:                  file-scope type#21: T#(1,1)
+  type:                  file-scope type#24: T#(1,1)
 
-file-scope type#24
-  name:                  file-scope id-name#3: "A"
-  decl_position.seq:     8
+file-scope type#28
+  name:                  file-scope id-name#11: "GD2"
+  decl_position.seq:     70
 kind:                    tk_struct
 extra_info:              file-scope class-type-supplement#15
 
