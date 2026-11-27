@@ -265,6 +265,13 @@ jobs:
           exec edgy --config="${CONFIG}" --run-timestamp="${RUN_TIMESTAMP}" --max-failure-count=10 --timeout=600 -A --meticulous all
           EOF
 
+          # Use the checkout's tools: the pinned ci-runner image predates
+          # the IL display filter scripts. Remove once it is repinned.
+          dev_bin="${GITHUB_WORKSPACE}/dev_tools/bin"
+          dev_libs="${GITHUB_WORKSPACE}/dev_tools/pylibs"
+          export PATH="${dev_bin}:${PATH}"
+          export PYTHONPATH="${dev_libs}${PYTHONPATH:+:${PYTHONPATH}}"
+
           edg-prefix-env-loader .tmp/extensive-ci.edgivk
 
       # Reviews (acknowledg-forge, edgy-review) read only the .rt.tar.gz
