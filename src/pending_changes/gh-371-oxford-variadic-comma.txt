@@ -1,0 +1,15 @@
+[GH #371]
+C++26: Deprecate omitting the comma before a variadic ellipsis (P3176R1)
+
+In C++26 mode, a warning is now issued for a variadic ellipsis that follows
+a parameter declaration without a comma, which P3176R1 ("The Oxford
+variadic comma") deprecates.  An ellipsis that is the only parameter is not
+affected:
+
+  void f(int...);                   // Warning.
+  void g(int, ...);                 // Okay.
+  void h(...);                      // Okay.
+  template<class... T> void i(T......);   // Warning.
+
+As with GCC and Clang, the warning is not issued when emulating GCC versions
+before 15 or Clang versions before 20.
