@@ -28920,7 +28920,7 @@ indication in *rcblock).
              const_cast; mark it accordingly. */
           expr->variant.operation.is_const_cast = TRUE;
         }  /* if */
-        record_cast_position_in_expr_rescan_info(expr,
+        record_cast_position_in_expr_rescan_info(expr, csf_const_cast,
                                                  &start_position,
                                                  &type_position,
                                                  cast_type);
@@ -29260,7 +29260,7 @@ if it's not valid).
           expr->is_static_cast = TRUE;
         }  /* if */
       }  /* if */
-      record_cast_position_in_expr_rescan_info(expr,
+      record_cast_position_in_expr_rescan_info(expr, source_form,
                                                start_position,
                                                type_position,
                                                type_cast_to);
@@ -29760,7 +29760,7 @@ indication in *rcblock).
         }  /* if */
 #endif /* CHECKING */
       }  /* if */
-      record_cast_position_in_expr_rescan_info(expr,
+      record_cast_position_in_expr_rescan_info(expr, csf_reinterpret_cast,
                                                &start_position,
                                                &type_position,
                                                type_cast_to);

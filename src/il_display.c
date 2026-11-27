@@ -2263,6 +2263,12 @@ Display a typeref kind.
     case trk_template_arg_list:        str = "template_arg_list";        break;
     case trk_name_qualifier:           str = "name_qualifier";           break;
     case trk_pack_index:               str = "pack_index";               break;
+    case trk_collapsed_lvalue_reference:
+      str = "collapsed_lvalue_reference";
+      break;
+    case trk_collapsed_rvalue_reference:
+      str = "collapsed_rvalue_reference";
+      break;
     default:                           str = "**BAD TYPEREF KIND**";     break;
   }  /* switch */
   (void)fprintf(f_display, "%s\n", str);
@@ -4837,6 +4843,12 @@ Display the indicated expression node.
       if (ptr->variant.operation.is_rvalue_reference_cast) {
         disp_boolean("is_rvalue_reference_cast", TRUE);
       }  /* if */
+#if BACK_END_IS_CP_GEN_BE
+      if (ptr->variant.operation.reference_cast_type != NULL) {
+        disp_ptr("reference_cast_type",
+                 (char*)ptr->variant.operation.reference_cast_type, iek_type);
+      }  /* if */
+#endif /* BACK_END_IS_CP_GEN_BE */
 #if MICROSOFT_EXTENSIONS_ALLOWED
       if (ptr->variant.operation.is_tracking_reference_cast) {
         disp_boolean("is_tracking_reference_cast", TRUE);

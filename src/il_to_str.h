@@ -508,6 +508,12 @@ extern a_type_ptr complex_type_needs_modification(
                                                 a_float_kind *orig_float_kind);
 #endif /* GNU_EXTENSIONS_ALLOWED && C99_IL_EXTENSIONS_SUPPORTED */
 
+extern a_boolean typedef_is_invisible(
+                    a_type_ptr                            type,
+                    a_type_ptr                            *resolved_type,
+                    a_boolean                             suppress_const,
+                    an_il_to_str_output_control_block_ptr octl);
+
 extern void form_type_first_part(
                     a_type_ptr                            type,
                     a_boolean                             under_lhs_declarator,

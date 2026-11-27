@@ -2864,7 +2864,7 @@ by octl.
 }  /* form_type_specifier */
 
 
-static inline a_boolean typedef_is_invisible(
+a_boolean typedef_is_invisible(
                           a_type_ptr                            type,
                           a_type_ptr                            *resolved_type,
                           a_boolean                             suppress_const,

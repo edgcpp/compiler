@@ -700,6 +700,17 @@ instance of an alias template).
 }  /* typeref_is_using_decl_alias */
 
 
+inline a_boolean type_has_collapsed_reference_spelling(a_type_ptr type)
+/*
+Return TRUE if type records the original spelling of a collapsed reference.
+*/
+{
+  return type_is(type, tk_typeref) &&
+         (is_typeref_kind(type, trk_collapsed_lvalue_reference) ||
+          is_typeref_kind(type, trk_collapsed_rvalue_reference));
+}  /* type_has_collapsed_reference_spelling */
+
+
 inline a_boolean typeref_is_type_operator(
                                          a_type_ptr tp,
                                          a_boolean  include_intrinsics = FALSE)
@@ -721,7 +732,8 @@ clang/GNU type-returning type builtin.
              !is_typeref_kind(tp, trk_is_alias) &&
              !is_typeref_kind(tp, trk_is_template_alias) &&
              !is_typeref_kind(tp, trk_template_arg_list) &&
-             !is_typeref_kind(tp, trk_name_qualifier);
+             !is_typeref_kind(tp, trk_name_qualifier) &&
+             !type_has_collapsed_reference_spelling(tp);
   } else {
     result = is_typeref_kind((tp), trk_is_decltype) ||
              is_typeref_kind((tp), trk_is_splice) ||

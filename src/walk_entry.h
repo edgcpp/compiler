@@ -1671,6 +1671,10 @@ handle_next_entry:
             /* No pointers. */
             break;
           case enk_operation:
+#if BACK_END_IS_CP_GEN_BE
+            walk_ptr(eptr->variant.operation.reference_cast_type, a_type_ptr,
+                     iek_type);
+#endif /* BACK_END_IS_CP_GEN_BE */
             walk_list(eptr->variant.operation.operands, an_expr_node_ptr,
                       iek_expr_node);
 #if NEEDED_FLAG_WALK || KEEP_IN_IL_WALK
