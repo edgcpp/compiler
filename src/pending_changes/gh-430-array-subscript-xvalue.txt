@@ -18,3 +18,6 @@ that need an lvalue are now diagnosed:
 
   int &&r1 = A().i[0];      // Previously an error.
   int *p = &A().i[0];       // Now an error.
+
+The GNU two-operand conditional "x ? : y" no longer causes an internal
+error when "x" is an xvalue, such as "A().b" or "A().i[0]".

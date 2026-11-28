@@ -91,10 +91,16 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
 
 "Test_name.c", line N: error: static assertion failed
 
-"Test_name.c", line N: internal error: assertion failed
+"Test_name.c", line N: error: static assertion failed
 
+"Test_name.c", line N: error: operand types are incompatible ("FourUInts" (aka "__attribute((vector_size(16))) unsigned int") and "FourDoubles" (aka "__attribute((vector_size(32))) double"))
+    (void)(C ? L : R);
+                 ^
+          detected during instantiation of "void all_dependent(Cond, LHS, RHS) [with Cond=FourInts, LHS=FourUInts, RHS=FourDoubles]" at line 177
 
-24 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
-Compilation aborted.
-Aborted
-eccp: front end returned an exit status of 134
+"Test_name.c", line N: error: operand types are incompatible ("FourUInts" (aka "__attribute((vector_size(16))) unsigned int") and "TwoUInts" (aka "__attribute((vector_size(8))) unsigned int"))
+    (void)(C ? L : R);
+                 ^
+          detected during instantiation of "void all_dependent(Cond, LHS, RHS) [with Cond=FourInts, LHS=FourUInts, RHS=TwoUInts]" at line 180
+
+27 errors detected in the compilation of "Test_name.c".

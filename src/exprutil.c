@@ -3915,6 +3915,7 @@ lowering (as value category is known at that time).
     expr_copy->variant.reused_value_init = dip;
     expr_copy->type = make_pointer_type(expr->type);
     expr_copy = add_indirection_to_node(expr_copy);
+    copy_node_value_category(expr, expr_copy);
     *temp_init_used = TRUE;
   } else if (is_invariant_expr(expr, vars_can_change,
                                treat_as_potential_prvalue)) {
@@ -3931,13 +3932,18 @@ lowering (as value category is known at that time).
   } else {
     /* Change the original expression to a dynamic initialization marked
        with is_reused_value, and use an enk_reuse_value for the reuse.
-       For an lvalue case, the temporary is set to the address of the
-       lvalue, so the original expression "lvalue" becomes something like
-       "*(temp = &lvalue)". */
+       For a glvalue case, the temporary is set to the address of the
+       glvalue, so the original expression "glvalue" becomes something like
+       "*(temp = &glvalue)".  An xvalue stays an xvalue. */
     a_type_ptr       temp_type = expr->type;
     an_expr_node_ptr expr_to_save = copy_node(expr);
-    a_boolean        lvalue_case = expr->is_lvalue;
-    if (lvalue_case) {
+    a_boolean        glvalue_case = is_glvalue_node(expr);
+    a_boolean        xvalue_case = expr->is_xvalue;
+    if (glvalue_case) {
+      /* add_address_of_to_node takes only an lvalue; the address of an
+         xvalue is the same. */
+      expr_to_save->is_lvalue = TRUE;
+      expr_to_save->is_xvalue = FALSE;
       expr_to_save = add_address_of_to_node(expr_to_save);
       temp_type = expr_to_save->type;
     } else {
@@ -3950,18 +3956,23 @@ lowering (as value category is known at that time).
     temp_init_expr = alloc_temp_init_node(temp_type, dip,
                                           /*is_lvalue=*/FALSE,
                                           /*is_explicit_cast=*/FALSE);
-    if (lvalue_case) {
+    if (glvalue_case) {
       temp_init_expr = add_indirection_to_node(temp_init_expr);
+      if (xvalue_case) {
+        temp_init_expr->is_lvalue = FALSE;
+        temp_init_expr->is_xvalue = TRUE;
+      }  /* if */
     }  /* if */
     overwrite_node(expr, temp_init_expr);
-    /* Make the expression for the reuse of the temporary.  For an lvalue,
+    /* Make the expression for the reuse of the temporary.  For a glvalue,
        put a "*" on top of that because the temporary is a pointer to the
-       lvalue. */
+       glvalue. */
     expr_copy = alloc_expr_node((an_expr_node_kind)enk_reuse_value);
     expr_copy->variant.reused_value_init = dip;
     expr_copy->type = temp_type;
-    if (lvalue_case) {
+    if (glvalue_case) {
       expr_copy = add_indirection_to_node(expr_copy);
+      copy_node_value_category(expr, expr_copy);
     }  /* if */
     *temp_init_used = TRUE;
   }  /* if */
