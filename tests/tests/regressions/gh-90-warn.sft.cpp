@@ -26,7 +26,9 @@ T make();
 
 const int *f4() { return &static_cast<const int &>(make().b); } // Warning.
 const int *f5() { return make().arr; }         // Warning (not with GCC 8).
-const int *f6() { return &make().arr[1]; }     // Warning (not with GCC 8).
+const int *f6() { return make().arr + 1; }     // Warning (not with GCC 8).
+// "&make().arr[1]" is an error since "make().arr[1]" became an xvalue
+// (Core issue 1213, GH #440).
 
 // No warnings for these.
 int *n5() { return make().p; }

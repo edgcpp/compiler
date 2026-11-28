@@ -20,6 +20,6 @@ fe_only -DTEST_NUMBER=1 --c++20 Test_name.c
                            ^
 
 "Test_name.c", line 29: warning: returning pointer to local temporary
-  const int *f6() { return &make().arr[1]; }     // Warning (not with GCC 8).
+  const int *f6() { return make().arr + 1; }     // Warning (not with GCC 8).
                            ^
 

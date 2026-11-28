@@ -95,12 +95,46 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     static_assert(is_same_v<TwoFloats, decltype(declval<TwoInts>() ? declval<TwoFloats>() : declval<TwoFloats>())>);
     ^
 
-"Test_name.c", line 142: internal error: assertion failed at: "exprutil.c", line <suppressed> in conv_glvalue_to_prvalue
-
+"Test_name.c", line 142: error: static assertion failed
     static_assert(is_same_v<TwoInts, decltype(declval<TwoInts>() ?: declval<TwoInts>())>);
-                                                                  ^
+    ^
 
-24 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
-Compilation aborted.
-Aborted
-eccp: front end returned an exit status of 134
+"Test_name.c", line 179: warning: variable "vs" is used before its value is set
+    (vs == 1 ? four_shorts : four_shorts);
+     ^
+
+"Test_name.c", line 179: warning: expression has no effect
+    (vs == 1 ? four_shorts : four_shorts);
+    ^
+
+"Test_name.c", line 182: warning: expression has no effect
+    (four_shorts == 1 ? vs : vs);
+    ^
+
+"Test_name.c", line 185: error: operand types are incompatible ("FourShorts" (aka "__attribute((ext_vector_type(4))) short") and "FourShortsVS" (aka "__attribute((vector_size(8))) short"))
+    (four_shorts == 1 ? four_shorts : vs);
+                                    ^
+
+"Test_name.c", line 188: error: operand types are incompatible ("FourShortsVS" (aka "__attribute((vector_size(8))) short") and "FourShorts" (aka "__attribute((ext_vector_type(4))) short"))
+    (four_shorts == 1 ? vs : four_shorts);
+                           ^
+
+"Test_name.c", line 191: error: operand types are incompatible ("FourShortsVS" (aka "__attribute((vector_size(8))) short") and "FourShorts" (aka "__attribute((ext_vector_type(4))) short"))
+    (vs == 1 ? vs : four_shorts);
+                  ^
+
+"Test_name.c", line 194: error: operand types are incompatible ("FourShorts" (aka "__attribute((ext_vector_type(4))) short") and "FourShortsVS" (aka "__attribute((vector_size(8))) short"))
+    (vs == 1 ? four_shorts : vs);
+                           ^
+
+"Test_name.c", line 160: error: operand types are incompatible ("FourUInts" (aka "__attribute((ext_vector_type(4))) unsigned int") and "FourDoubles" (aka "__attribute((ext_vector_type(4))) double"))
+    (void)(C ? L : R);
+                 ^
+          detected during instantiation of "void all_dependent(Cond, LHS, RHS) [with Cond=FourInts, LHS=FourUInts, RHS=FourDoubles]" at line 168
+
+"Test_name.c", line 160: error: operand types are incompatible ("FourUInts" (aka "__attribute((ext_vector_type(4))) unsigned int") and "TwoUInts" (aka "__attribute((ext_vector_type(2))) unsigned int"))
+    (void)(C ? L : R);
+                 ^
+          detected during instantiation of "void all_dependent(Cond, LHS, RHS) [with Cond=FourInts, LHS=FourUInts, RHS=TwoUInts]" at line 171
+
+31 errors detected in the compilation of "Test_name.c".

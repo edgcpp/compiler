@@ -1,17 +1,5 @@
 fe_only -DTEST_NUMBER=4 --clang -tused -e 200 --no_wrap_diagnostics --clang_version 999999 --c++17 --exceptions --exceptions Test_name.c
-"Test_name.c", line 16: error: an rvalue reference cannot be bound to an lvalue
-    int &&r = T{}[1];
-              ^
-
-"Test_name.c", line 20: error: invalid redeclaration of type name "cwg1213::U" (declared at line 19)
-    using U = int &&;
-          ^
-
-"Test_name.c", line 27: error: invalid redeclaration of type name "cwg1213::U" (declared at line 20)
-    using U = decltype(X().array[ConvertsToInt()]);
-          ^
-
-"Test_name.c", line 32: error: invalid redeclaration of type name "cwg1213::U" (declared at line 27)
+"Test_name.c", line 32: error: invalid redeclaration of type name "cwg1213::U" (declared at line 19)
     using U = decltype(V4Int()[0]);
           ^
 
@@ -77,4 +65,4 @@ fe_only -DTEST_NUMBER=4 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     using T = unsigned;
           ^
 
-13 errors detected in the compilation of "Test_name.c".
+10 errors detected in the compilation of "Test_name.c".

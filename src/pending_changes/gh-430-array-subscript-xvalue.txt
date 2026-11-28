@@ -1,0 +1,23 @@
+[GH #430,GH #440]
+Subscripting an array prvalue or xvalue produces an xvalue
+
+Subscripting an array prvalue or xvalue, such as "A().i[0]", now produces
+an xvalue rather than an lvalue (Core issue 1213).  This is done in C++14
+and later modes, and in C++11 mode when emulating GCC 9 or later or Clang 7
+or later.  It is not done when emulating an earlier GCC or Clang version,
+or in Microsoft modes, since those compilers produce an lvalue.  The
+changes for GH #90 made "A().b" an xvalue, so binding a reference to a
+conditional expression with operands "A().b" and "A().i[0]" now extends the
+lifetime of the temporary:
+
+  struct A { int b; int i[2]; ~A(); };
+  const int &r = c ? A().b : A().i[0];  // Previously bound to a copy.
+
+An rvalue reference can now be bound to such a subscript, and the cases
+that need an lvalue are now diagnosed:
+
+  int &&r1 = A().i[0];      // Previously an error.
+  int *p = &A().i[0];       // Now an error.
+
+The GNU two-operand conditional "x ? : y" no longer causes an internal
+error when "x" is an xvalue, such as "A().b" or "A().i[0]".

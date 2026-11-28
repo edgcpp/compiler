@@ -2114,6 +2114,28 @@ to NULL.
 }  /* reduce_singleton_subscript_list */
 
 
+static a_boolean is_array_rvalue_subscript_operand(an_operand *operand)
+/*
+Return TRUE if operand, an operand of a built-in subscript operation on which
+the array-to-pointer conversion has not yet been done, is an array prvalue or
+xvalue.  Subscripting such an array produces an xvalue (Core issue 1213) in
+the modes in which subscript_of_array_rvalue_is_xvalue is set (see
+cmd_line.c).  A static compound literal in GNU mode is represented as an
+array prvalue constant, but it designates a static object and is converted
+to an lvalue on array-to-pointer decay (see do_array_to_pointer_conversion),
+so it is not an rvalue here.  That decay leaves the constant as is in a C++11
+constant expression; the subscript is an lvalue there too, so that the value
+category of the subscript does not depend on the context.
+*/
+{
+  return subscript_of_array_rvalue_is_xvalue &&
+         !is_error_operand(operand) && is_array_type(operand->type) &&
+         !is_an_lvalue(operand) &&
+         !(is_constant_operand(operand) &&
+           operand->variant.constant.is_compound_literal);
+}  /* is_array_rvalue_subscript_operand */
+
+
 static void scan_function_call(an_operand             *operand,
                                an_operand             *bound_function_selector,
                                a_boolean              is_multi_subscript,
@@ -2160,6 +2182,7 @@ Those cases are mostly delegated to scan_function_call.
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
   a_boolean            err = FALSE, processed = FALSE, opnd2_done = FALSE;
   a_boolean            subscript_is_expr_list = FALSE, cli_array_case = FALSE;
+  a_boolean            array_operand_is_rvalue = FALSE;
 
   db_enter(4, "scan_subscript_operator");
 
@@ -2525,6 +2548,7 @@ Those cases are mostly delegated to scan_function_call.
 #endif /* GNU_VECTOR_TYPES_ALLOWED */
     if (!processed) {
       /* Non-operator-function cases. */
+      array_operand_is_rvalue = is_array_rvalue_subscript_operand(operand_1);
       do_operand_transformations(operand_1, TOPT_NO_OPTIONS);
 #if MICROSOFT_EXTENSIONS_ALLOWED
       /* If conversions were done, this might now be a CLI array case. */
@@ -2640,6 +2664,10 @@ Those cases are mostly delegated to scan_function_call.
                                         &closing_bracket_position);
         subscript_is_expr_list = FALSE;
       }  /* if */
+      if (is_array_rvalue_subscript_operand(&operand_2)) {
+        /* The "integer[array]" form. */
+        array_operand_is_rvalue = TRUE;
+      }  /* if */
       do_operand_transformations(&operand_2, TOPT_NO_OPTIONS);
       /* One of the operands must have type "pointer to object type" and the 
          other must be an integral expression. */
@@ -2712,8 +2740,13 @@ Those cases are mostly delegated to scan_function_call.
           set_pointer_operand_is_second_flag(result);
         }  /* if */
         /* Preserve the reference entries from the pointer operand (the
-           array) because the result is an lvalue. */
+           array) because the result is a glvalue. */
         result->ref_entries_list = pointer_operand->ref_entries_list;
+        if (array_operand_is_rvalue) {
+          /* Subscripting an array prvalue or xvalue produces an xvalue
+             (Core issue 1213), e.g., "A().arr[0]". */
+          conv_rvalue_reference_result_to_xvalue(result);
+        }  /* if */
       }  /* if */
     }  /* if */
   }  /* if */
